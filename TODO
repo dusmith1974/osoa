@@ -1,0 +1,33 @@
+google c++ styleguiide
+ gcsg lint checker in make
+ gcsg vim settings (chromium embedded)
+serializable object as base class (boost serialization or protobuf)
+ protobuf-lite
+xerces xml input msgs, xsd validation
+logging class boost log, continue at midnight, chunk 100meg, show settings/time at start etc
+settings as xml or sqlite
+service base class/template app
+ ipc asio sockets
+ c++11 thread slave/worker threads
+inputter(s)
+processor(s)
+outputter(s)
+sqlite main db/cache
+mq
+gtest/gmock
+gnu/boost cmd line parser
+ build boost libs under ndk
+  use gnu getopt until then
+doc repo, make bash gcsg gcc clib cheatsheets (vim bash)
+book src repo - joss, etc.
+ des patt
+ loki
+joss SOA.
+make foreach proj list 
+
+sockets api
+cmd line filter app
+
+gcov gprof
+gdb/valgrind
+autotools
