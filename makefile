@@ -23,6 +23,13 @@ $(OBJDIR)/%.o : %.cc
 
 all: $(BIN_DIR)/test 
 
+debug: CXXFLAGS += -DDEBUG -g
+debug: $(BIN_DIR)/test
+
+ifneq ($(MAKECMDGOALS), debug)
+CXXFLAGS += -O3
+endif
+
 ifeq ($(MAKECMDGOALS),clean)
 DEPS=
 else
@@ -33,7 +40,7 @@ $(OBJDIR)/%.d : %.cc
 endif
 
 $(BIN_DIR)/test: $(OBJS)
-	$(LINK.cc) $(OBJS) $(OUTPUT_OPTION)
+	$(LINK.cc) $(OBJS) -lboost_program_options $(OUTPUT_OPTION)
 	ctags -R --c-kinds=+cdefglmnpstuvx --extra=+f
 
 $(OBJS) $(DEPS) : | $(OBJDIR) $(BIN_DIR)

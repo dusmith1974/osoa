@@ -15,10 +15,15 @@ namespace po = boost::program_options;
 
 class Args : boost::noncopyable {
  public:
-  Args(int argc, char* argv);
+  Args();
+  void Initialize(int argc, const char* argv[]);
 
  private:
   std::unique_ptr<po::options_description> usage_;
+  po::options_description& usage() { return *(usage_.get()); }
+
+  std::unique_ptr<po::variables_map> var_map_;
+  po::variables_map& var_map() { return *(var_map_.get()); }
 };
 
 }  // namespace osoa

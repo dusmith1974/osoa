@@ -2,6 +2,10 @@
 
 #include <iostream>
 
-int main(int argc, const char * argv[]) {
+#include <service/service.h>
+
+int main(int argc, const char *argv[]) {
+  osoa::Service service;
+  service.Initialize(argc, argv);
 }
 
