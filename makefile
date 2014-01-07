@@ -40,7 +40,7 @@ $(OBJDIR)/%.d : %.cc
 endif
 
 $(BIN_DIR)/test: $(OBJS)
-	$(LINK.cc) $(OBJS) -lboost_program_options $(OUTPUT_OPTION)
+	$(LINK.cc) $(OBJS) -static -pthread -lboost_program_options -lboost_log -lboost_system -lboost_thread $(OUTPUT_OPTION)
 	ctags -R --c-kinds=+cdefglmnpstuvx --extra=+f
 
 $(OBJS) $(DEPS) : | $(OBJDIR) $(BIN_DIR)

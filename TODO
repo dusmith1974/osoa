@@ -1,3 +1,5 @@
+valgrind memleak
+boost log (async thread, rotate)
 boost po cfg file (multiple sources)
 boost-python
 google c++ styleguiide
