@@ -4,10 +4,10 @@
 #define SERVICE_ARGS_H_
 
 #include <memory>
+#include <string>
 
 #include <boost/noncopyable.hpp>  // NOLINT
 #include <boost/program_options.hpp> // NOLINT
-
 
 namespace osoa {
 
@@ -18,12 +18,17 @@ class Args : boost::noncopyable {
   Args();
   void Initialize(int argc, const char* argv[]);
 
+public:
+  const std::string& log_dir() { return log_dir_; }
+
  private:
   std::unique_ptr<po::options_description> usage_;
   po::options_description& usage() { return *(usage_.get()); }
 
   std::unique_ptr<po::variables_map> var_map_;
   po::variables_map& var_map() { return *(var_map_.get()); }
+
+  std::string log_dir_;
 };
 
 }  // namespace osoa
