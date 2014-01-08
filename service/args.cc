@@ -5,6 +5,10 @@
 #include <iostream>
 #include <string>
 
+#include <boost/log/core.hpp>
+#include <boost/log/trivial.hpp>
+#include <boost/log/expressions.hpp>
+
 namespace po = boost::program_options;
 
 namespace osoa {
@@ -20,8 +24,10 @@ void Args::Initialize(int argc, const char* argv[]) {
 
   usage().add_options()
     ("help,h", "show help message")
-    ("logdir,l", log_dir_option, "set loggng directory")
-    ("no-log,n", "no logging to file");
+    ("log-dir,l", log_dir_option, "set loggng directory")
+    ("no-log-file,n", "no logging to file")
+    ("verbose,v", "set verbose logging")
+    ;
  
   try {
     po::store(po::parse_command_line(argc, argv, usage()), var_map());  
@@ -31,10 +37,14 @@ void Args::Initialize(int argc, const char* argv[]) {
     exit(EXIT_FAILURE);
   }
 
-  if (var_map().count("help") || 1 == argc) {
+  if (var_map().count("help") /*|| 1 == argc*/) {
     std::cout << usage() << std::endl;
     exit(EXIT_SUCCESS);
   }
+ 
+  using namespace boost::log;
+  auto log_level = (var_map().count("verbose")) ? trivial::debug : trivial::info;
+  core::get()->set_filter(trivial::severity >= log_level);
 }
 
 }  // namespace osoa
