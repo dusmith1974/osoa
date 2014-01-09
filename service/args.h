@@ -20,6 +20,7 @@ class Args : boost::noncopyable {
 
 public:
   const std::string& log_dir() { return log_dir_; }
+  bool verbose() { return verbose_; }
 
  private:
   std::unique_ptr<po::options_description> usage_;
@@ -29,6 +30,9 @@ public:
   po::variables_map& var_map() { return *(var_map_.get()); }
 
   std::string log_dir_;
+
+  bool verbose_;
+  void set_verbose(bool verbose) { verbose_ = verbose; }
 };
 
 }  // namespace osoa

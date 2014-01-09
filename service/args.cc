@@ -5,10 +5,6 @@
 #include <iostream>
 #include <string>
 
-#include <boost/log/core.hpp>
-#include <boost/log/trivial.hpp>
-#include <boost/log/expressions.hpp>
-
 namespace po = boost::program_options;
 
 namespace osoa {
@@ -42,9 +38,8 @@ void Args::Initialize(int argc, const char* argv[]) {
     exit(EXIT_SUCCESS);
   }
  
-  using namespace boost::log;
-  auto log_level = (var_map().count("verbose")) ? trivial::debug : trivial::info;
-  core::get()->set_filter(trivial::severity >= log_level);
+  if (var_map().count("verbose")) 
+    set_verbose(true);
 }
 
 }  // namespace osoa
