@@ -27,6 +27,7 @@
 
 namespace src = boost::log::sources;
 namespace attrs = boost::log::attributes;
+namespace expr = boost::log::expressions;
 
 namespace osoa {
 
@@ -47,17 +48,19 @@ void Service::Initialize(int argc, const char *argv[]) {
   using namespace boost::log;
 
   add_common_attributes();
-  add_console_log();
+  
+
   add_file_log (
     keywords::file_name = "sample_%N.log",                                        
     keywords::rotation_size = 10 * 1024 * 1024,                                   
     keywords::time_based_rotation = sinks::file::rotation_at_time_point(0, 0, 0), 
     keywords::format = "[%TimeStamp% %Process% %ThreadID%]: %Message%",
-    keywords::severity = trivial::debug
+    keywords::filter = expr::attr< severity_level>("Severity") >= trivial::debug
   );
 
   auto log_level = (args().verbose()) ? trivial::debug : trivial::info;
-  core::get()->set_filter(trivial::severity >= log_level);
+  auto sink = add_console_log();
+  sink->set_filter(trivial::severity >= log_level);
 
   core::get()->add_global_attribute("ThreadID", attrs::current_thread_id());
   core::get()->add_global_attribute("Process", attrs::current_process_name());
