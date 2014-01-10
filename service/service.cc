@@ -11,12 +11,20 @@
 #include <boost/log/utility/setup/file.hpp>
 #include <boost/log/utility/setup/console.hpp>
 #include <boost/log/utility/setup/common_attributes.hpp>
+#include <boost/log/sources/global_logger_storage.hpp>
+#include <boost/log/sources/logger.hpp>
 #include <boost/log/sources/severity_logger.hpp>
+#include <boost/log/sources/severity_feature.hpp>
 #include <boost/log/sources/record_ostream.hpp>
+#include <boost/move/utility.hpp>
 
 #include <service/args.h> // NOLINT
 
+namespace src = boost::log::sources;
+
 namespace osoa {
+
+BOOST_LOG_INLINE_GLOBAL_LOGGER_DEFAULT(svc_logger, src::severity_logger_mt<boost::log::trivial::severity_level>)
 
 Service::Service() : args_(new Args()) {}
 
@@ -41,7 +49,9 @@ void Service::Initialize(int argc, const char *argv[]) {
   auto log_level = (args().verbose()) ? trivial::debug : trivial::info;
   core::get()->set_filter(trivial::severity >= log_level);
 
-  BOOST_LOG_TRIVIAL(info) << "service start";
+  auto& lg = svc_logger::get();
+  BOOST_LOG_SEV(lg, trivial::info) << "Started the service.";
+  BOOST_LOG_SEV(lg, trivial::debug) << "really Started the service.";
 }
 
 }  // namespace osoa
