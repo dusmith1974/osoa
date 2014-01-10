@@ -49,13 +49,14 @@ void Service::Initialize(int argc, const char *argv[]) {
 
   add_common_attributes();
   
+  boost::log::register_simple_formatter_factory< boost::log::trivial::severity_level, char >("Severity"); 
 
   add_file_log (
-    keywords::file_name = "sample_%N.log",                                        
+    keywords::file_name = "file_%Y-%m-%d_%H-%M-%S.%N.log",                                        
     keywords::rotation_size = 10 * 1024 * 1024,                                   
     keywords::time_based_rotation = sinks::file::rotation_at_time_point(0, 0, 0), 
-    keywords::format = "[%TimeStamp% %Process% %ThreadID%]: %Message%",
-    keywords::filter = expr::attr< severity_level>("Severity") >= trivial::debug
+    keywords::format = "[%TimeStamp%] [%Process%] [%ThreadID%] [%Severity%]: %Message%",
+    keywords::filter = expr::attr<severity_level>("Severity") >= trivial::debug
   );
 
   auto log_level = (args().verbose()) ? trivial::debug : trivial::info;
@@ -64,6 +65,7 @@ void Service::Initialize(int argc, const char *argv[]) {
 
   core::get()->add_global_attribute("ThreadID", attrs::current_thread_id());
   core::get()->add_global_attribute("Process", attrs::current_process_name());
+  //core::get()->add_global_attribute("Severity", trivial::severity);
 
   auto& lg = svc_logger::get();
   BOOST_LOG_SEV(lg, trivial::info) << "Started the service.";

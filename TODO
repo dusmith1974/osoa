@@ -1,4 +1,10 @@
+mv2 log.cc
+log to folder def var/logs
+log auto flush on/off
+log sync/async thread
+log severity level
 valgrind memleak
+cppcheck
 boost log (async thread, rotate)
 boost po cfg file (multiple sources)
 boost-python
