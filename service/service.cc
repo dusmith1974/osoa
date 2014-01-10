@@ -4,6 +4,11 @@
 
 #include <iostream>
 
+#include <boost/log/attributes/attribute.hpp>
+#include <boost/log/attributes/attribute_cast.hpp>
+#include <boost/log/attributes/attribute_value.hpp>
+#include <boost/log/attributes/current_thread_id.hpp>
+#include <boost/log/attributes/current_process_name.hpp>
 #include <boost/log/trivial.hpp>
 #include <boost/log/core.hpp>
 #include <boost/log/expressions.hpp>
@@ -21,15 +26,19 @@
 #include <service/args.h> // NOLINT
 
 namespace src = boost::log::sources;
+namespace attrs = boost::log::attributes;
 
 namespace osoa {
+
+using namespace boost::log::trivial;
 
 BOOST_LOG_INLINE_GLOBAL_LOGGER_DEFAULT(svc_logger, src::severity_logger_mt<boost::log::trivial::severity_level>)
 
 Service::Service() : args_(new Args()) {}
 
 Service::~Service() {
-  BOOST_LOG_TRIVIAL(info) << "service stop";
+  auto& lg = svc_logger::get();
+  BOOST_LOG_SEV(lg, info) << "service stop";
 }
 
 void Service::Initialize(int argc, const char *argv[]) {
@@ -43,11 +52,15 @@ void Service::Initialize(int argc, const char *argv[]) {
     keywords::file_name = "sample_%N.log",                                        
     keywords::rotation_size = 10 * 1024 * 1024,                                   
     keywords::time_based_rotation = sinks::file::rotation_at_time_point(0, 0, 0), 
-    keywords::format = "[%TimeStamp%]: %Message%"
+    keywords::format = "[%TimeStamp% %Process% %ThreadID%]: %Message%",
+    keywords::severity = trivial::debug
   );
 
   auto log_level = (args().verbose()) ? trivial::debug : trivial::info;
   core::get()->set_filter(trivial::severity >= log_level);
+
+  core::get()->add_global_attribute("ThreadID", attrs::current_thread_id());
+  core::get()->add_global_attribute("Process", attrs::current_process_name());
 
   auto& lg = svc_logger::get();
   BOOST_LOG_SEV(lg, trivial::info) << "Started the service.";
