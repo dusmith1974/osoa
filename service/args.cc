@@ -5,6 +5,9 @@
 #include <iostream>
 #include <string>
 
+#include <boost/filesystem.hpp>
+#include <boost/filesystem/path.hpp>
+
 namespace po = boost::program_options;
 
 namespace osoa {
@@ -40,6 +43,11 @@ void Args::Initialize(int argc, const char* argv[]) {
  
   if (var_map().count("verbose")) 
     set_verbose(true);
+
+  using namespace fs = boost::filesystem;
+  if (!log_dir().empty()) {
+    fs::path(log_dir());
+  }
 }
 
 }  // namespace osoa
