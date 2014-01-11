@@ -55,9 +55,15 @@ void Service::Initialize(int argc, const char *argv[]) {
   boost::log::register_simple_formatter_factory< boost::log::trivial::severity_level, char >("Severity"); 
 
   fs::path full_path(argv[0]);
+  fs::path leaf(full_path.filename().string());
+
+  if (!args().log_dir().empty()) {
+    full_path = args().log_dir();
+    full_path = full_path / leaf;
+  }
   
   add_file_log (
-    keywords::file_name = full_path.filename().string() + "_%Y-%m-%d_%H-%M-%S.%N.log",                                        
+    keywords::file_name = full_path.string() + "_%Y-%m-%d_%H-%M-%S.%N.log",                                        
     keywords::rotation_size = 10 * 1024 * 1024,                                   
     keywords::time_based_rotation = sinks::file::rotation_at_time_point(0, 0, 0), 
     keywords::format = "[%TimeStamp%] [%Process%] [%Severity%] [%ThreadID%]: %Message%",
