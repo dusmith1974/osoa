@@ -29,7 +29,15 @@ public:
   std::unique_ptr<po::variables_map> var_map_;
   po::variables_map& var_map() { return *(var_map_.get()); }
 
+  int version_major_no() { return version_major_no_; } 
+  int version_minor_no() { return version_minor_no_; } 
+
+  std::string Version();
+
   std::string log_dir_;
+
+  static const int version_major_no_;
+  static const int version_minor_no_;
 
   bool verbose_;
   void set_verbose(bool verbose) { verbose_ = verbose; }

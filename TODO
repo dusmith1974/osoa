@@ -1,3 +1,5 @@
+po multiple srcs, async nflush logging, build as .a or .so and derive service (extend args version etc).
+auto inc build number http://www.linuxjournal.com/content/add-auto-incrementing-build-number-your-build-process
 mv2 log.cc
 log to folder def var/logs
 log auto flush on/off
