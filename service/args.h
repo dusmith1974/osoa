@@ -23,8 +23,14 @@ public:
   bool verbose() { return verbose_; }
 
  private:
-  std::unique_ptr<po::options_description> usage_;
-  po::options_description& usage() { return *(usage_.get()); }
+  std::unique_ptr<po::options_description> generic_;
+  po::options_description& generic() { return *(generic_.get()); }
+
+  std::unique_ptr<po::options_description> config_;
+  po::options_description& config() { return *(config_.get()); }
+
+  std::unique_ptr<po::options_description> hidden_;
+  po::options_description& hidden() { return *(hidden_.get()); }
 
   std::unique_ptr<po::variables_map> var_map_;
   po::variables_map& var_map() { return *(var_map_.get()); }
@@ -35,6 +41,7 @@ public:
   std::string Version();
 
   std::string log_dir_;
+  std::string config_file_;
 
   static const int version_major_no_;
   static const int version_minor_no_;
