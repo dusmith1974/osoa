@@ -23,7 +23,7 @@ $(OBJDIR)/%.o : %.cc
 
 all: $(BIN_DIR)/test 
 
-debug: CXXFLAGS += -DDEBUG -g
+debug: CXXFLAGS += -DDEBUG -g -O0
 debug: $(BIN_DIR)/test
 
 ifneq ($(MAKECMDGOALS), debug)

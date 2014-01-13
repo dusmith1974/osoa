@@ -41,7 +41,9 @@ public:
   std::string Version();
 
   std::string log_dir_;
+
   std::string config_file_;
+  const std::string& config_file() { return config_file_; }
 
   static const int version_major_no_;
   static const int version_minor_no_;

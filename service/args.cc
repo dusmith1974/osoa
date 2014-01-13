@@ -28,7 +28,6 @@ void Args::Initialize(int argc, const char* argv[]) {
   auto config_file_option = new po::typed_value<decltype(config_file_)>(&config_file_);
   config_file_option->value_name("filename");
 
-  std::string config_file;
   generic().add_options()
     ("help,h", "show help message")
     ("version,V", "print version information and exit") 
@@ -60,9 +59,9 @@ void Args::Initialize(int argc, const char* argv[]) {
     po::notify(var_map());
 
     if (var_map().count("config")) {
-      std::ifstream ifs(config_file.c_str());
+      std::ifstream ifs(config_file().c_str());
       if (!ifs) {
-        std::cout << "Cannot open config file: " << config_file << std::endl;
+        std::cout << "Cannot open config file: " << config_file() << std::endl;
         exit(EXIT_FAILURE);
       } else {
         po::store(po::parse_config_file(ifs, config_file_options), var_map());

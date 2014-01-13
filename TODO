@@ -1,3 +1,4 @@
+log header - repeat on rotate? header rotation pre hook
 po multiple srcs, async nflush logging, build as .a or .so and derive service (extend args version etc).
 auto inc build number http://www.linuxjournal.com/content/add-auto-incrementing-build-number-your-build-process
 mv2 log.cc
