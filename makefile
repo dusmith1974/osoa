@@ -1,4 +1,4 @@
-CXXFLAGS = -std=c++11
+CXXFLAGS = -std=c++11 -DBOOST_ALL_DYN_LINK
 
 ITEM = item
 SERVICE = service
@@ -40,8 +40,8 @@ $(OBJDIR)/%.d : %.cc
 endif
 
 $(BIN_DIR)/test: $(OBJS)
-	$(LINK.cc) $(OBJS) -static -pthread -lboost_program_options -lboost_log_setup -lboost_log -lboost_system -lboost_thread -lboost_date_time -lboost_filesystem $(OUTPUT_OPTION)
-	ctags -R --c-kinds=+cdefglmnpstuvx --extra=+f
+	$(LINK.cc) $(OBJS) -dynamic -pthread -lboost_program_options -lboost_log_setup -lboost_log -lboost_system -lboost_thread -lboost_date_time -lboost_filesystem $(OUTPUT_OPTION)
+ctags -R --c-kinds=+cdefglmnpstuvx --extra=+f
 
 $(OBJS) $(DEPS) : | $(OBJDIR) $(BIN_DIR)
 
