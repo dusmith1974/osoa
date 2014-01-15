@@ -18,7 +18,10 @@ Args::Args()
     : generic_(new po::options_description("Genric Options:")),
       config_(new po::options_description("Configuration:")),
       hidden_(new po::options_description("Hidden Options:")),
-      var_map_(new po::variables_map()) {
+      var_map_(new po::variables_map()),
+      log_dir_(""),
+      config_file_(""), 
+      verbose_(false) {
 }
 
 void Args::Initialize(int argc, const char* argv[]) {

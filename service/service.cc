@@ -72,7 +72,7 @@ void Service::Initialize(int argc, const char *argv[]) {
   
   auto log_level = (args().verbose()) ? trivial::debug : trivial::info;
   auto sink = add_console_log();
-  sink->set_filter(trivial::severity >= /*log_level*/ trivial::info);
+  sink->set_filter(trivial::severity >= log_level);
 
   core::get()->add_global_attribute("ThreadID", attrs::current_thread_id());
   core::get()->add_global_attribute("Process", attrs::current_process_name());

@@ -49,7 +49,7 @@ public:
   static const int version_minor_no_;
 
   bool verbose_;
-  void set_verbose(bool verbose) { verbose_ = verbose; }
+  void set_verbose(bool val) { verbose_ = val; }
 };
 
 }  // namespace osoa
