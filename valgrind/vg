@@ -1,0 +1,3 @@
+#!/bin/bash
+valgrind --leak-check=yes --track-origins=yes --show-reachable=no ../bin/test 2>&1 |less
+

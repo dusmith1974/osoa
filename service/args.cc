@@ -24,6 +24,9 @@ Args::Args()
       verbose_(false) {
 }
 
+Args::~Args() {
+}
+
 void Args::Initialize(int argc, const char* argv[]) {
   auto log_dir_option = new po::typed_value<decltype(log_dir_)>(&log_dir_);
   log_dir_option->value_name("directory");

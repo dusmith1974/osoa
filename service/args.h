@@ -16,6 +16,8 @@ namespace po = boost::program_options;
 class Args  : boost::noncopyable {
  public:
   Args();
+  virtual ~Args();
+
   void Initialize(int argc, const char* argv[]);
 
 public:
