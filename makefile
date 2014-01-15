@@ -1,4 +1,7 @@
-CXXFLAGS = -std=c++11 -DBOOST_ALL_DYN_LINK
+CXXFLAGS = -DBOOST_ALL_DYN_LINK
+CXXFLAGS += -Wall -Wextra -ansi -pedantic -Weffc++ -Wshadow -Werror
+#CXXFLAGS += -Wno-error=c++0x-compat
+CXXFLAGS += -std=c++11
 
 ITEM = item
 SERVICE = service

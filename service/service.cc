@@ -69,10 +69,10 @@ void Service::Initialize(int argc, const char *argv[]) {
     keywords::format = "[%TimeStamp%] [%Process%] [%Severity%] [%ThreadID%]: %Message%",
     keywords::filter = expr::attr<severity_level>("Severity") >= trivial::debug
   );
-
+  
   auto log_level = (args().verbose()) ? trivial::debug : trivial::info;
   auto sink = add_console_log();
-  sink->set_filter(trivial::severity >= log_level);
+  sink->set_filter(trivial::severity >= /*log_level*/ trivial::info);
 
   core::get()->add_global_attribute("ThreadID", attrs::current_thread_id());
   core::get()->add_global_attribute("Process", attrs::current_process_name());

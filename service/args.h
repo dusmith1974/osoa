@@ -13,7 +13,7 @@ namespace osoa {
 
 namespace po = boost::program_options;
 
-class Args : boost::noncopyable {
+class Args  : boost::noncopyable {
  public:
   Args();
   void Initialize(int argc, const char* argv[]);
