@@ -27,7 +27,6 @@
 
 #include <service/args.h> // NOLINT
 
-namespace src = boost::log::sources;
 namespace attrs = boost::log::attributes;
 namespace expr = boost::log::expressions;
 namespace fs = boost::filesystem;
@@ -37,9 +36,9 @@ namespace osoa {
 using namespace boost::log::trivial;
 using namespace boost::log;
 
-BOOST_LOG_INLINE_GLOBAL_LOGGER_DEFAULT(svc_logger, src::severity_logger_mt<boost::log::trivial::severity_level>)
-
-Service::Service() : args_(new Args()) {}
+Service::Service() : 
+  args_(new Args()),
+  svc_logger_(new src::severity_logger_mt<boost::log::trivial::severity_level>()) {}
 
 Service::~Service() {
 }
@@ -81,7 +80,7 @@ int Service::Initialize(int argc, const char *argv[]) {
 }
 
 int Service::Start() {
-  auto& lg = svc_logger::get();
+  auto lg = svc_logger();
   BOOST_LOG_SEV(lg, trivial::info) << "Started the service.";
   BOOST_LOG_SEV(lg, trivial::debug) << "really Started the service.";
 
@@ -89,7 +88,7 @@ int Service::Start() {
 }
 
 int Service::Stop() {
-  auto& lg = svc_logger::get();
+  auto lg = svc_logger();
   BOOST_LOG_SEV(lg, info) << "service stop";
 
   return 0;
