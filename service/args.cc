@@ -27,7 +27,7 @@ Args::Args()
 Args::~Args() {
 }
 
-void Args::Initialize(int argc, const char* argv[]) {
+int Args::Initialize(int argc, const char* argv[]) {
   auto log_dir_option = new po::typed_value<decltype(log_dir_)>(&log_dir_);
   log_dir_option->value_name("directory");
 
@@ -36,7 +36,7 @@ void Args::Initialize(int argc, const char* argv[]) {
 
   generic().add_options()
     ("help,h", "show help message")
-    ("version,V", "print version information and exit") 
+    ("version,V", "print version information") 
     ("config,c", config_file_option, "name of (optional) config file")
     ;
  
@@ -68,30 +68,31 @@ void Args::Initialize(int argc, const char* argv[]) {
       std::ifstream ifs(config_file().c_str());
       if (!ifs) {
         std::cout << "Cannot open config file: " << config_file() << std::endl;
-        exit(EXIT_FAILURE);
+        return 1;
       } else {
         po::store(po::parse_config_file(ifs, config_file_options), var_map());
         po::notify(var_map());
       }
     }
-
   } catch (std::exception& e) {
     std::cout << e.what() << std::endl;
-    exit(EXIT_FAILURE);
+    return 1;
   }
 
   if (var_map().count("help") /*|| 1 == argc*/) {
     std::cout << visible_options << std::endl;
-    exit(EXIT_SUCCESS);
+    return 1;
   }
  
   if (var_map().count("version")) {
     std::cout << Version() << std::endl;
-    exit(EXIT_SUCCESS);
+    return 1;
   }
 
   if (var_map().count("verbose")) 
     set_verbose(true);
+
+  return 0;
 }
 
 std::string Args::Version() {

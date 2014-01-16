@@ -35,24 +35,24 @@ namespace fs = boost::filesystem;
 namespace osoa {
 
 using namespace boost::log::trivial;
+using namespace boost::log;
 
 BOOST_LOG_INLINE_GLOBAL_LOGGER_DEFAULT(svc_logger, src::severity_logger_mt<boost::log::trivial::severity_level>)
 
 Service::Service() : args_(new Args()) {}
 
 Service::~Service() {
-  auto& lg = svc_logger::get();
-  BOOST_LOG_SEV(lg, info) << "service stop";
 }
 
-void Service::Initialize(int argc, const char *argv[]) {
-  args().Initialize(argc, argv); 
+int Service::Initialize(int argc, const char *argv[]) {
+  int result = args().Initialize(argc, argv); 
+  if (0 != result)
+    return result;
 
-  using namespace boost::log;
 
   add_common_attributes();
   
-  boost::log::register_simple_formatter_factory< boost::log::trivial::severity_level, char >("Severity"); 
+  boost::log::register_simple_formatter_factory<boost::log::trivial::severity_level, char>("Severity"); 
 
   fs::path full_path(argv[0]);
   fs::path leaf(full_path.filename().string());
@@ -77,9 +77,21 @@ void Service::Initialize(int argc, const char *argv[]) {
   core::get()->add_global_attribute("ThreadID", attrs::current_thread_id());
   core::get()->add_global_attribute("Process", attrs::current_process_name());
 
+  return 0;
+}
+
+int Service::Start() {
   auto& lg = svc_logger::get();
   BOOST_LOG_SEV(lg, trivial::info) << "Started the service.";
   BOOST_LOG_SEV(lg, trivial::debug) << "really Started the service.";
+
+  return 0;
 }
 
+int Service::Stop() {
+  auto& lg = svc_logger::get();
+  BOOST_LOG_SEV(lg, info) << "service stop";
+
+  return 0;
+}
 }  // namespace osoa

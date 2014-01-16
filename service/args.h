@@ -18,7 +18,7 @@ class Args  : boost::noncopyable {
   Args();
   virtual ~Args();
 
-  void Initialize(int argc, const char* argv[]);
+  int Initialize(int argc, const char* argv[]);
 
 public:
   const std::string& log_dir() { return log_dir_; }

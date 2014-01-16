@@ -13,7 +13,10 @@ class Service {
   Service();
   ~Service();
 
-  void Initialize(int argc, const char *argv[]);
+  int Initialize(int argc, const char *argv[]);
+
+  int Start();
+  int Stop();
 
  private:
   std::unique_ptr<Args> args_;
