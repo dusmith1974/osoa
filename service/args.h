@@ -13,7 +13,7 @@ namespace osoa {
 
 namespace po = boost::program_options;
 
-class Args  : boost::noncopyable {
+class Args : boost::noncopyable {
  public:
   Args();
   virtual ~Args();
@@ -22,6 +22,8 @@ class Args  : boost::noncopyable {
 
 public:
   const std::string& log_dir() { return log_dir_; }
+  const std::string& module_path() { return module_path_; }
+
   bool verbose() { return verbose_; }
 
  private:
@@ -43,6 +45,9 @@ public:
   std::string Version();
 
   std::string log_dir_;
+
+  std::string module_path_;
+  void set_module_path(const std::string& val) { module_path_ = val; }
 
   std::string config_file_;
   const std::string& config_file() { return config_file_; }

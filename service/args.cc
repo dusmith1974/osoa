@@ -20,6 +20,7 @@ Args::Args()
       hidden_(new po::options_description("Hidden Options:")),
       var_map_(new po::variables_map()),
       log_dir_(""),
+      module_path_(""),
       config_file_(""), 
       verbose_(false) {
 }
@@ -28,6 +29,8 @@ Args::~Args() {
 }
 
 int Args::Initialize(int argc, const char* argv[]) {
+  set_module_path(argv[0]);
+
   auto log_dir_option = new po::typed_value<decltype(log_dir_)>(&log_dir_);
   log_dir_option->value_name("directory");
 
