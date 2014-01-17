@@ -1,3 +1,6 @@
+makefile check gcc ver <4.8 (eg Jolla or Minix) -> c++0x (!11) && no warnings (too many for boost)
+makefile parse boost/version.hpp, if <54 -> no boost log (use log4cpp instead?) abs factory or pimpl
+makefile - warn if no $BOOST_DIR
 log header - repeat on rotate? header rotation pre hook
 po multiple srcs, async nflush logging, build as .a or .so and derive service (extend args version etc).
 auto inc build number http://www.linuxjournal.com/content/add-auto-incrementing-build-number-your-build-process
