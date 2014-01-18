@@ -6,7 +6,10 @@
 
 int main(int argc, const char *argv[]) {
   osoa::Service service;
-  service.Initialize(argc, argv);
+
+  int result = service.Initialize(argc, argv);
+  if (0 != result)
+    return result;
 
   if (0 == service.Start())
     service.Stop();
