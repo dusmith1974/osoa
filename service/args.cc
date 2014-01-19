@@ -95,6 +95,9 @@ int Args::Initialize(int argc, const char* argv[]) {
   if (var_map().count("verbose")) 
     set_verbose(true);
 
+  if (var_map().count("no-log-file"))
+    set_no_log_file(true);
+
   return 0;
 }
 

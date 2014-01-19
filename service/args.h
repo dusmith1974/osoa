@@ -23,6 +23,7 @@ class Args : boost::noncopyable {
 public:
   const std::string& log_dir() { return log_dir_; }
   const std::string& module_path() { return module_path_; }
+  bool no_log_file() { return no_log_file_; }
 
   bool verbose() { return verbose_; }
 
@@ -57,6 +58,9 @@ public:
 
   bool verbose_;
   void set_verbose(bool val) { verbose_ = val; }
+
+  bool no_log_file_;
+  void set_no_log_file(bool val) { no_log_file_ = val; }
 };
 
 }  // namespace osoa
