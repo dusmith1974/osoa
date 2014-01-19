@@ -50,6 +50,9 @@ public:
   std::string module_path_;
   void set_module_path(const std::string& val) { module_path_ = val; }
 
+  bool no_log_file_;
+  void set_no_log_file(bool val) { no_log_file_ = val; }
+
   std::string config_file_;
   const std::string& config_file() { return config_file_; }
 
@@ -58,9 +61,6 @@ public:
 
   bool verbose_;
   void set_verbose(bool val) { verbose_ = val; }
-
-  bool no_log_file_;
-  void set_no_log_file(bool val) { no_log_file_ = val; }
 };
 
 }  // namespace osoa

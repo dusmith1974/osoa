@@ -21,6 +21,7 @@ Args::Args()
       var_map_(new po::variables_map()),
       log_dir_(""),
       module_path_(""),
+      no_log_file_(false),
       config_file_(""), 
       verbose_(false) {
 }

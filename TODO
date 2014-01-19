@@ -1,3 +1,4 @@
+sh scripts for cppcheck valgrind and cpplint (use google bash styleguide)
 makefile check gcc ver <4.8 (eg Jolla or Minix) -> c++0x (!11) && no warnings (too many for boost)
 makefile parse boost/version.hpp, if <54 -> no boost log (use log4cpp instead?) abs factory or pimpl
 makefile - warn if no $BOOST_DIR
