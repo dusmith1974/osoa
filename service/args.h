@@ -6,8 +6,8 @@
 #include <memory>
 #include <string>
 
-#include <boost/noncopyable.hpp>  // NOLINT
-#include <boost/program_options.hpp> // NOLINT
+#include "boost/noncopyable.hpp"
+#include "boost/program_options.hpp"
 
 namespace osoa {
 
@@ -20,12 +20,12 @@ class Args : boost::noncopyable {
 
   int Initialize(int argc, const char* argv[]);
 
-public:
-  const std::string& log_dir() { return log_dir_; }
-  const std::string& module_path() { return module_path_; }
-  bool no_log_file() { return no_log_file_; }
+ public:
+  const std::string& log_dir() const { return log_dir_; }
+  const std::string& module_path() const { return module_path_; }
+  bool no_log_file() const { return no_log_file_; }
 
-  bool verbose() { return verbose_; }
+  bool verbose() const { return verbose_; }
 
  private:
   std::unique_ptr<po::options_description> generic_;
@@ -40,8 +40,8 @@ public:
   std::unique_ptr<po::variables_map> var_map_;
   po::variables_map& var_map() { return *(var_map_.get()); }
 
-  int version_major_no() { return version_major_no_; } 
-  int version_minor_no() { return version_minor_no_; } 
+  int version_major_no() { return version_major_no_; }
+  int version_minor_no() { return version_minor_no_; }
 
   std::string Version();
 

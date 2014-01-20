@@ -23,7 +23,7 @@ class Service {
  private:
   std::unique_ptr<Args> args_;
   Args& args() { return *(args_.get()); }
-  
+
   std::unique_ptr<Logging> logging_;
   Logging& logging() { return *(logging_.get()); }
 };

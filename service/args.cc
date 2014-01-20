@@ -22,7 +22,7 @@ Args::Args()
       log_dir_(""),
       module_path_(""),
       no_log_file_(false),
-      config_file_(""), 
+      config_file_(""),
       verbose_(false) {
 }
 
@@ -35,25 +35,23 @@ int Args::Initialize(int argc, const char* argv[]) {
   auto log_dir_option = new po::typed_value<decltype(log_dir_)>(&log_dir_);
   log_dir_option->value_name("directory");
 
-  auto config_file_option = new po::typed_value<decltype(config_file_)>(&config_file_);
+  auto config_file_option =
+    new po::typed_value<decltype(config_file_)>(&config_file_);
   config_file_option->value_name("filename");
 
   generic().add_options()
     ("help,h", "show help message")
-    ("version,V", "print version information") 
-    ("config,c", config_file_option, "name of (optional) config file")
-    ;
- 
+    ("version,V", "print version information")
+    ("config,c", config_file_option, "name of (optional) config file");
+
   config().add_options()
     ("log-dir,l", log_dir_option, "set loggng directory")
     ("no-log-file,n", "no logging to file")
-    ("verbose,v", "set verbose logging")
-    ;
+    ("verbose,v", "set verbose logging");
 
   hidden().add_options()
-    ("async-log", "asynchonous logging thread") 
-    ("auto-flush-log", "flush log-file on each written record") 
-    ;
+    ("async-log", "asynchonous logging thread")
+    ("auto-flush-log", "flush log-file on each written record");
 
   po::options_description cmdline_options;
   cmdline_options.add(generic()).add(config()).add(hidden());
@@ -65,7 +63,7 @@ int Args::Initialize(int argc, const char* argv[]) {
   visible_options.add(generic()).add(config());
 
   try {
-    po::store(po::parse_command_line(argc, argv, cmdline_options), var_map());  
+    po::store(po::parse_command_line(argc, argv, cmdline_options), var_map());
     po::notify(var_map());
 
     if (var_map().count("config")) {
@@ -87,13 +85,13 @@ int Args::Initialize(int argc, const char* argv[]) {
     std::cout << visible_options << std::endl;
     return 1;
   }
- 
+
   if (var_map().count("version")) {
     std::cout << Version() << std::endl;
     return 1;
   }
 
-  if (var_map().count("verbose")) 
+  if (var_map().count("verbose"))
     set_verbose(true);
 
   if (var_map().count("no-log-file"))
@@ -104,7 +102,8 @@ int Args::Initialize(int argc, const char* argv[]) {
 
 std::string Args::Version() {
   std::stringstream ss;
-  ss << "osoa " << std::to_string(version_major_no()) << "." << version_minor_no() << std::endl
+  ss << "osoa " << std::to_string(version_major_no()) << "."
+    << version_minor_no() << std::endl
     << "Copyright (C) 2014 Duncan Smith" << std::endl;
 
   return ss.str();

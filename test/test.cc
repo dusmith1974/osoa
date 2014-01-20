@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-#include <service/service.h>
+#include "service/service.h"
 
 int main(int argc, const char *argv[]) {
   osoa::Service service;

@@ -5,9 +5,9 @@
 
 #include <memory>
 
-#include <boost/log/trivial.hpp>
-#include <boost/log/sources/severity_logger.hpp>
-#include <boost/noncopyable.hpp>
+#include "boost/log/trivial.hpp"
+#include "boost/log/sources/severity_logger.hpp"
+#include "boost/noncopyable.hpp"
 
 namespace src = boost::log::sources;
 
@@ -20,12 +20,15 @@ class Logging : boost::noncopyable {
   Logging();
   ~Logging();
 
-  int Initialize(Args& args);
+  int Initialize(const Args& args);
 
-  src::severity_logger_mt<boost::log::trivial::severity_level>& svc_logger() { return *(svc_logger_.get()); } 
+  src::severity_logger_mt<boost::log::trivial::severity_level>& svc_logger() {
+    return *(svc_logger_.get());
+  }
 
  private:
-  std::unique_ptr<src::severity_logger_mt<boost::log::trivial::severity_level>> svc_logger_;
+  std::unique_ptr<
+    src::severity_logger_mt<boost::log::trivial::severity_level>> svc_logger_;
 };
 
 }  // namespace osoa
