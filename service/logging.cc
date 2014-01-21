@@ -60,7 +60,7 @@ int Logging::Initialize(const Args& args) {
     add_file_log(
       bl::keywords::file_name = full_path.string()
         + "_%Y-%m-%d_%H-%M-%S.%N.log",
-      bl::keywords::rotation_size = 10 * 1024 * 1024,
+      bl::keywords::rotation_size = args.rotation_size() * 1024 * 1024,
       bl::keywords::time_based_rotation =
         bl::sinks::file::rotation_at_time_point(0, 0, 0),
       bl::keywords::format =
@@ -76,7 +76,15 @@ int Logging::Initialize(const Args& args) {
   bl::core::get()->add_global_attribute(
     "Process", attrs::current_process_name());
 
+  WriteLogHeader(args);
+
   return 0;
 }
 
+int Logging::WriteLogHeader(const Args& args) {
+  BOOST_LOG_SEV(svc_logger(), blt::info) << "Rotation size: " 
+    << args.rotation_size();
+
+  return 0;  
+}
 }  // namespace osoa

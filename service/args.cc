@@ -23,6 +23,7 @@ Args::Args()
       module_path_(""),
       no_log_file_(false),
       config_file_(""),
+      rotation_size_(10),
       verbose_(false) {
 }
 
@@ -49,9 +50,14 @@ int Args::Initialize(int argc, const char* argv[]) {
     ("no-log-file,n", "no logging to file")
     ("verbose,v", "set verbose logging");
 
+  auto rotation_size_option =
+    new po::typed_value<decltype(rotation_size_)>(&rotation_size_);
+  rotation_size_option->value_name("MB");
+
   hidden().add_options()
     ("async-log", "asynchonous logging thread")
-    ("auto-flush-log", "flush log-file on each written record");
+    ("auto-flush-log", "flush log-file on each written record")
+    ("rotation-size", rotation_size_option, "rotate logs every n MB");
 
   po::options_description cmdline_options;
   cmdline_options.add(generic()).add(config()).add(hidden());

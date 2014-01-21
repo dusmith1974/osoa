@@ -24,6 +24,7 @@ class Args : boost::noncopyable {
   const std::string& log_dir() const { return log_dir_; }
   const std::string& module_path() const { return module_path_; }
   bool no_log_file() const { return no_log_file_; }
+  int rotation_size() const { return rotation_size_; }
 
   bool verbose() const { return verbose_; }
 
@@ -55,6 +56,8 @@ class Args : boost::noncopyable {
 
   std::string config_file_;
   const std::string& config_file() { return config_file_; }
+
+  int rotation_size_;
 
   static const int version_major_no_;
   static const int version_minor_no_;
