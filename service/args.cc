@@ -23,6 +23,8 @@ Args::Args()
       module_path_(""),
       no_log_file_(false),
       config_file_(""),
+      async_log_(false),
+      auto_flush_log_(false),
       rotation_size_(10),
       verbose_(false) {
 }
@@ -97,11 +99,10 @@ int Args::Initialize(int argc, const char* argv[]) {
     return 1;
   }
 
-  if (var_map().count("verbose"))
-    set_verbose(true);
-
-  if (var_map().count("no-log-file"))
-    set_no_log_file(true);
+  if (var_map().count("verbose")) set_verbose(true);
+  if (var_map().count("no-log-file")) set_no_log_file(true);
+  if (var_map().count("async-log")) set_async_log(true);
+  if (var_map().count("auto-flush-log")) set_auto_flush_log(true);
 
   return 0;
 }

@@ -21,9 +21,12 @@ class Args : boost::noncopyable {
   int Initialize(int argc, const char* argv[]);
 
  public:
+  const std::string& config_file() const { return config_file_; }
   const std::string& log_dir() const { return log_dir_; }
   const std::string& module_path() const { return module_path_; }
   bool no_log_file() const { return no_log_file_; }
+  bool async_log() const { return async_log_; }
+  bool auto_flush_log() const { return auto_flush_log_; }
   int rotation_size() const { return rotation_size_; }
 
   bool verbose() const { return verbose_; }
@@ -55,7 +58,12 @@ class Args : boost::noncopyable {
   void set_no_log_file(bool val) { no_log_file_ = val; }
 
   std::string config_file_;
-  const std::string& config_file() { return config_file_; }
+
+  bool async_log_;
+  void set_async_log(bool val) { async_log_ = val; }
+
+  bool auto_flush_log_;
+  void set_auto_flush_log(bool val) { auto_flush_log_ = val; }
 
   int rotation_size_;
 

@@ -82,8 +82,39 @@ int Logging::Initialize(const Args& args) {
 }
 
 int Logging::WriteLogHeader(const Args& args) {
-  BOOST_LOG_SEV(svc_logger(), blt::info) << "Rotation size: " 
+  char* user_name = getenv("USER");
+  if (!user_name) 
+    user_name = getenv("USERNAME");
+       
+  if (user_name)
+    BOOST_LOG_SEV(svc_logger(), blt::info) << "program started by : " 
+      << user_name; 
+
+  if (!args.config_file().empty())
+    BOOST_LOG_SEV(svc_logger(), blt::info) << "using config file: " 
+      << args.config_file();
+  else
+    BOOST_LOG_SEV(svc_logger(), blt::info) << "not using config file"; 
+
+  BOOST_LOG_SEV(svc_logger(), blt::info) << "log-dir: " 
+    << args.log_dir();
+
+  BOOST_LOG_SEV(svc_logger(), blt::info) << "no-log-file: " 
+    << args.no_log_file();
+
+  BOOST_LOG_SEV(svc_logger(), blt::info) << "verbose: " 
+    << args.verbose();
+
+  BOOST_LOG_SEV(svc_logger(), blt::info) << "rotation-size: " 
     << args.rotation_size();
+
+  BOOST_LOG_SEV(svc_logger(), blt::info) << "async-log: " 
+    << args.async_log();
+
+  BOOST_LOG_SEV(svc_logger(), blt::info) << "auto-flush-log: " 
+    << args.auto_flush_log();
+
+  BOOST_LOG_SEV(svc_logger(), blt::info) << "auto-flush-log: " << std::endl;
 
   return 0;  
 }
