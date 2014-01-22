@@ -21,7 +21,7 @@ class Logging : boost::noncopyable {
   ~Logging();
 
   int Initialize(const Args& args);
-  int WriteLogHeader(const Args& args);
+  void WriteLogHeader(const Args& args);
 
   src::severity_logger_mt<boost::log::trivial::severity_level>& svc_logger() {
     return *(svc_logger_.get());

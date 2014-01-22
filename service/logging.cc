@@ -8,6 +8,7 @@
 #include <string>
 
 #include "boost/asio/ip/host_name.hpp"
+#include "boost/date_time/posix_time/posix_time.hpp"
 #include "boost/filesystem.hpp"
 #include "boost/filesystem/path.hpp"
 #include "boost/log/attributes/attribute.hpp"
@@ -46,6 +47,11 @@ Logging::Logging() :
 Logging::~Logging() {
 }
 
+void write_header(boost::log::sinks::text_file_backend::stream_type& file) {
+  file << "ROTATE" << std::endl;
+  boost log sev..?
+}
+
 int Logging::Initialize(const Args& args) {
   bl::add_common_attributes();
 
@@ -59,17 +65,20 @@ int Logging::Initialize(const Args& args) {
     full_path = full_path / leaf;
   }
 
-  if (!args.no_log_file())
-    add_file_log(
+  if (!args.no_log_file()) {
+    auto sink = add_file_log(
       bl::keywords::file_name = full_path.string()
         + "_%Y-%m-%d_%H-%M-%S.%N.log",
-      bl::keywords::rotation_size = args.rotation_size() * 1024 * 1024,
+      bl::keywords::rotation_size = args.rotation_size() * 1024 /** 1024*/,
       bl::keywords::time_based_rotation =
         bl::sinks::file::rotation_at_time_point(0, 0, 0),
       bl::keywords::format =
         "[%TimeStamp%] [%Process%] [%Severity%] [%ThreadID%]: %Message%",
       bl::keywords::filter =
         expr::attr<blt::severity_level>("Severity") >= blt::debug);
+    
+    sink->locked_backend()->set_open_handler(&write_header);
+  }
 
   bl::add_console_log()->set_filter(
     blt::severity >= ((args.verbose()) ? blt::debug : blt::info));
@@ -84,20 +93,19 @@ int Logging::Initialize(const Args& args) {
   return 0;
 }
 
-int Logging::WriteLogHeader(const Args& args) {
+void Logging::WriteLogHeader(const Args& args) {
   char* user_name = getenv("USER");
   if (!user_name) 
     user_name = getenv("USERNAME");
 
   std::string hostname = boost::asio::ip::host_name();
        
-  std::time_t t = std::time(nullptr);
-  std::tm tm = *std::localtime(&t);
-  std::cout << std::put_time(&tm, "%c %Z") << '\n';
+  using namespace boost::posix_time;
+  ptime now = second_clock::local_time();
 
   if (user_name)
     BOOST_LOG_SEV(svc_logger(), blt::info) << "program started by : " 
-      << user_name << " on " << hostname; 
+      << user_name << " on " << hostname << " at " << now; 
 
   if (!args.config_file().empty())
     BOOST_LOG_SEV(svc_logger(), blt::info) << "using config-file: " 
@@ -127,7 +135,5 @@ int Logging::WriteLogHeader(const Args& args) {
     << args.auto_flush_log();
 
   BOOST_LOG_SEV(svc_logger(), blt::info) << "";
-
-  return 0;  
 }
 }  // namespace osoa

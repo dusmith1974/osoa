@@ -1,4 +1,4 @@
-prog start @
+log utc time
 logfile_time_N - with scan (maybe)?
 cscope-vim
 sh scripts for cppcheck valgrind and cpplint (use google bash styleguide)
