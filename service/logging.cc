@@ -2,9 +2,12 @@
 
 #include "service/logging.h"
 
+#include <ctime>
+#include <iomanip>
 #include <iostream>
 #include <string>
 
+#include "boost/asio/ip/host_name.hpp"
 #include "boost/filesystem.hpp"
 #include "boost/filesystem/path.hpp"
 #include "boost/log/attributes/attribute.hpp"
@@ -85,19 +88,28 @@ int Logging::WriteLogHeader(const Args& args) {
   char* user_name = getenv("USER");
   if (!user_name) 
     user_name = getenv("USERNAME");
+
+  std::string hostname = boost::asio::ip::host_name();
        
+  std::time_t t = std::time(nullptr);
+  std::tm tm = *std::localtime(&t);
+  std::cout << std::put_time(&tm, "%c %Z") << '\n';
+
   if (user_name)
     BOOST_LOG_SEV(svc_logger(), blt::info) << "program started by : " 
-      << user_name; 
+      << user_name << " on " << hostname; 
 
   if (!args.config_file().empty())
-    BOOST_LOG_SEV(svc_logger(), blt::info) << "using config file: " 
+    BOOST_LOG_SEV(svc_logger(), blt::info) << "using config-file: " 
       << args.config_file();
   else
-    BOOST_LOG_SEV(svc_logger(), blt::info) << "not using config file"; 
+    BOOST_LOG_SEV(svc_logger(), blt::info) << "not using config-file"; 
 
-  BOOST_LOG_SEV(svc_logger(), blt::info) << "log-dir: " 
-    << args.log_dir();
+  if (!args.log_dir().empty())
+    BOOST_LOG_SEV(svc_logger(), blt::info) << "using log-dir: " 
+      << args.log_dir();
+  else
+    BOOST_LOG_SEV(svc_logger(), blt::info) << "not using log-dir"; 
 
   BOOST_LOG_SEV(svc_logger(), blt::info) << "no-log-file: " 
     << args.no_log_file();
@@ -105,8 +117,8 @@ int Logging::WriteLogHeader(const Args& args) {
   BOOST_LOG_SEV(svc_logger(), blt::info) << "verbose: " 
     << args.verbose();
 
-  BOOST_LOG_SEV(svc_logger(), blt::info) << "rotation-size: " 
-    << args.rotation_size();
+  BOOST_LOG_SEV(svc_logger(), blt::info) << "log file rotation-size: " 
+    << args.rotation_size() << " MiB" ;
 
   BOOST_LOG_SEV(svc_logger(), blt::info) << "async-log: " 
     << args.async_log();
@@ -114,7 +126,7 @@ int Logging::WriteLogHeader(const Args& args) {
   BOOST_LOG_SEV(svc_logger(), blt::info) << "auto-flush-log: " 
     << args.auto_flush_log();
 
-  BOOST_LOG_SEV(svc_logger(), blt::info) << "auto-flush-log: " << std::endl;
+  BOOST_LOG_SEV(svc_logger(), blt::info) << "";
 
   return 0;  
 }
