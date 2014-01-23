@@ -27,9 +27,16 @@ class Logging : boost::noncopyable {
     return *(svc_logger_.get());
   }
 
+  static const std::string& log_header() { return Logging::log_header_; }
+  static void set_log_header(const std::string& val) { 
+    Logging::log_header_ = val; 
+  }
+
  private:
   std::unique_ptr<
     src::severity_logger_mt<boost::log::trivial::severity_level>> svc_logger_;
+
+  static std::string log_header_;
 };
 
 }  // namespace osoa

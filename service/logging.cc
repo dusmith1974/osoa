@@ -5,6 +5,7 @@
 #include <ctime>
 #include <iomanip>
 #include <iostream>
+#include <sstream>
 #include <string>
 
 #include "boost/asio/ip/host_name.hpp"
@@ -41,15 +42,16 @@ namespace osoa {
 namespace bl = boost::log;
 namespace blt = boost::log::trivial;
 
+std::string Logging::log_header_("");
+
 Logging::Logging() :
   svc_logger_(new src::severity_logger_mt<blt::severity_level>()) {}
 
 Logging::~Logging() {
 }
 
-void write_header(boost::log::sinks::text_file_backend::stream_type& file) {
-  file << "ROTATE" << std::endl;
-  boost log sev..?
+void RotateHeader(boost::log::sinks::text_file_backend::stream_type& file) {
+  file << Logging::log_header() << std::endl;
 }
 
 int Logging::Initialize(const Args& args) {
@@ -69,7 +71,7 @@ int Logging::Initialize(const Args& args) {
     auto sink = add_file_log(
       bl::keywords::file_name = full_path.string()
         + "_%Y-%m-%d_%H-%M-%S.%N.log",
-      bl::keywords::rotation_size = args.rotation_size() * 1024 /** 1024*/,
+      bl::keywords::rotation_size = args.rotation_size() * 1024 * 1024,
       bl::keywords::time_based_rotation =
         bl::sinks::file::rotation_at_time_point(0, 0, 0),
       bl::keywords::format =
@@ -77,7 +79,7 @@ int Logging::Initialize(const Args& args) {
       bl::keywords::filter =
         expr::attr<blt::severity_level>("Severity") >= blt::debug);
     
-    sink->locked_backend()->set_open_handler(&write_header);
+    sink->locked_backend()->set_open_handler(&RotateHeader);
   }
 
   bl::add_console_log()->set_filter(
@@ -94,6 +96,8 @@ int Logging::Initialize(const Args& args) {
 }
 
 void Logging::WriteLogHeader(const Args& args) {
+  std::stringstream ss;
+
   char* user_name = getenv("USER");
   if (!user_name) 
     user_name = getenv("USERNAME");
@@ -104,36 +108,28 @@ void Logging::WriteLogHeader(const Args& args) {
   ptime now = second_clock::local_time();
 
   if (user_name)
-    BOOST_LOG_SEV(svc_logger(), blt::info) << "program started by : " 
-      << user_name << " on " << hostname << " at " << now; 
+   ss << "program started by : " << user_name << " on " 
+    << hostname << " at " << now << std::endl; 
 
   if (!args.config_file().empty())
-    BOOST_LOG_SEV(svc_logger(), blt::info) << "using config-file: " 
-      << args.config_file();
+    ss << "using config-file: " << args.config_file() << std::endl;
   else
-    BOOST_LOG_SEV(svc_logger(), blt::info) << "not using config-file"; 
+    ss << "not using config-file" << std::endl; 
 
   if (!args.log_dir().empty())
-    BOOST_LOG_SEV(svc_logger(), blt::info) << "using log-dir: " 
-      << args.log_dir();
+    ss << "using log-dir: " << args.log_dir() << std::endl;
   else
-    BOOST_LOG_SEV(svc_logger(), blt::info) << "not using log-dir"; 
+    ss << "not using log-dir" << std::endl; 
 
-  BOOST_LOG_SEV(svc_logger(), blt::info) << "no-log-file: " 
-    << args.no_log_file();
+  ss << "no-log-file: " << args.no_log_file() << std::endl;
+  ss << "verbose: " << args.verbose() << std::endl;
+  
+  ss << "log file rotation-size: " << args.rotation_size() 
+    << " MiB" << std::endl;
 
-  BOOST_LOG_SEV(svc_logger(), blt::info) << "verbose: " 
-    << args.verbose();
+  ss << "async-log: " << args.async_log() << std::endl;
+  ss << "auto-flush-log: " << args.auto_flush_log() << std::endl;
 
-  BOOST_LOG_SEV(svc_logger(), blt::info) << "log file rotation-size: " 
-    << args.rotation_size() << " MiB" ;
-
-  BOOST_LOG_SEV(svc_logger(), blt::info) << "async-log: " 
-    << args.async_log();
-
-  BOOST_LOG_SEV(svc_logger(), blt::info) << "auto-flush-log: " 
-    << args.auto_flush_log();
-
-  BOOST_LOG_SEV(svc_logger(), blt::info) << "";
+  set_log_header(ss.str());
 }
 }  // namespace osoa
