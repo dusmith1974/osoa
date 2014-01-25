@@ -1,31 +1,16 @@
 log utc time
-logfile_time_N - with scan (maybe)?
 cscope-vim
-sh scripts for cppcheck valgrind and cpplint (use google bash styleguide)
-makefile check gcc ver <4.8 (eg Jolla or Minix) -> c++0x (!11) && no warnings (too many for boost)
-makefile parse boost/version.hpp, if <54 -> no boost log (use log4cpp instead?) abs factory or pimpl
 makefile - warn if no $BOOST_DIR
-log header - repeat on rotate? header rotation pre hook
 po multiple srcs, async nflush logging, build as .a or .so and derive service (extend args version etc).
 auto inc build number http://www.linuxjournal.com/content/add-auto-incrementing-build-number-your-build-process
-mv2 log.cc
-log to folder def var/logs
 log auto flush on/off
 log sync/async thread
-log severity level
-valgrind memleak
-cppcheck
 boost log (async thread, rotate)
-boost po cfg file (multiple sources)
 boost-python
-google c++ styleguiide
- gcsg lint checker in make
  gcsg vim settings (chromium embedded)
 serializable object as base class (boost serialization or protobuf)
  protobuf-lite
 xerces xml input msgs, xsd validation
-logging class boost log, continue at midnight, chunk 100meg, show settings/time at start etc
-settings as xml or sqlite
 service base class/template app
  ipc asio sockets
  c++11 thread slave/worker threads
@@ -35,19 +20,11 @@ outputter(s)
 sqlite main db/cache
 mq
 gtest/gmock
-gnu/boost cmd line parser
- build boost libs under ndk
-  use gnu getopt until then
-doc repo, make bash gcsg gcc clib cheatsheets (vim bash)
 book src repo - joss, etc.
  des patt
  loki
 joss SOA.
-make foreach proj list 
 
 sockets api
 cmd line filter app
-
 gcov gprof
-gdb/valgrind
-autotools

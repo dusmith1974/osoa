@@ -19,17 +19,22 @@
 #include "boost/log/attributes/current_thread_id.hpp"
 #include "boost/log/core.hpp"
 #include "boost/log/expressions.hpp"
+#include "boost/log/expressions/formatters/date_time.hpp"
+#include "boost/log/sinks.hpp"
 #include "boost/log/sinks/text_file_backend.hpp"
 #include "boost/log/sources/global_logger_storage.hpp"
 #include "boost/log/sources/logger.hpp"
 #include "boost/log/sources/record_ostream.hpp"
 #include "boost/log/sources/severity_feature.hpp"
 #include "boost/log/sources/severity_logger.hpp"
+#include "boost/log/support/date_time.hpp"
 #include "boost/log/trivial.hpp"
 #include "boost/log/utility/setup/common_attributes.hpp"
 #include "boost/log/utility/setup/console.hpp"
 #include "boost/log/utility/setup/file.hpp"
 #include "boost/move/utility.hpp"
+#include <boost/log/utility/setup/settings.hpp>
+#include <boost/log/utility/setup/from_settings.hpp>
 
 #include "service/args.h"
 
@@ -45,7 +50,9 @@ namespace blt = boost::log::trivial;
 std::string Logging::log_header_("");
 
 Logging::Logging() :
-  svc_logger_(new src::severity_logger_mt<blt::severity_level>()) {}
+  svc_logger_(new src::severity_logger_mt<blt::severity_level>())
+  /*backend_(nullptr),
+  frontend_(nullptr)*/ {}
 
 Logging::~Logging() {
 }
@@ -68,20 +75,27 @@ int Logging::Initialize(const Args& args) {
   }
 
   if (!args.no_log_file()) {
-    auto sink = add_file_log(
-      bl::keywords::file_name = full_path.string()
-        + "_%Y-%m-%d_%H-%M-%S.%N.log",
-      bl::keywords::rotation_size = args.rotation_size() * 1024 * 1024,
-      bl::keywords::time_based_rotation =
-        bl::sinks::file::rotation_at_time_point(0, 0, 0),
-      bl::keywords::format =
-        "[%TimeStamp%] [%Process%] [%Severity%] [%ThreadID%]: %Message%",
-      bl::keywords::filter =
-        expr::attr<blt::severity_level>("Severity") >= blt::debug);
+    boost::shared_ptr<sinks::text_file_backend> backend =
+      boost::make_shared< sinks::text_file_backend>(
+        bl::keywords::file_name = full_path.string() + "_%Y-%m-%d_%H-%M-%S.%N.log",
+        bl::keywords::rotation_size = args.rotation_size() * 1024 * 1024,
+        bl::keywords::time_based_rotation = sinks::file::rotation_at_time_point(0, 0, 0));
+
+    typedef sinks::asynchronous_sink<sinks::text_file_backend> sink_t;
+    boost::shared_ptr<sink_t> sink(new sink_t(backend));
+    sink->set_formatter(expr::stream 
+      << "[" << expr::format_date_time<boost::posix_time::ptime>("TimeStamp", "%H:%M:%S.%f") << "]"
+      << " [" << expr::attr<std::string>("Process") << "]"
+      << " [" << expr::attr<blt::severity_level>("Severity") << "]"
+      << " [" << expr::attr<bl::attributes::current_thread_id::value_type>("ThreadID") << "] "
+      << expr::attr<std::string>("Message")); 
+    sink->set_filter(expr::attr<blt::severity_level>("Severity") >= blt::debug);
+    bl::core::get()->add_sink(sink);
     
     sink->locked_backend()->set_open_handler(&RotateHeader);
   }
 
+  // todo - also provide async console option sink frontends std::clog
   bl::add_console_log()->set_filter(
     blt::severity >= ((args.verbose()) ? blt::debug : blt::info));
 

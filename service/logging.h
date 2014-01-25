@@ -10,6 +10,7 @@
 #include "boost/noncopyable.hpp"
 
 namespace src = boost::log::sources;
+namespace sinks = boost::log::sinks;
 
 namespace osoa {
 
@@ -36,6 +37,8 @@ class Logging : boost::noncopyable {
   std::unique_ptr<
     src::severity_logger_mt<boost::log::trivial::severity_level>> svc_logger_;
 
+  //std::shared_ptr<sinks::text_file_backend> backend_;
+  //std::shared_ptr<sinks::synchronous_sink<sinks::text_file_backend>> frontend_;  
   static std::string log_header_;
 };
 
