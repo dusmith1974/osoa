@@ -50,9 +50,10 @@ namespace blt = boost::log::trivial;
 std::string Logging::log_header_("");
 
 Logging::Logging() :
-  svc_logger_(new src::severity_logger_mt<blt::severity_level>())
-  /*backend_(nullptr),
-  frontend_(nullptr)*/ {}
+  svc_logger_(new src::severity_logger_mt<blt::severity_level>()) 
+  /*backend_(nullptr),*/
+  //sync_frontend_(nullptr),
+  /*async_frontend_(nullptr)*/ {}
 
 Logging::~Logging() {
 }
@@ -76,23 +77,54 @@ int Logging::Initialize(const Args& args) {
 
   if (!args.no_log_file()) {
     boost::shared_ptr<sinks::text_file_backend> backend =
-      boost::make_shared< sinks::text_file_backend>(
+      boost::make_shared<sinks::text_file_backend>(
         bl::keywords::file_name = full_path.string() + "_%Y-%m-%d_%H-%M-%S.%N.log",
         bl::keywords::rotation_size = args.rotation_size() * 1024 * 1024,
         bl::keywords::time_based_rotation = sinks::file::rotation_at_time_point(0, 0, 0));
 
-    typedef sinks::asynchronous_sink<sinks::text_file_backend> sink_t;
-    boost::shared_ptr<sink_t> sink(new sink_t(backend));
-    sink->set_formatter(expr::stream 
-      << "[" << expr::format_date_time<boost::posix_time::ptime>("TimeStamp", "%H:%M:%S.%f") << "]"
-      << " [" << expr::attr<std::string>("Process") << "]"
-      << " [" << expr::attr<blt::severity_level>("Severity") << "]"
-      << " [" << expr::attr<bl::attributes::current_thread_id::value_type>("ThreadID") << "] "
-      << expr::attr<std::string>("Message")); 
-    sink->set_filter(expr::attr<blt::severity_level>("Severity") >= blt::debug);
-    bl::core::get()->add_sink(sink);
-    
-    sink->locked_backend()->set_open_handler(&RotateHeader);
+    boost::shared_ptr<sinks::text_file_backend> backend2 =
+      boost::make_shared<sinks::text_file_backend>(
+        bl::keywords::file_name = full_path.string() + "as_%Y-%m-%d_%H-%M-%S.%N.log",
+        bl::keywords::rotation_size = args.rotation_size() * 1024 * 1024,
+        bl::keywords::time_based_rotation = sinks::file::rotation_at_time_point(0, 0, 0));
+    /*auto ex = expr::stream 
+          << "[" << expr::format_date_time<boost::posix_time::ptime>("TimeStamp", "%H:%M:%S.%f") << "]"
+                << " [" << expr::attr<std::string>("Process") << "]"
+                      << " [" << expr::attr<blt::severity_level>("Severity") << "]"
+                            << " [" << expr::attr<bl::attributes::current_thread_id::value_type>("ThreadID") << "] "
+                                  << expr::attr<std::string>("Message");
+
+    auto ex2 = expr::attr<blt::severity_level>("Severity") >= blt::debug;*/
+
+    if (args.async_log()) {
+      boost::shared_ptr<async_sink_t> async_frontend_; 
+
+      async_frontend_ = boost::shared_ptr<async_sink_t>(new async_sink_t(backend2));
+      async_frontend_->set_formatter(expr::stream 
+        << "[" << expr::format_date_time<boost::posix_time::ptime>("TimeStamp", "%H:%M:%S.%f") << "]"
+        << " [" << expr::attr<std::string>("Process") << "]"
+        << " [" << expr::attr<blt::severity_level>("Severity") << "]"
+        << " [" << expr::attr<bl::attributes::current_thread_id::value_type>("ThreadID") << "] "
+        << expr::attr<std::string>("Message")); 
+      async_frontend_->set_filter(expr::attr<blt::severity_level>("Severity") >= blt::debug);
+      async_frontend_->locked_backend()->set_open_handler(&RotateHeader);
+
+      bl::core::get()->add_sink(async_frontend_);
+    } else {
+      boost::shared_ptr<sync_sink_t> sync_frontend_;  
+      
+      sync_frontend_ = boost::shared_ptr<sync_sink_t>(new sync_sink_t(backend));
+      sync_frontend_->set_formatter(expr::stream 
+        << "[" << expr::format_date_time<boost::posix_time::ptime>("TimeStamp", "%H:%M:%S.%f") << "]"
+        << " [" << expr::attr<std::string>("Process") << "]"
+        << " [" << expr::attr<blt::severity_level>("Severity") << "]"
+        << " [" << expr::attr<bl::attributes::current_thread_id::value_type>("ThreadID") << "] "
+        << expr::attr<std::string>("Message")); 
+      sync_frontend_->set_filter(expr::attr<blt::severity_level>("Severity") >= blt::debug);
+      sync_frontend_->locked_backend()->set_open_handler(&RotateHeader);
+
+      bl::core::get()->add_sink(sync_frontend_);
+    }
   }
 
   // todo - also provide async console option sink frontends std::clog
