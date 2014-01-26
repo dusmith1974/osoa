@@ -34,7 +34,8 @@ int Service::Start() {
   BOOST_LOG_SEV(lg, blt::debug) << "really Started the service.";
 
   for (int j = 0; j < 600;  ++j)
-    BOOST_LOG_SEV(logging().svc_logger(), blt::info) << "The quick brown fox jumped over the lazy dog."; 
+    BOOST_LOG_SEV(logging().svc_logger(), blt::info)
+      << "The quick brown fox jumped over the lazy dog.";
 
   return 0;
 }
