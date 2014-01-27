@@ -6,6 +6,7 @@
 
 #include "service/args.h"
 #include "service/logging.h"
+#include "util/timing.h"
 
 namespace osoa {
 
@@ -13,7 +14,9 @@ namespace blt = boost::log::trivial;
 
 Service::Service() :
   args_(new Args()),
-  logging_(new Logging()) {}
+  logging_(new Logging()),
+  svc_start_time_(std::chrono::steady_clock::now()),
+  svc_end_time_(std::chrono::steady_clock::now()) {}
 
 Service::~Service() {
 }
@@ -33,8 +36,10 @@ int Service::Start() {
   BOOST_LOG_SEV(lg, blt::info) << "Started the service.";
   BOOST_LOG_SEV(lg, blt::debug) << "really Started the service.";
 
-  for (int j = 0; j < 600;  ++j)
-    BOOST_LOG_SEV(logging().svc_logger(), blt::info)
+  set_svc_start_time(std::chrono::steady_clock::now());
+
+  for (int j = 0; j < 10e6 /*/ 4*/;  ++j)
+    BOOST_LOG_SEV(logging().svc_logger(), blt::debug)
       << "The quick brown fox jumped over the lazy dog.";
 
   return 0;
@@ -43,6 +48,10 @@ int Service::Start() {
 int Service::Stop() {
   auto lg = logging().svc_logger();
   BOOST_LOG_SEV(lg, blt::info) << "service stop";
+
+  set_svc_end_time(std::chrono::steady_clock::now());
+  BOOST_LOG_SEV(lg, blt::info) << "Service uptime: " 
+    << add_timestamp(std::make_pair(svc_start_time(), svc_end_time()));
 
   return 0;
 }

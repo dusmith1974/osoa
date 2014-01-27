@@ -25,7 +25,7 @@ Args::Args()
       config_file_(""),
       async_log_(false),
       auto_flush_log_(false),
-      rotation_size_(10),
+      rotation_size_(1e2),
       verbose_(false) {
 }
 
