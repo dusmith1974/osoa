@@ -7,9 +7,14 @@
 #include <string>
 
 #include "boost/log/trivial.hpp"
+#include "boost/log/sinks.hpp"
 #include "boost/noncopyable.hpp"
+#include "boost/shared_ptr.hpp"
 
 namespace src = boost::log::sources;
+
+typedef boost::log::sinks::synchronous_sink<boost::log::sinks::text_file_backend> sync_sink_t;
+typedef boost::log::sinks::asynchronous_sink<boost::log::sinks::text_file_backend> async_sink_t;
 
 namespace osoa {
 
@@ -31,6 +36,8 @@ class Logging : boost::noncopyable {
   static void set_log_header(const std::string& val) {
     Logging::log_header_ = val;
   }
+
+  boost::shared_ptr<async_sink_t> async_sink_;
 
  private:
   std::unique_ptr<

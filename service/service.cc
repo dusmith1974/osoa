@@ -4,6 +4,8 @@
 
 #include <iostream>
 
+#include "boost/log/core.hpp"
+
 #include "service/args.h"
 #include "service/logging.h"
 #include "util/timing.h"
@@ -38,7 +40,7 @@ int Service::Start() {
 
   set_svc_start_time(std::chrono::steady_clock::now());
 
-  for (int j = 0; j < 10e6 /*/ 4*/;  ++j)
+  for (int j = 0; j < 10e6 / 4;  ++j)
     BOOST_LOG_SEV(logging().svc_logger(), blt::debug)
       << "The quick brown fox jumped over the lazy dog.";
 
@@ -52,6 +54,16 @@ int Service::Stop() {
   set_svc_end_time(std::chrono::steady_clock::now());
   BOOST_LOG_SEV(lg, blt::info) << "Service uptime: " 
     << add_timestamp(std::make_pair(svc_start_time(), svc_end_time()));
+
+  // join/stop all threads before stopping logging.
+
+  if (nullptr != logging().async_sink_) {
+    auto core = boost::log::core::get();
+    core->remove_sink(logging().async_sink_);
+    logging().async_sink_->stop();
+    logging().async_sink_->flush();
+    logging().async_sink_.reset();
+  }
 
   return 0;
 }
