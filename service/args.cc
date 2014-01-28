@@ -26,7 +26,8 @@ Args::Args()
       async_log_(false),
       auto_flush_log_(false),
       rotation_size_(1e2),
-      verbose_(false) {
+      verbose_(false),
+      silent_(false) {
 }
 
 Args::~Args() {
@@ -50,7 +51,8 @@ int Args::Initialize(int argc, const char* argv[]) {
   config().add_options()
     ("log-dir,l", log_dir_option, "set loggng directory")
     ("no-log-file,n", "no logging to file")
-    ("verbose,v", "set verbose logging");
+    ("verbose,v", "set verbose logging")
+    ("silent,s", "minimal console logging");
 
   auto rotation_size_option =
     new po::typed_value<decltype(rotation_size_)>(&rotation_size_);
@@ -100,6 +102,7 @@ int Args::Initialize(int argc, const char* argv[]) {
   }
 
   if (var_map().count("verbose")) set_verbose(true);
+  if (var_map().count("silent")) set_silent(true);
   if (var_map().count("no-log-file")) set_no_log_file(true);
   if (var_map().count("async-log")) set_async_log(true);
   if (var_map().count("auto-flush-log")) set_auto_flush_log(true);

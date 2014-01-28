@@ -30,6 +30,7 @@ class Args : boost::noncopyable {
   int rotation_size() const { return rotation_size_; }
 
   bool verbose() const { return verbose_; }
+  bool silent() const { return silent_; }
 
  private:
   std::unique_ptr<po::options_description> generic_;
@@ -72,6 +73,9 @@ class Args : boost::noncopyable {
 
   bool verbose_;
   void set_verbose(bool val) { verbose_ = val; }
+
+  bool silent_;
+  void set_silent(bool val) { silent_ = val; }
 };
 
 }  // namespace osoa

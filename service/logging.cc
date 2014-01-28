@@ -87,9 +87,10 @@ int Logging::Initialize(const Args& args) {
     }
   }
 
-  // todo - also provide async console option sink frontends std::clog
-  bl::add_console_log()->set_filter(
-    blt::severity >= ((args.verbose()) ? blt::debug : blt::info));
+  if (!args.silent()) {
+    bl::add_console_log()->set_filter(
+      blt::severity >= ((args.verbose()) ? blt::debug : blt::info));
+  }
 
   bl::core::get()->add_global_attribute(
     "ThreadID", attrs::current_thread_id());

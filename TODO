@@ -1,12 +1,9 @@
 pimpl log i/f -> boost log || pantheios
-async console
+silent logging
 log utc time
 makefile - warn if no $BOOST_DIR
-po multiple srcs, async nflush logging, build as .a or .so and derive service (extend args version etc).
+po multiple srcs, build as .a or .so and derive service (extend args version etc).
 auto inc build number http://www.linuxjournal.com/content/add-auto-incrementing-build-number-your-build-process
-log auto flush on/off
-log sync/async thread
-boost log (async thread, rotate)
 boost-python
  gcsg vim settings (chromium embedded)
 serializable object as base class (boost serialization or protobuf)
