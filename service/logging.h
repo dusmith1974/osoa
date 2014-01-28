@@ -28,20 +28,22 @@ class Logging : boost::noncopyable {
   int Initialize(const Args& args);
   void WriteLogHeader(const Args& args);
 
-  src::severity_logger_mt<boost::log::trivial::severity_level>& svc_logger() {
-    return *(svc_logger_.get());
+  std::shared_ptr<src::severity_logger_mt<boost::log::trivial::severity_level>> svc_logger() {
+    return svc_logger_;
   }
+
+  boost::shared_ptr<async_sink_t> async_sink() { return async_sink_; }
 
   static const std::string& log_header() { return Logging::log_header_; }
   static void set_log_header(const std::string& val) {
     Logging::log_header_ = val;
   }
 
-  boost::shared_ptr<async_sink_t> async_sink_;
-
  private:
-  std::unique_ptr<
+  std::shared_ptr<
     src::severity_logger_mt<boost::log::trivial::severity_level>> svc_logger_;
+
+  boost::shared_ptr<async_sink_t> async_sink_;
 
   static std::string log_header_;
 };

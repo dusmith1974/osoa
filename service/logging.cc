@@ -26,13 +26,11 @@ namespace osoa {
 namespace bl = boost::log;
 namespace blt = boost::log::trivial;
 
-
 std::string Logging::log_header_("");
 
 Logging::Logging() :
-  async_sink_(nullptr),
-  svc_logger_(new src::severity_logger_mt<blt::severity_level>()) {}
-
+  svc_logger_(new src::severity_logger_mt<blt::severity_level>()),
+  async_sink_(nullptr) {}
 Logging::~Logging() {
 }
 
@@ -73,22 +71,18 @@ int Logging::Initialize(const Args& args) {
       expr::attr<blt::severity_level>("Severity") >= blt::debug;
 
     if (args.async_log()) {
-      //boost::shared_ptr<async_sink_t> async_frontend_;
-      //async_frontend_ = boost::shared_ptr<async_sink_t>(
-      //  new async_sink_t(backend));
       async_sink_ = boost::shared_ptr<async_sink_t>(new async_sink_t(backend));
-
-      async_sink_->set_formatter(expr_format);
-      async_sink_->set_filter(expr_filter);
-      async_sink_->locked_backend()->set_open_handler(&RotateHeader);
-      bl::core::get()->add_sink(async_sink_);
+      async_sink()->set_formatter(expr_format);
+      async_sink()->set_filter(expr_filter);
+      async_sink()->locked_backend()->set_open_handler(&RotateHeader);
+      bl::core::get()->add_sink(async_sink());
     } else {
-      boost::shared_ptr<sync_sink_t> sync_frontend_;
-      sync_frontend_ = boost::shared_ptr<sync_sink_t>(new sync_sink_t(backend));
-      sync_frontend_->set_formatter(expr_format);
-      sync_frontend_->set_filter(expr_filter);
-      sync_frontend_->locked_backend()->set_open_handler(&RotateHeader);
-      bl::core::get()->add_sink(sync_frontend_);
+      boost::shared_ptr<sync_sink_t> sync_frontend;
+      sync_frontend = boost::shared_ptr<sync_sink_t>(new sync_sink_t(backend));
+      sync_frontend->set_formatter(expr_format);
+      sync_frontend->set_filter(expr_filter);
+      sync_frontend->locked_backend()->set_open_handler(&RotateHeader);
+      bl::core::get()->add_sink(sync_frontend);
     }
   }
 
