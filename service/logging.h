@@ -12,9 +12,11 @@
 #include "boost/shared_ptr.hpp"
 
 namespace src = boost::log::sources;
+namespace sinks = boost::log::sinks;
+namespace blt = boost::log::trivial;
 
-typedef boost::log::sinks::synchronous_sink<boost::log::sinks::text_file_backend> sync_sink_t;
-typedef boost::log::sinks::asynchronous_sink<boost::log::sinks::text_file_backend> async_sink_t;
+typedef sinks::synchronous_sink<sinks::text_file_backend> sync_sink_t;
+typedef sinks::asynchronous_sink<sinks::text_file_backend> async_sink_t;
 
 namespace osoa {
 
@@ -28,7 +30,7 @@ class Logging : boost::noncopyable {
   int Initialize(const Args& args);
   void WriteLogHeader(const Args& args);
 
-  std::shared_ptr<src::severity_logger_mt<boost::log::trivial::severity_level>> svc_logger() {
+  std::shared_ptr<src::severity_logger_mt<blt::severity_level>> svc_logger() {
     return svc_logger_;
   }
 

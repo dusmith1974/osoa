@@ -13,13 +13,13 @@ std::string add_timestamp(const SteadyTimepointPair& timepoints) {
     timepoints.second - timepoints.first);
   auto sec = std::chrono::duration_cast<std::chrono::seconds>(
     timepoints.second - timepoints.first);
-  
+
   std::stringstream ss;
   auto elapsed = timepoints.second - timepoints.first;
-  ss << elapsed.count() << " ticks of " 
-    << std::chrono::steady_clock::period::num 
+  ss << elapsed.count() << " ticks of "
+    << std::chrono::steady_clock::period::num
     << "/" << std::chrono::steady_clock::period::den << " (";
-  
+
   if (sec.count())
     ss << sec.count() << " seconds)";
   else if (milli.count())
