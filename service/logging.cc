@@ -57,6 +57,7 @@ int Logging::Initialize(const Args& args) {
         bl::keywords::rotation_size = args.rotation_size() * 1024 * 1024,
         bl::keywords::time_based_rotation =
           sinks::file::rotation_at_time_point(0, 0, 0));
+    backend->auto_flush(args.auto_flush_log());
 
     auto expr_format = expr::stream
       << "[" << expr::format_date_time<boost::posix_time::ptime>(

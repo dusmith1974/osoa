@@ -1,8 +1,6 @@
 pimpl log i/f -> boost log || pantheios
-report start end runtime with util/timing
 async console
 log utc time
-cscope-vim
 makefile - warn if no $BOOST_DIR
 po multiple srcs, async nflush logging, build as .a or .so and derive service (extend args version etc).
 auto inc build number http://www.linuxjournal.com/content/add-auto-incrementing-build-number-your-build-process
