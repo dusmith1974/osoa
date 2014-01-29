@@ -17,31 +17,18 @@
 #include "service/args.h"
 
 namespace attrs = boost::log::attributes;
+namespace bl = boost::log;
 namespace expr = boost::log::expressions;
-namespace fs = boost::filesystem;
-namespace sinks = boost::log::sinks;
 
 namespace osoa {
 
-namespace bl = boost::log;
-namespace blt = boost::log::trivial;
-
 std::string Logging::log_header_("");
-
-Logging::Logging() :
-  svc_logger_(new src::severity_logger_mt<blt::severity_level>()),
-  async_sink_(nullptr) {}
-Logging::~Logging() {
-}
 
 void RotateHeader(sinks::text_file_backend::stream_type& file) {  // NOLINT
   file << Logging::log_header() << std::endl;
 }
 
-int Logging::Initialize(const Args& args) {
-  bl::add_common_attributes();
-  bl::register_simple_formatter_factory<blt::severity_level, char>("Severity");
-
+fs::path GetFullPath(const Args& args) {
   fs::path full_path(args.module_path());
   fs::path leaf(full_path.filename().string());
   if (!args.log_dir().empty()) {
@@ -49,42 +36,25 @@ int Logging::Initialize(const Args& args) {
     full_path = full_path / leaf;
   }
 
+  return full_path;
+}
+
+Logging::Logging() :
+  svc_logger_(new src::severity_logger_mt<blt::severity_level>()),
+  async_sink_(nullptr) {}
+
+Logging::~Logging() {
+}
+
+
+int Logging::Initialize(const Args& args) {
+  bl::add_common_attributes();
+  bl::register_simple_formatter_factory<blt::severity_level, char>("Severity");
+
+  fs::path full_path = GetFullPath(args);
+
   if (!args.no_log_file()) {
-    boost::shared_ptr<sinks::text_file_backend> backend =
-      boost::make_shared<sinks::text_file_backend>(
-        bl::keywords::file_name = full_path.string() +
-          "_%Y-%m-%d_%H-%M-%S.%N.log",
-        bl::keywords::rotation_size = args.rotation_size() * 1024 * 1024,
-        bl::keywords::time_based_rotation =
-          sinks::file::rotation_at_time_point(0, 0, 0));
-    backend->auto_flush(args.auto_flush_log());
-
-    auto expr_format = expr::stream
-      << "[" << expr::format_date_time<boost::posix_time::ptime>(
-        "TimeStamp", "%H:%M:%S.%f") << "]"
-      << " [" << expr::attr<std::string>("Process") << "]"
-      << " [" << expr::attr<blt::severity_level>("Severity") << "]"
-      << " [" << expr::attr<bl::attributes::current_thread_id::value_type>(
-        "ThreadID") << "] "
-      << expr::attr<std::string>("Message");
-
-    auto expr_filter =
-      expr::attr<blt::severity_level>("Severity") >= blt::debug;
-
-    if (args.async_log()) {
-      async_sink_ = boost::shared_ptr<async_sink_t>(new async_sink_t(backend));
-      async_sink()->set_formatter(expr_format);
-      async_sink()->set_filter(expr_filter);
-      async_sink()->locked_backend()->set_open_handler(&RotateHeader);
-      bl::core::get()->add_sink(async_sink());
-    } else {
-      boost::shared_ptr<sync_sink_t> sync_frontend;
-      sync_frontend = boost::shared_ptr<sync_sink_t>(new sync_sink_t(backend));
-      sync_frontend->set_formatter(expr_format);
-      sync_frontend->set_filter(expr_filter);
-      sync_frontend->locked_backend()->set_open_handler(&RotateHeader);
-      bl::core::get()->add_sink(sync_frontend);
-    }
+    SetupLogFile(args, full_path);
   }
 
   if (!args.silent()) {
@@ -100,6 +70,52 @@ int Logging::Initialize(const Args& args) {
   WriteLogHeader(args);
 
   return 0;
+}
+
+TextFileBackend Logging::SetupTextfileBackend(const Args& args, const fs::path& path) {
+  return boost::make_shared<sinks::text_file_backend>(
+    bl::keywords::file_name = path.string() +
+      "_%Y-%m-%d_%H-%M-%S.%N.log",
+    bl::keywords::rotation_size = args.rotation_size() * 1024 * 1024,
+    bl::keywords::time_based_rotation =
+      sinks::file::rotation_at_time_point(0, 0, 0));
+  
+}
+
+template<typename T>
+void SetupSink(T sink) {
+  if (nullptr == sink) return;
+
+  auto expr_format = expr::stream
+    << "[" << expr::format_date_time<boost::posix_time::ptime>(
+      "TimeStamp", "%H:%M:%S.%f") << "]"
+    << " [" << expr::attr<std::string>("Process") << "]"
+    << " [" << expr::attr<blt::severity_level>("Severity") << "]"
+    << " [" << expr::attr<bl::attributes::current_thread_id::value_type>(
+      "ThreadID") << "] "
+    << expr::attr<std::string>("Message");
+  sink->set_formatter(expr_format);
+
+  auto expr_filter =
+    expr::attr<blt::severity_level>("Severity") >= blt::debug;
+  sink->set_filter(expr_filter);
+
+  sink->locked_backend()->set_open_handler(&RotateHeader);
+  bl::core::get()->add_sink(sink);
+}
+
+void Logging::SetupLogFile(const Args& args, const fs::path& path) {
+  TextFileBackend backend = SetupTextfileBackend(args, path);
+  backend->auto_flush(args.auto_flush_log());
+
+  if (args.async_log()) {
+    async_sink_ = boost::shared_ptr<AsyncSink>(new AsyncSink(backend));
+    SetupSink<boost::shared_ptr<AsyncSink>>(async_sink());
+  } else {
+    boost::shared_ptr<SyncSink> sync_frontend = boost::shared_ptr<SyncSink>(
+      new SyncSink(backend));
+    SetupSink<boost::shared_ptr<SyncSink>>(sync_frontend);
+  }
 }
 
 void Logging::WriteLogHeader(const Args& args) {

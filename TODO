@@ -1,17 +1,17 @@
-pimpl log i/f -> boost log || pantheios
-silent logging
-log utc time
-makefile - warn if no $BOOST_DIR
-po multiple srcs, build as .a or .so and derive service (extend args version etc).
-auto inc build number http://www.linuxjournal.com/content/add-auto-incrementing-build-number-your-build-process
-boost-python
- gcsg vim settings (chromium embedded)
+tidy up logging class
+build as .a or .so and derive service (extend args version etc).
 serializable object as base class (boost serialization or protobuf)
  protobuf-lite
 xerces xml input msgs, xsd validation
 service base class/template app
  ipc asio sockets
  c++11 thread slave/worker threads
+pimpl log i/f -> boost log || pantheios
+log utc time
+makefile - warn if no $BOOST_DIR
+auto inc build number http://www.linuxjournal.com/content/add-auto-incrementing-build-number-your-build-process
+boost-python, plug-in to add func to items as passed through processor, pre/post hooks, filters
+ gcsg vim settings (chromium embedded)
 inputter(s)
 processor(s)
 outputter(s)
