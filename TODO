@@ -1,3 +1,4 @@
+use override
 tidy up logging class
 build as .a or .so and derive service (extend args version etc).
 serializable object as base class (boost serialization or protobuf)

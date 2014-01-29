@@ -39,49 +39,6 @@ fs::path GetFullPath(const Args& args) {
   return full_path;
 }
 
-Logging::Logging() :
-  svc_logger_(new src::severity_logger_mt<blt::severity_level>()),
-  async_sink_(nullptr) {}
-
-Logging::~Logging() {
-}
-
-
-int Logging::Initialize(const Args& args) {
-  bl::add_common_attributes();
-  bl::register_simple_formatter_factory<blt::severity_level, char>("Severity");
-
-  fs::path full_path = GetFullPath(args);
-
-  if (!args.no_log_file()) {
-    SetupLogFile(args, full_path);
-  }
-
-  if (!args.silent()) {
-    bl::add_console_log()->set_filter(
-      blt::severity >= ((args.verbose()) ? blt::debug : blt::info));
-  }
-
-  bl::core::get()->add_global_attribute(
-    "ThreadID", attrs::current_thread_id());
-  bl::core::get()->add_global_attribute(
-    "Process", attrs::current_process_name());
-
-  WriteLogHeader(args);
-
-  return 0;
-}
-
-TextFileBackend Logging::SetupTextfileBackend(const Args& args, const fs::path& path) {
-  return boost::make_shared<sinks::text_file_backend>(
-    bl::keywords::file_name = path.string() +
-      "_%Y-%m-%d_%H-%M-%S.%N.log",
-    bl::keywords::rotation_size = args.rotation_size() * 1024 * 1024,
-    bl::keywords::time_based_rotation =
-      sinks::file::rotation_at_time_point(0, 0, 0));
-  
-}
-
 template<typename T>
 void SetupSink(T sink) {
   if (nullptr == sink) return;
@@ -102,6 +59,44 @@ void SetupSink(T sink) {
 
   sink->locked_backend()->set_open_handler(&RotateHeader);
   bl::core::get()->add_sink(sink);
+}
+
+Logging::Logging() :
+  svc_logger_(new src::severity_logger_mt<blt::severity_level>()),
+  async_sink_(nullptr) {}
+
+Logging::~Logging() {
+}
+
+int Logging::Initialize(const Args& args) {
+  bl::add_common_attributes();
+  bl::register_simple_formatter_factory<blt::severity_level, char>("Severity");
+
+  fs::path full_path = GetFullPath(args);
+  if (!args.no_log_file()) 
+    SetupLogFile(args, full_path);
+
+  if (!args.silent()) 
+    bl::add_console_log()->set_filter(
+      blt::severity >= ((args.verbose()) ? blt::debug : blt::info));
+
+  bl::core::get()->add_global_attribute(
+    "ThreadID", attrs::current_thread_id());
+  bl::core::get()->add_global_attribute(
+    "Process", attrs::current_process_name());
+
+  WriteLogHeader(args);
+
+  return 0;
+}
+
+TextFileBackend Logging::SetupTextfileBackend(const Args& args, const fs::path& path) {
+  return boost::make_shared<sinks::text_file_backend>(
+    bl::keywords::file_name = path.string() +
+      "_%Y-%m-%d_%H-%M-%S.%N.log",
+    bl::keywords::rotation_size = args.rotation_size() * 1024 * 1024,
+    bl::keywords::time_based_rotation =
+      sinks::file::rotation_at_time_point(0, 0, 0));
 }
 
 void Logging::SetupLogFile(const Args& args, const fs::path& path) {

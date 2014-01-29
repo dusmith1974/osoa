@@ -20,7 +20,6 @@ class Args : boost::noncopyable {
 
   int Initialize(int argc, const char* argv[]);
 
- public:
   const std::string& config_file() const { return config_file_; }
   const std::string& log_dir() const { return log_dir_; }
   const std::string& module_path() const { return module_path_; }
@@ -32,12 +31,14 @@ class Args : boost::noncopyable {
   bool verbose() const { return verbose_; }
   bool silent() const { return silent_; }
 
+ protected:
+  po::options_description& config() { return *(config_.get()); }
+
  private:
   std::unique_ptr<po::options_description> generic_;
   po::options_description& generic() { return *(generic_.get()); }
 
   std::unique_ptr<po::options_description> config_;
-  po::options_description& config() { return *(config_.get()); }
 
   std::unique_ptr<po::options_description> hidden_;
   po::options_description& hidden() { return *(hidden_.get()); }

@@ -16,9 +16,9 @@ class Logging;
 class Service {
  public:
   Service();
-  ~Service();
+  virtual ~Service();
 
-  int Initialize(int argc, const char *argv[]);
+  virtual int Initialize(int argc, const char *argv[]);
 
   int Start();
   int Stop();
