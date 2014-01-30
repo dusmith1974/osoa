@@ -20,15 +20,17 @@ class Service {
 
   virtual int Initialize(int argc, const char *argv[]);
 
-  int Start();
-  int Stop();
+  virtual int Start();
+  virtual int Stop();
+
+ protected:
+  Args& args() { return *(args_.get()); }
+  Logging& logging() { return *(logging_.get()); }
 
  private:
   std::unique_ptr<Args> args_;
-  Args& args() { return *(args_.get()); }
 
   std::unique_ptr<Logging> logging_;
-  Logging& logging() { return *(logging_.get()); }
 
   timepoint svc_start_time_;
   void set_svc_start_time(const timepoint& val) { svc_start_time_ = val; }

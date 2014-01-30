@@ -40,9 +40,6 @@ int Service::Start() {
 
   set_svc_start_time(std::chrono::steady_clock::now());
 
-  for (int j = 0; j < 500/*10e6 / 4*/;  ++j)
-    BOOST_LOG_SEV(*lg, blt::debug)
-      << "The quick brown fox jumped over the lazy dog.";
 
   return 0;
 }

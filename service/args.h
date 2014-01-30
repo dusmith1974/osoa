@@ -31,8 +31,8 @@ class Args : boost::noncopyable {
   bool verbose() const { return verbose_; }
   bool silent() const { return silent_; }
 
- protected:
   po::options_description& config() { return *(config_.get()); }
+  po::variables_map& var_map() { return *(var_map_.get()); }
 
  private:
   std::unique_ptr<po::options_description> generic_;
@@ -44,7 +44,6 @@ class Args : boost::noncopyable {
   po::options_description& hidden() { return *(hidden_.get()); }
 
   std::unique_ptr<po::variables_map> var_map_;
-  po::variables_map& var_map() { return *(var_map_.get()); }
 
   int version_major_no() { return version_major_no_; }
   int version_minor_no() { return version_minor_no_; }
