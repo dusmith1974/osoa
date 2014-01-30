@@ -19,7 +19,8 @@ Test::~Test() {}
 int Test::Initialize(int argc, const char *argv[]) {
   po::options_description& config = args().config();
 
-  auto msg_count_option = new po::typed_value<decltype(msg_count_)>(&msg_count_);
+  auto msg_count_option =
+    new po::typed_value<decltype(msg_count_)>(&msg_count_);
   msg_count_option->value_name("number");
 
   config.add_options()
@@ -32,8 +33,8 @@ int Test::Initialize(int argc, const char *argv[]) {
 int Test::Start() {
   int result = super::Start();
   if (0 != result) return result;
-  
-  if (args().var_map().count("subclass")) 
+
+  if (args().var_map().count("subclass"))
     std::cout << "SUB-CLASS" << std::endl;
 
   auto lg = logging().svc_logger();

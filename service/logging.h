@@ -31,8 +31,8 @@ class Logging : boost::noncopyable {
 
   int Initialize(const Args& args);
 
-  TextFileBackend SetupTextfileBackend(const Args& args, 
-                                            const fs::path& path);
+  TextFileBackend SetupTextfileBackend(const Args& args,
+                                       const fs::path& path);
 
   void SetupLogFile(const Args& args, const fs::path& path);
   void WriteLogHeader(const Args& args);

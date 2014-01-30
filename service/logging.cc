@@ -73,10 +73,10 @@ int Logging::Initialize(const Args& args) {
   bl::register_simple_formatter_factory<blt::severity_level, char>("Severity");
 
   fs::path full_path = GetFullPath(args);
-  if (!args.no_log_file()) 
+  if (!args.no_log_file())
     SetupLogFile(args, full_path);
 
-  if (!args.silent()) 
+  if (!args.silent())
     bl::add_console_log()->set_filter(
       blt::severity >= ((args.verbose()) ? blt::debug : blt::info));
 
@@ -90,7 +90,8 @@ int Logging::Initialize(const Args& args) {
   return 0;
 }
 
-TextFileBackend Logging::SetupTextfileBackend(const Args& args, const fs::path& path) {
+TextFileBackend Logging::SetupTextfileBackend(const Args& args,
+                                              const fs::path& path) {
   return boost::make_shared<sinks::text_file_backend>(
     bl::keywords::file_name = path.string() +
       "_%Y-%m-%d_%H-%M-%S.%N.log",
