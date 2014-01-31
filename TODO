@@ -1,6 +1,7 @@
-override/final
-tidy up logging class
+mv unique_ptr shared_ptr
 build as .a or .so and derive service (extend args version etc).
+sockets api
+rest api (for commands)
 serializable object as base class (boost serialization or protobuf)
  protobuf-lite
 xerces xml input msgs, xsd validation
@@ -24,6 +25,5 @@ book src repo - joss, etc.
  loki
 joss SOA.
 
-sockets api
 cmd line filter app
 gcov gprof

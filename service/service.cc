@@ -7,6 +7,7 @@
 #include "boost/log/core.hpp"
 
 #include "service/args.h"
+#include "service/comms.h"
 #include "service/logging.h"
 #include "util/timing.h"
 
@@ -40,7 +41,9 @@ int Service::Start() {
 
   set_svc_start_time(std::chrono::steady_clock::now());
 
-
+  Comms comms;
+  comms.Test();
+  
   return 0;
 }
 
