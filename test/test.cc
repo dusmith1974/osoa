@@ -7,6 +7,7 @@
 #include "boost/program_options.hpp"
 
 #include "service/args.h"
+#include "comms.h"
 #include "service/logging.h"
 
 namespace po = boost::program_options;
@@ -42,6 +43,9 @@ int Test::Start() {
     BOOST_LOG_SEV(*lg, blt::debug)
       << "The quick brown fox jumped over the lazy dog.";
 
+  Comms comms;
+  comms.Subscribe("localhost", "daytime");
+  
   return 0;
 }
 

@@ -3,6 +3,8 @@
 #ifndef SERVICE_COMMS_H_
 #define SERVICE_COMMS_H_
 
+#include <string>
+
 #include "boost/noncopyable.hpp"
 
 namespace osoa {
@@ -12,7 +14,8 @@ class Comms : boost::noncopyable {
   Comms() {}
   ~Comms() {}
 
-  void Test();
+  int Subscribe(const std::string& server, const std::string& service);
+  //void Test();
 };
 
 }  // namespace osoa

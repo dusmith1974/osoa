@@ -41,8 +41,6 @@ int Service::Start() {
 
   set_svc_start_time(std::chrono::steady_clock::now());
 
-  Comms comms;
-  comms.Test();
   
   return 0;
 }
