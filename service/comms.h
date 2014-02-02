@@ -14,6 +14,7 @@ class Comms : boost::noncopyable {
   Comms() {}
   ~Comms() {}
 
+  int Publish();
   int Subscribe(const std::string& server, const std::string& service);
   //void Test();
 };

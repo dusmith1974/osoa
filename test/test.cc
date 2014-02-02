@@ -26,7 +26,8 @@ int Test::Initialize(int argc, const char *argv[]) {
 
   config.add_options()
     ("msg-count,o", msg_count_option, "number of msgs")
-    ("subclass,S", "from sub-class");
+    ("subscribe,s", "subscribe to service")
+    ("publish,p", "open listening port");
 
   return Service::Initialize(argc, argv);
 }
@@ -35,16 +36,19 @@ int Test::Start() {
   int result = super::Start();
   if (0 != result) return result;
 
-  if (args().var_map().count("subclass"))
-    std::cout << "SUB-CLASS" << std::endl;
+  Comms comms;
+
+  if (args().var_map().count("subscribe"))
+    comms.Subscribe("localhost", "daytime");
+
+  if (args().var_map().count("publish"))
+    comms.Publish();
 
   auto lg = logging().svc_logger();
   for (int j = 0; j < msg_count();  ++j)
     BOOST_LOG_SEV(*lg, blt::debug)
       << "The quick brown fox jumped over the lazy dog.";
 
-  Comms comms;
-  comms.Subscribe("localhost", "daytime");
   
   return 0;
 }

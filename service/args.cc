@@ -49,10 +49,10 @@ int Args::Initialize(int argc, const char* argv[]) {
     ("config,c", config_file_option, "name of (optional) config file");
 
   config().add_options()
-    ("log-dir,l", log_dir_option, "set loggng directory")
+    ("log-dir,d", log_dir_option, "set loggng directory")
     ("no-log-file,n", "no logging to file")
     ("verbose,v", "set verbose logging")
-    ("silent,s", "minimal console logging");
+    ("silent,S", "minimal console logging");
 
   auto rotation_size_option =
     new po::typed_value<decltype(rotation_size_)>(&rotation_size_);

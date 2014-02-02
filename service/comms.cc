@@ -1,4 +1,4 @@
-// Copyright 2013 Duncan Smith
+// Copyright 2014 Duncan Smith
 
 #include "service/comms.h"
 
@@ -30,11 +30,42 @@ using boost::asio::ip::tcp;
 
 namespace osoa {
 
+// http://www.iana.org/assignments/service-names-port-numbers/
+//   service-names-port-numbers.xhtml?&page=125
+const int base_port = 35007; // to 35353 unassigned (2014-02-02)
+const int listening_port = base_port + 0;
+
+// Iterative Server (handle one connection at a time).
+int Comms::Publish() {
+  try {
+    asio::io_service io_service;
+    tcp::acceptor acceptor(io_service, tcp::endpoint(tcp::v4(), listening_port));
+
+    int connections = 0;
+    for (;;) {
+      tcp::socket socket(io_service);
+      acceptor.accept(socket);
+
+      std::stringstream ss;
+      ss << "OSOA comms connection: " << ++connections;
+
+      boost::system::error_code ignored_error;
+      asio::write(socket, asio::buffer(ss.str()), ignored_error);
+    }
+  } catch (std::exception& e) {
+    std::cerr << e.what() << std::endl;
+  }
+  return 0;
+}
+
+// Make a synchronous connection.
 int Comms::Subscribe(const std::string& server, const std::string& service) {
   asio::io_service io_service;
 
+  std::string service2 = service; 
+  service2 = "35007";
   tcp::resolver resolver(io_service);
-  tcp::resolver::query query(server, service);
+  tcp::resolver::query query(server, service2);
   tcp::resolver::iterator endpoint_iterator = resolver.resolve(query);
 
   tcp::socket socket(io_service);
@@ -46,9 +77,9 @@ int Comms::Subscribe(const std::string& server, const std::string& service) {
       boost::system::error_code error;
 
       size_t len = socket.read_some(asio::buffer(buf), error);
-      if (error == asio::error::eof) // boost::system::errc::success
+      if (error == asio::error::eof) 
         break;
-      else if (error) 
+      else if (error) // ie not boost::system::errc::success
         throw boost::system::system_error(error);
 
       std::cout.write(buf.data(), len);
