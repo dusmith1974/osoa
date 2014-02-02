@@ -4,6 +4,7 @@
 
 #include <iostream>
 
+#include "boost/algorithm/string.hpp"
 #include "boost/array.hpp"
 #include "boost/asio.hpp"
 //#include "boost/bind.hpp"
@@ -59,13 +60,20 @@ int Comms::Publish() {
 }
 
 // Make a synchronous connection.
-int Comms::Subscribe(const std::string& server, const std::string& service) {
+int Comms::Subscribe(const std::string& /*server*/, const std::string& service) {
   asio::io_service io_service;
 
   std::string service2 = service; 
   service2 = "35007";
+  std::vector<std::string> svc;
+  //std::string service3 = "localhost:35007";
+  std::string service3 = "192.168.43.1:35007";
+  boost::split(svc, service3, boost::is_any_of(":"));
+  if (svc.size() < 2)
+    return 1;
+
   tcp::resolver resolver(io_service);
-  tcp::resolver::query query(server, service2);
+  tcp::resolver::query query(svc[0], svc[1]);
   tcp::resolver::iterator endpoint_iterator = resolver.resolve(query);
 
   tcp::socket socket(io_service);
