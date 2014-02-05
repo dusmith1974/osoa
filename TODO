@@ -1,3 +1,5 @@
+prog_opt multitoken for pub/sub lists into vec
+prog_opt env parser for username
 mv unique_ptr shared_ptr
 build as .a or .so and derive service (extend args version etc).
 sockets api

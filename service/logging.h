@@ -29,13 +29,13 @@ class Logging : boost::noncopyable {
   Logging();
   ~Logging();
 
-  int Initialize(const Args& args);
+  int Initialize(const std::shared_ptr<Args> args);
 
-  TextFileBackend SetupTextfileBackend(const Args& args,
+  TextFileBackend SetupTextfileBackend(const std::shared_ptr<Args> args,
                                        const fs::path& path);
 
-  void SetupLogFile(const Args& args, const fs::path& path);
-  void WriteLogHeader(const Args& args);
+  void SetupLogFile(const std::shared_ptr<Args> args, const fs::path& path);
+  void WriteLogHeader(const std::shared_ptr<Args> args);
 
   std::shared_ptr<src::severity_logger_mt<blt::severity_level>> svc_logger() {
     return svc_logger_;

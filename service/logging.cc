@@ -28,11 +28,11 @@ void RotateHeader(sinks::text_file_backend::stream_type& file) {  // NOLINT
   file << Logging::log_header() << std::endl;
 }
 
-fs::path GetFullPath(const Args& args) {
-  fs::path full_path(args.module_path());
+fs::path GetFullPath(const std::shared_ptr<Args> args) {
+  fs::path full_path(args->module_path());
   fs::path leaf(full_path.filename().string());
-  if (!args.log_dir().empty()) {
-    full_path = args.log_dir();
+  if (!args->log_dir().empty()) {
+    full_path = args->log_dir();
     full_path = full_path / leaf;
   }
 
@@ -68,17 +68,17 @@ Logging::Logging() :
 Logging::~Logging() {
 }
 
-int Logging::Initialize(const Args& args) {
+int Logging::Initialize(const std::shared_ptr<Args> args) {
   bl::add_common_attributes();
   bl::register_simple_formatter_factory<blt::severity_level, char>("Severity");
 
   fs::path full_path = GetFullPath(args);
-  if (!args.no_log_file())
+  if (!args->no_log_file())
     SetupLogFile(args, full_path);
 
-  if (!args.silent())
+  if (!args->silent())
     bl::add_console_log()->set_filter(
-      blt::severity >= ((args.verbose()) ? blt::debug : blt::info));
+      blt::severity >= ((args->verbose()) ? blt::debug : blt::info));
 
   bl::core::get()->add_global_attribute(
     "ThreadID", attrs::current_thread_id());
@@ -90,21 +90,21 @@ int Logging::Initialize(const Args& args) {
   return 0;
 }
 
-TextFileBackend Logging::SetupTextfileBackend(const Args& args,
+TextFileBackend Logging::SetupTextfileBackend(const std::shared_ptr<Args> args,
                                               const fs::path& path) {
   return boost::make_shared<sinks::text_file_backend>(
     bl::keywords::file_name = path.string() +
       "_%Y-%m-%d_%H-%M-%S.%N.log",
-    bl::keywords::rotation_size = args.rotation_size() * 1024 * 1024,
+    bl::keywords::rotation_size = args->rotation_size() * 1024 * 1024,
     bl::keywords::time_based_rotation =
       sinks::file::rotation_at_time_point(0, 0, 0));
 }
 
-void Logging::SetupLogFile(const Args& args, const fs::path& path) {
+void Logging::SetupLogFile(const std::shared_ptr<Args> args, const fs::path& path) {
   TextFileBackend backend = SetupTextfileBackend(args, path);
-  backend->auto_flush(args.auto_flush_log());
+  backend->auto_flush(args->auto_flush_log());
 
-  if (args.async_log()) {
+  if (args->async_log()) {
     async_sink_ = boost::shared_ptr<AsyncSink>(new AsyncSink(backend));
     SetupSink<boost::shared_ptr<AsyncSink>>(async_sink());
   } else {
@@ -114,7 +114,7 @@ void Logging::SetupLogFile(const Args& args, const fs::path& path) {
   }
 }
 
-void Logging::WriteLogHeader(const Args& args) {
+void Logging::WriteLogHeader(const std::shared_ptr<Args> args) {
   std::stringstream ss;
 
   char* user_name = getenv("USER");
@@ -130,24 +130,24 @@ void Logging::WriteLogHeader(const Args& args) {
     << ((user_name) ? user_name : "unknown") << " on "
     << hostname << " at " << now << std::endl;
 
-  if (!args.config_file().empty())
-    ss << "using config-file: " << args.config_file() << std::endl;
+  if (!args->config_file().empty())
+    ss << "using config-file: " << args->config_file() << std::endl;
   else
     ss << "not using config-file" << std::endl;
 
-  if (!args.log_dir().empty())
-    ss << "using log-dir: " << args.log_dir() << std::endl;
+  if (!args->log_dir().empty())
+    ss << "using log-dir: " << args->log_dir() << std::endl;
   else
     ss << "not using log-dir" << std::endl;
 
-  ss << "no-log-file: " << args.no_log_file() << std::endl;
-  ss << "verbose: " << args.verbose() << std::endl;
+  ss << "no-log-file: " << args->no_log_file() << std::endl;
+  ss << "verbose: " << args->verbose() << std::endl;
 
-  ss << "log file rotation-size: " << args.rotation_size()
+  ss << "log file rotation-size: " << args->rotation_size()
     << " MiB" << std::endl;
 
-  ss << "async-log: " << args.async_log() << std::endl;
-  ss << "auto-flush-log: " << args.auto_flush_log() << std::endl;
+  ss << "async-log: " << args->async_log() << std::endl;
+  ss << "auto-flush-log: " << args->auto_flush_log() << std::endl;
 
   set_log_header(ss.str());
 }

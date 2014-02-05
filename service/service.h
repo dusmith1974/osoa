@@ -24,13 +24,13 @@ class Service {
   virtual int Stop();
 
  protected:
-  Args& args() { return *(args_.get()); }
-  Logging& logging() { return *(logging_.get()); }
+  std::shared_ptr<Args> args() { return args_; }
+  std::shared_ptr<Logging> logging() { return logging_; }
 
  private:
-  std::unique_ptr<Args> args_;
+  std::shared_ptr<Args> args_;
 
-  std::unique_ptr<Logging> logging_;
+  std::shared_ptr<Logging> logging_;
 
   timepoint svc_start_time_;
   void set_svc_start_time(const timepoint& val) { svc_start_time_ = val; }

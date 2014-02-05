@@ -18,7 +18,7 @@ Test::Test() : msg_count_(10) {}
 Test::~Test() {}
 
 int Test::Initialize(int argc, const char *argv[]) {
-  po::options_description& config = args().config();
+  po::options_description& config = args()->config();
 
   auto msg_count_option =
     new po::typed_value<decltype(msg_count_)>(&msg_count_);
@@ -38,13 +38,13 @@ int Test::Start() {
 
   Comms comms;
 
-  if (args().var_map().count("subscribe"))
+  if (args()->var_map().count("subscribe"))
     comms.Subscribe("localhost", "daytime");
 
-  if (args().var_map().count("publish"))
+  if (args()->var_map().count("publish"))
     comms.Publish();
 
-  auto lg = logging().svc_logger();
+  auto lg = logging()->svc_logger();
   for (int j = 0; j < msg_count();  ++j)
     BOOST_LOG_SEV(*lg, blt::debug)
       << "The quick brown fox jumped over the lazy dog.";
