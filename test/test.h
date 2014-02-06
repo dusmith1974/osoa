@@ -23,6 +23,7 @@ class Test final : public Service, private boost::noncopyable {
   int Start() override;
   int Stop() override;
 
+  const std::vector<std::string> subscriptions() const { return subscriptions_; } 
  private:
   int msg_count_;
   int msg_count() { return msg_count_; }

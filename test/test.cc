@@ -14,7 +14,7 @@ namespace po = boost::program_options;
 
 namespace osoa {
 
-Test::Test() : msg_count_(10) {}
+Test::Test() : msg_count_(10), subscriptions_{} {}
 Test::~Test() {}
 
 int Test::Initialize(int argc, const char *argv[]) {
@@ -30,10 +30,10 @@ int Test::Initialize(int argc, const char *argv[]) {
 
   config.add_options()
     ("msg-count,o", msg_count_option, "number of msgs")
-    ("subscribe,s", "subscribe to service")
     ("publish,p", "open listening port")
-    //("subscriptions,t", po::value<std::vector<std::string>>(&subscriptions_)->multitoken(), "list of subscription(s)");
-    ("subscriptions,t", subscriptions_option->multitoken(), "list of subscription(s)");
+    ("subscriptions,s", subscriptions_option->multitoken(), 
+      "list of subscription(s)");
+
   return Service::Initialize(argc, argv);
 }
 
@@ -43,8 +43,8 @@ int Test::Start() {
 
   Comms comms;
 
-  if (args()->var_map().count("subscribe"))
-    comms.Subscribe("localhost", "daytime");
+  if (args()->var_map().count("subscriptions"))
+    comms.Subscribe(subscriptions());
 
   if (args()->var_map().count("publish"))
     comms.Publish();
@@ -53,8 +53,6 @@ int Test::Start() {
   for (int j = 0; j < msg_count();  ++j)
     BOOST_LOG_SEV(*lg, blt::debug)
       << "The quick brown fox jumped over the lazy dog.";
-
-  std::cout << "There are " << subscriptions_.size() << " subscriptions." << std::endl;
   
   return 0;
 }

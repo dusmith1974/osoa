@@ -60,40 +60,40 @@ int Comms::Publish() {
 }
 
 // Make a synchronous connection.
-int Comms::Subscribe(const std::string& /*server*/, const std::string& service) {
+int Comms::Subscribe(const std::vector<std::string>& subscriptions) {
   asio::io_service io_service;
 
-  std::string service2 = service; 
-  service2 = "35007";
-  std::vector<std::string> svc;
-  //std::string service3 = "localhost:35007";
-  std::string service3 = "192.168.43.1:35007";
-  boost::split(svc, service3, boost::is_any_of(":"));
-  if (svc.size() < 2)
-    return 1;
+  for (auto& subscription : subscriptions ) {
+    std::vector<std::string> server_service;
+    boost::split(server_service, subscription, boost::is_any_of(":"));
+    if (server_service.size() < 2)
+      continue;
 
-  tcp::resolver resolver(io_service);
-  tcp::resolver::query query(svc[0], svc[1]);
-  tcp::resolver::iterator endpoint_iterator = resolver.resolve(query);
+    tcp::resolver resolver(io_service);
+    tcp::resolver::query query(server_service[0], server_service[1]);
+    tcp::resolver::iterator endpoint_iterator = resolver.resolve(query);
 
-  tcp::socket socket(io_service);
-  asio::connect(socket, endpoint_iterator);
+    tcp::socket socket(io_service);
+    asio::connect(socket, endpoint_iterator);
 
-  try {
-    for (;;) {
-      boost::array<char, 128> buf;
-      boost::system::error_code error;
+    try {
+      for (;;) {
+        boost::array<char, 128> buf;
+        boost::system::error_code error;
 
-      size_t len = socket.read_some(asio::buffer(buf), error);
-      if (error == asio::error::eof) 
-        break;
-      else if (error) // ie not boost::system::errc::success
-        throw boost::system::system_error(error);
+        size_t len = socket.read_some(asio::buffer(buf), error);
+        if (error == asio::error::eof) 
+          break;
+        else if (error) // ie not boost::system::errc::success
+          throw boost::system::system_error(error);
 
-      std::cout.write(buf.data(), len);
+        std::cout.write(buf.data(), len);
+      }
+
+      std::cout << std::endl;
+    } catch (std::exception& e) {
+      std::cerr << e.what() << std::endl;
     }
-  } catch (std::exception& e) {
-    std::cerr << e.what() << std::endl;
   }
   
   return 0;

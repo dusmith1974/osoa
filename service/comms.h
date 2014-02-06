@@ -1,9 +1,10 @@
-// Copyright 2013 Duncan Smith
+// Copyright 2014 Duncan Smith
 
 #ifndef SERVICE_COMMS_H_
 #define SERVICE_COMMS_H_
 
 #include <string>
+#include <vector>
 
 #include "boost/noncopyable.hpp"
 
@@ -15,7 +16,7 @@ class Comms : boost::noncopyable {
   ~Comms() {}
 
   int Publish();
-  int Subscribe(const std::string& /*server*/, const std::string& service);
+  int Subscribe(const std::vector<std::string>& subscriptions);
   //void Test();
 };
 

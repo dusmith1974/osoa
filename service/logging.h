@@ -6,8 +6,8 @@
 #include <memory>
 #include <string>
 
-#include "boost/log/trivial.hpp"
 #include "boost/log/sinks.hpp"
+#include "boost/log/trivial.hpp"
 #include "boost/noncopyable.hpp"
 #include "boost/shared_ptr.hpp"
 
