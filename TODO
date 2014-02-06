@@ -1,3 +1,5 @@
+use prog_opt implicit for default values
+use prog_opt handlers()
 prog_opt multitoken for pub/sub lists into vec
 prog_opt env parser for username
 mv unique_ptr shared_ptr

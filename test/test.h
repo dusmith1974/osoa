@@ -3,6 +3,8 @@
 #ifndef TEST_TEST_H_
 #define TEST_TEST_H_
 
+#include <vector>
+
 #include "boost/noncopyable.hpp"
 
 #include "service/service.h"
@@ -24,6 +26,8 @@ class Test final : public Service, private boost::noncopyable {
  private:
   int msg_count_;
   int msg_count() { return msg_count_; }
+
+  std::vector<std::string> subscriptions_; 
 };
 
 }  // namespace osoa
