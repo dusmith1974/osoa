@@ -17,7 +17,6 @@ class Comms : boost::noncopyable {
 
   int Publish();
   int Subscribe(const std::vector<std::string>& subscriptions);
-  //void Test();
 };
 
 }  // namespace osoa

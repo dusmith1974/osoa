@@ -28,7 +28,7 @@ void RotateHeader(sinks::text_file_backend::stream_type& file) {  // NOLINT
   file << Logging::log_header() << std::endl;
 }
 
-fs::path GetFullPath(const std::shared_ptr<Args> args) {
+fs::path GetFullPath(std::shared_ptr<const Args> args) {
   fs::path full_path(args->module_path());
   fs::path leaf(full_path.filename().string());
   if (!args->log_dir().empty()) {
@@ -68,7 +68,7 @@ Logging::Logging() :
 Logging::~Logging() {
 }
 
-int Logging::Initialize(const std::shared_ptr<Args> args) {
+int Logging::Initialize(std::shared_ptr<const Args> args) {
   bl::add_common_attributes();
   bl::register_simple_formatter_factory<blt::severity_level, char>("Severity");
 
@@ -90,7 +90,7 @@ int Logging::Initialize(const std::shared_ptr<Args> args) {
   return 0;
 }
 
-TextFileBackend Logging::SetupTextfileBackend(const std::shared_ptr<Args> args,
+TextFileBackend Logging::SetupTextfileBackend(std::shared_ptr<const Args> args,
                                               const fs::path& path) {
   return boost::make_shared<sinks::text_file_backend>(
     bl::keywords::file_name = path.string() +
@@ -100,7 +100,8 @@ TextFileBackend Logging::SetupTextfileBackend(const std::shared_ptr<Args> args,
       sinks::file::rotation_at_time_point(0, 0, 0));
 }
 
-void Logging::SetupLogFile(const std::shared_ptr<Args> args, const fs::path& path) {
+void Logging::SetupLogFile(std::shared_ptr<const Args> args,
+                           const fs::path& path) {
   TextFileBackend backend = SetupTextfileBackend(args, path);
   backend->auto_flush(args->auto_flush_log());
 
@@ -114,7 +115,7 @@ void Logging::SetupLogFile(const std::shared_ptr<Args> args, const fs::path& pat
   }
 }
 
-void Logging::WriteLogHeader(const std::shared_ptr<Args> args) {
+void Logging::WriteLogHeader(std::shared_ptr<const Args> args) {
   std::stringstream ss;
 
   char* user_name = getenv("USER");

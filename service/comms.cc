@@ -7,8 +7,8 @@
 #include "boost/algorithm/string.hpp"
 #include "boost/array.hpp"
 #include "boost/asio.hpp"
-//#include "boost/bind.hpp"
-//#include "boost/date_time/posix_time/posix_time.hpp"
+// #include "boost/bind.hpp"
+// #include "boost/date_time/posix_time/posix_time.hpp"
 
 /*void print(const boost::system::error_code&) {
   std::cout << "async waited" << std::endl;
@@ -33,14 +33,15 @@ namespace osoa {
 
 // http://www.iana.org/assignments/service-names-port-numbers/
 //   service-names-port-numbers.xhtml?&page=125
-const int base_port = 35007; // to 35353 unassigned (2014-02-02)
+const int base_port = 35007;  // to 35353 unassigned (2014-02-02)
 const int listening_port = base_port + 0;
 
 // Iterative Server (handle one connection at a time).
 int Comms::Publish() {
   try {
     asio::io_service io_service;
-    tcp::acceptor acceptor(io_service, tcp::endpoint(tcp::v4(), listening_port));
+    tcp::acceptor acceptor(io_service,
+                           tcp::endpoint(tcp::v4(), listening_port));
 
     int connections = 0;
     for (;;) {
@@ -63,7 +64,7 @@ int Comms::Publish() {
 int Comms::Subscribe(const std::vector<std::string>& subscriptions) {
   asio::io_service io_service;
 
-  for (auto& subscription : subscriptions ) {
+  for (auto& subscription : subscriptions) {
     std::vector<std::string> server_service;
     boost::split(server_service, subscription, boost::is_any_of(":"));
     if (server_service.size() < 2)
@@ -82,9 +83,9 @@ int Comms::Subscribe(const std::vector<std::string>& subscriptions) {
         boost::system::error_code error;
 
         size_t len = socket.read_some(asio::buffer(buf), error);
-        if (error == asio::error::eof) 
+        if (error == asio::error::eof)
           break;
-        else if (error) // ie not boost::system::errc::success
+        else if (error)  // ie not boost::system::errc::success
           throw boost::system::system_error(error);
 
         std::cout.write(buf.data(), len);
@@ -95,7 +96,7 @@ int Comms::Subscribe(const std::vector<std::string>& subscriptions) {
       std::cerr << e.what() << std::endl;
     }
   }
-  
+
   return 0;
 }
 
@@ -115,11 +116,12 @@ int Comms::Subscribe(const std::vector<std::string>& subscriptions) {
 
   int count = 0;
   boost::asio::deadline_timer t3(io, boost::posix_time::seconds(1));
-  t3.async_wait(boost::bind(print_count, boost::asio::placeholders::error, &t3, &count));
+  t3.async_wait(boost::bind(print_count,
+    boost::asio::placeholders::error, &t3, &count));
 
   io.reset();
   io.run();
-  
+
   std::cout << "final countdown " << count << std::endl;
 }*/
 }  // namespace osoa

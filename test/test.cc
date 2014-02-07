@@ -7,7 +7,7 @@
 #include "boost/program_options.hpp"
 
 #include "service/args.h"
-#include "comms.h"
+#include "service/comms.h"
 #include "service/logging.h"
 
 namespace po = boost::program_options;
@@ -31,7 +31,7 @@ int Test::Initialize(int argc, const char *argv[]) {
   config.add_options()
     ("msg-count,o", msg_count_option, "number of msgs")
     ("publish,p", "open listening port")
-    ("subscriptions,s", subscriptions_option->multitoken(), 
+    ("subscriptions,s", subscriptions_option->multitoken(),
       "list of subscription(s)");
 
   return Service::Initialize(argc, argv);
@@ -53,7 +53,7 @@ int Test::Start() {
   for (int j = 0; j < msg_count();  ++j)
     BOOST_LOG_SEV(*lg, blt::debug)
       << "The quick brown fox jumped over the lazy dog.";
-  
+
   return 0;
 }
 
