@@ -41,6 +41,13 @@ int Service::Start() {
 
   set_svc_start_time(std::chrono::steady_clock::now());
 
+  Comms comms;
+
+  if (args()->var_map().count("services"))
+    comms.ResolveServices(args()->services());
+
+  if (args()->var_map().count("listening-ports"))
+    comms.Listen(args()->listening_ports());
 
   return 0;
 }

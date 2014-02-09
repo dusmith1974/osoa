@@ -27,6 +27,8 @@ Args::Args()
       auto_flush_log_(false),
       rotation_size_(1e2),
       verbose_(false),
+      listening_ports_{},
+      services_{},
       silent_(false) {
 }
 
@@ -43,6 +45,14 @@ int Args::Initialize(int argc, const char* argv[]) {
     new po::typed_value<decltype(config_file_)>(&config_file_);
   config_file_option->value_name("filename");
 
+  auto listening_ports_option =
+    new po::typed_value<decltype(listening_ports_)>(&listening_ports_);
+  listening_ports_option->value_name("{service_name|port}");
+
+  auto services_option =
+    new po::typed_value<decltype(services_)>(&services_);
+  services_option->value_name("{server:(service_name|port)}");
+
   generic().add_options()
     ("help,h", "show help message")
     ("version,V", "print version information")
@@ -52,7 +62,11 @@ int Args::Initialize(int argc, const char* argv[]) {
     ("log-dir,d", log_dir_option, "set loggng directory")
     ("no-log-file,n", "no logging to file")
     ("verbose,v", "set verbose logging")
-    ("silent,S", "minimal console logging");
+    ("silent,S", "minimal console logging")
+    ("listening-ports,p", listening_ports_option->multitoken(),
+      "open listening port(s)")
+    ("services,s", services_option->multitoken(),
+      "list of service(s)");
 
   auto rotation_size_option =
     new po::typed_value<decltype(rotation_size_)>(&rotation_size_);

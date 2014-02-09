@@ -29,47 +29,50 @@ void print_count(const boost::system::error_code&,
 namespace osoa {
 
 // Iterative Server (handle one connection at a time).
-int Comms::Publish() {
-  try {
-    asio::io_service io_service;
+int Comms::Listen(const std::vector<std::string>& ports) {
+  asio::io_service io_service;
+  
+  for (auto& port : ports) {
+    try {
+      tcp::resolver resolver(io_service);
+      tcp::resolver::query query(tcp::v4(), "127.0.0.1", port);
+      tcp::resolver::iterator endpoint_iterator = resolver.resolve(query);
+      
+      // http://www.iana.org/assignments/service-names-port-numbers/
+      //   service-names-port-numbers.xhtml?&page=125
+      int port_number = 0;
+      for (; endpoint_iterator != tcp::resolver::iterator(); ++ endpoint_iterator)
+        port_number = endpoint_iterator->endpoint().port();
 
-    tcp::resolver resolver(io_service);
-    tcp::resolver::query query(tcp::v4(), "127.0.0.1", "osoa");
-    tcp::resolver::iterator endpoint_iterator = resolver.resolve(query);
-    
-    // http://www.iana.org/assignments/service-names-port-numbers/
-    //   service-names-port-numbers.xhtml?&page=125
-    int port = 0;
-    for (; endpoint_iterator != tcp::resolver::iterator(); ++ endpoint_iterator)
-      port = endpoint_iterator->endpoint().port();
+      tcp::acceptor acceptor(io_service,
+                             tcp::endpoint(tcp::v4(), port_number));
 
-    tcp::acceptor acceptor(io_service,
-                           tcp::endpoint(tcp::v4(), port));
+      int connections = 0;
+      for (;;) {
+        tcp::socket socket(io_service);
+        acceptor.accept(socket);
 
-    int connections = 0;
-    for (;;) {
-      tcp::socket socket(io_service);
-      acceptor.accept(socket);
+        std::stringstream ss;
+        ss << "OSOA comms connection: " << ++connections;
 
-      std::stringstream ss;
-      ss << "OSOA comms connection: " << ++connections;
-
-      boost::system::error_code ignored_error;
-      asio::write(socket, asio::buffer(ss.str()), ignored_error);
+        boost::system::error_code ignored_error;
+        asio::write(socket, asio::buffer(ss.str()), ignored_error);
+      }
+    } catch (std::exception& e) {
+      std::cerr << e.what() << std::endl;
     }
-  } catch (std::exception& e) {
-    std::cerr << e.what() << std::endl;
   }
+
   return 0;
 }
 
 // Make a synchronous connection.
-int Comms::Subscribe(const std::vector<std::string>& subscriptions) {
+int Comms::ResolveServices(const std::vector<std::string>& services) {
   asio::io_service io_service;
 
-  for (auto& subscription : subscriptions) {
+  for (auto& service : services) {
     std::vector<std::string> server_service;
-    boost::split(server_service, subscription, boost::is_any_of(":"));
+    boost::split(server_service, service, boost::is_any_of(":"));
     if (server_service.size() < 2)
       continue;
 
@@ -83,6 +86,7 @@ int Comms::Subscribe(const std::vector<std::string>& subscriptions) {
         std::make_shared<tcp::resolver::iterator>(resolver.resolve(query)));
 
       tcp::socket socket(io_service);
+
       asio::connect(socket, endpoint_iterator);
 
       for (;;) {

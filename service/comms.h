@@ -27,8 +27,8 @@ class Comms : boost::noncopyable {
   Comms() : service_map_{} {}
   ~Comms() {}
 
-  int Publish();
-  int Subscribe(const std::vector<std::string>& subscriptions);
+  int Listen(const std::vector<std::string>& ports);
+  int ResolveServices(const std::vector<std::string>& services);
  
   const ServiceMap& service_map() const { return service_map_; }
 

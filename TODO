@@ -1,3 +1,5 @@
+specify listening port in arg
+mv Publish to Listen, Subscribe to Connect
 sigslot to handle subscription feed
 log comms cx/dx server
 log errors

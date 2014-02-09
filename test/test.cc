@@ -14,7 +14,7 @@ namespace po = boost::program_options;
 
 namespace osoa {
 
-Test::Test() : msg_count_(10), subscriptions_{} {}
+Test::Test() : msg_count_(10) {}
 Test::~Test() {}
 
 int Test::Initialize(int argc, const char *argv[]) {
@@ -24,15 +24,8 @@ int Test::Initialize(int argc, const char *argv[]) {
     new po::typed_value<decltype(msg_count_)>(&msg_count_);
   msg_count_option->value_name("number");
 
-  auto subscriptions_option =
-    new po::typed_value<decltype(subscriptions_)>(&subscriptions_);
-  subscriptions_option->value_name("{server:service}");
-
   config.add_options()
-    ("msg-count,o", msg_count_option, "number of msgs")
-    ("publish,p", "open listening port")
-    ("subscriptions,s", subscriptions_option->multitoken(),
-      "list of subscription(s)");
+    ("msg-count,o", msg_count_option, "number of msgs");
 
   return Service::Initialize(argc, argv);
 }
@@ -40,14 +33,6 @@ int Test::Initialize(int argc, const char *argv[]) {
 int Test::Start() {
   int result = super::Start();
   if (0 != result) return result;
-
-  Comms comms;
-
-  if (args()->var_map().count("subscriptions"))
-    comms.Subscribe(subscriptions());
-
-  if (args()->var_map().count("publish"))
-    comms.Publish();
 
   auto lg = logging()->svc_logger();
   for (int j = 0; j < msg_count();  ++j)

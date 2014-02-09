@@ -28,6 +28,14 @@ class Args : boost::noncopyable {
   bool auto_flush_log() const { return auto_flush_log_; }
   int rotation_size() const { return rotation_size_; }
 
+  const std::vector<std::string> listening_ports() const {
+    return listening_ports_;
+  }
+
+  const std::vector<std::string> services() const {
+    return services_;
+  }
+
   bool verbose() const { return verbose_; }
   bool silent() const { return silent_; }
 
@@ -73,6 +81,9 @@ class Args : boost::noncopyable {
 
   bool verbose_;
   void set_verbose(bool val) { verbose_ = val; }
+
+  std::vector<std::string> listening_ports_;
+  std::vector<std::string> services_;
 
   bool silent_;
   void set_silent(bool val) { silent_ = val; }

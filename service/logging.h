@@ -16,8 +16,8 @@ namespace src = boost::log::sources;
 namespace sinks = boost::log::sinks;
 namespace blt = boost::log::trivial;
 
-typedef sinks::synchronous_sink<sinks::text_file_backend> SyncSink;
 typedef sinks::asynchronous_sink<sinks::text_file_backend> AsyncSink;
+typedef sinks::synchronous_sink<sinks::text_file_backend> SyncSink;
 typedef boost::shared_ptr<sinks::text_file_backend> TextFileBackend;
 
 namespace osoa {

@@ -39,6 +39,7 @@ class Service {
   timepoint svc_end_time_;
   void set_svc_end_time(const timepoint& val) { svc_end_time_ = val; }
   const timepoint& svc_end_time() { return svc_end_time_; }
+
 };
 
 }  // namespace osoa
