@@ -1,3 +1,8 @@
+sigslot to handle subscription feed
+log comms cx/dx server
+log errors
+resolve all services in base class and keep sockets in service map
+make requests to iterative server (from map)
 use prog_opt implicit for default values
 use prog_opt handlers()
 prog_opt multitoken for pub/sub lists into vec
