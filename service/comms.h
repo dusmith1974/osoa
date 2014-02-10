@@ -30,6 +30,8 @@ class Comms : boost::noncopyable {
   int Listen(const std::vector<std::string>& ports);
   int ResolveServices(const std::vector<std::string>& services);
  
+  void Connect(const std::string& service) const;
+
   const ServiceMap& service_map() const { return service_map_; }
 
  private:

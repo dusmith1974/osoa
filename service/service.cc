@@ -49,6 +49,8 @@ int Service::Start() {
   if (args()->var_map().count("listening-ports"))
     comms.Listen(args()->listening_ports());
 
+  comms.Connect("osoa");
+
   return 0;
 }
 

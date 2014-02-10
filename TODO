@@ -1,10 +1,14 @@
-specify listening port in arg
++ 127.0.0.1 not found (when not connected to network?)
++ failover services
++ const member functions
+resolve all services in base class and keep sockets in service map
+" for listening ports
 mv Publish to Listen, Subscribe to Connect
 sigslot to handle subscription feed
 log comms cx/dx server
 log errors
-resolve all services in base class and keep sockets in service map
-make requests to iterative server (from map)
+log connections
+make requests to iterative server (from map) (connect)
 use prog_opt implicit for default values
 use prog_opt handlers()
 prog_opt multitoken for pub/sub lists into vec

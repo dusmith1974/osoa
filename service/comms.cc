@@ -41,7 +41,8 @@ int Comms::Listen(const std::vector<std::string>& ports) {
       // http://www.iana.org/assignments/service-names-port-numbers/
       //   service-names-port-numbers.xhtml?&page=125
       int port_number = 0;
-      for (; endpoint_iterator != tcp::resolver::iterator(); ++ endpoint_iterator)
+      for (; endpoint_iterator != tcp::resolver::iterator(); 
+            ++ endpoint_iterator)
         port_number = endpoint_iterator->endpoint().port();
 
       tcp::acceptor acceptor(io_service,
@@ -81,7 +82,7 @@ int Comms::ResolveServices(const std::vector<std::string>& services) {
       tcp::resolver::query query(server_service[0], server_service[1]);
       tcp::resolver::iterator endpoint_iterator = resolver.resolve(query);
 
-      service_map()[server_service[0]] = std::make_pair(
+      service_map()[server_service[1]] = std::make_pair(
         std::make_shared<tcp::socket>(io_service), 
         std::make_shared<tcp::resolver::iterator>(resolver.resolve(query)));
 
@@ -109,6 +110,31 @@ int Comms::ResolveServices(const std::vector<std::string>& services) {
   }
 
   return 0;
+}
+
+void Comms::Connect(const std::string& service) const {
+  for (const auto& socket_pair : service_map()) {
+    if (socket_pair.first == service) {
+      asio::connect(*socket_pair.second.first, *socket_pair.second.second);
+
+      for (;;) {
+        boost::array<char, 128> buf;
+        boost::system::error_code error;
+
+        size_t len = socket_pair.second.first->read_some(asio::buffer(buf),
+                                                         error);
+        if (error == asio::error::eof)
+          break;
+        else if (error)  // ie not boost::system::errc::success
+          throw boost::system::system_error(error);
+
+        std::cout.write(buf.data(), len);
+      }
+
+      std::cout << std::endl;
+      break;
+    }
+  }
 }
 
 /*void Comms::Test() {
