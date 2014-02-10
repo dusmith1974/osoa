@@ -24,7 +24,7 @@ typedef std::map<std::string, SocketPointPair> ServiceMap;
 
 class Comms : boost::noncopyable {
  public:
-  Comms() : service_map_{} {}
+  Comms() : io_service_(), service_map_{} {}
   ~Comms() {}
 
   int Listen(const std::vector<std::string>& ports);
@@ -35,6 +35,9 @@ class Comms : boost::noncopyable {
   const ServiceMap& service_map() const { return service_map_; }
 
  private:
+  asio::io_service io_service_;
+  asio::io_service& io_service() { return io_service_; }
+  
   ServiceMap service_map_;
   ServiceMap& service_map() { return service_map_; }
 };

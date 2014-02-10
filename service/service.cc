@@ -19,7 +19,8 @@ Service::Service() :
   args_(new Args()),
   logging_(new Logging()),
   svc_start_time_(std::chrono::steady_clock::now()),
-  svc_end_time_(std::chrono::steady_clock::now()) {}
+  svc_end_time_(std::chrono::steady_clock::now()),
+  comms_(std::make_shared<Comms>()) {}
 
 Service::~Service() {
 }
@@ -41,15 +42,17 @@ int Service::Start() {
 
   set_svc_start_time(std::chrono::steady_clock::now());
 
-  Comms comms;
 
   if (args()->var_map().count("services"))
-    comms.ResolveServices(args()->services());
+    comms_->ResolveServices(args()->services());
 
   if (args()->var_map().count("listening-ports"))
-    comms.Listen(args()->listening_ports());
+    comms_->Listen(args()->listening_ports());
 
-  comms.Connect("osoa");
+  comms_->Connect("osoa");
+  comms_->Connect("osoa");
+  comms_->Connect("daytime");
+  comms_->Connect("daytime");
 
   return 0;
 }

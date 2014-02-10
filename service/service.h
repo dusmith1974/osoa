@@ -12,6 +12,7 @@ typedef std::chrono::time_point<std::chrono::steady_clock> timepoint;
 
 class Args;
 class Logging;
+class Comms;
 
 class Service {
  public:
@@ -40,6 +41,7 @@ class Service {
   void set_svc_end_time(const timepoint& val) { svc_end_time_ = val; }
   const timepoint& svc_end_time() { return svc_end_time_; }
 
+  std::shared_ptr<Comms> comms_;
 };
 
 }  // namespace osoa
