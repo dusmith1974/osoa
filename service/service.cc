@@ -44,15 +44,10 @@ int Service::Start() {
 
 
   if (args()->var_map().count("services"))
-    comms_->ResolveServices(args()->services());
+    comms()->ResolveServices(args()->services());
 
   if (args()->var_map().count("listening-ports"))
-    comms_->Listen(args()->listening_ports());
-
-  comms_->Connect("osoa");
-  comms_->Connect("osoa");
-  comms_->Connect("daytime");
-  comms_->Connect("daytime");
+    comms()->Listen(args()->listening_ports());
 
   return 0;
 }

@@ -27,6 +27,7 @@ class Service {
  protected:
   std::shared_ptr<Args> args() { return args_; }
   std::shared_ptr<Logging> logging() { return logging_; }
+  std::shared_ptr<Comms> comms() { return comms_; }
 
  private:
   std::shared_ptr<Args> args_;

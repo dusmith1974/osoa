@@ -39,6 +39,11 @@ int Test::Start() {
     BOOST_LOG_SEV(*lg, blt::debug)
       << "The quick brown fox jumped over the lazy dog.";
 
+  comms()->Connect("osoa");
+  comms()->Connect("osoa");
+  comms()->Connect("daytime");
+  comms()->Connect("daytime");
+
   return 0;
 }
 
