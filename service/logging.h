@@ -16,26 +16,20 @@ namespace src = boost::log::sources;
 namespace sinks = boost::log::sinks;
 namespace blt = boost::log::trivial;
 
-typedef sinks::asynchronous_sink<sinks::text_file_backend> AsyncSink;
-typedef sinks::synchronous_sink<sinks::text_file_backend> SyncSink;
-typedef boost::shared_ptr<sinks::text_file_backend> TextFileBackend;
-
 namespace osoa {
 
 class Args;
 
 class Logging : boost::noncopyable {
  public:
+  typedef sinks::asynchronous_sink<sinks::text_file_backend> AsyncSink;
+
   Logging();
   ~Logging();
 
+  static const std::string& log_header() { return Logging::log_header_; }
+
   int Initialize(std::shared_ptr<const Args> args);
-
-  TextFileBackend SetupTextfileBackend(std::shared_ptr<const Args> args,
-                                       const fs::path& path);
-
-  void SetupLogFile(std::shared_ptr<const Args> args, const fs::path& path);
-  void WriteLogHeader(std::shared_ptr<const Args> args);
 
   std::shared_ptr<src::severity_logger_mt<blt::severity_level>> svc_logger() {
     return svc_logger_;
@@ -43,12 +37,21 @@ class Logging : boost::noncopyable {
 
   boost::shared_ptr<AsyncSink> async_sink() { return async_sink_; }
 
-  static const std::string& log_header() { return Logging::log_header_; }
+ private:
+  typedef sinks::synchronous_sink<sinks::text_file_backend> SyncSink;
+  typedef boost::shared_ptr<sinks::text_file_backend> TextFileBackend;
+  
+  void SetupLogFile(std::shared_ptr<const Args> args, const fs::path& path);
+  void WriteLogHeader(std::shared_ptr<const Args> args);
+
+  TextFileBackend SetupTextfileBackend(std::shared_ptr<const Args> args,
+                                       const fs::path& path);
+  
+  
   static void set_log_header(const std::string& val) {
     Logging::log_header_ = val;
   }
 
- private:
   std::shared_ptr<
     src::severity_logger_mt<boost::log::trivial::severity_level>> svc_logger_;
 

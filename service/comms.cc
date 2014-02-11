@@ -6,24 +6,6 @@
 
 #include "boost/algorithm/string.hpp"
 #include "boost/array.hpp"
-// #include "boost/bind.hpp"
-// #include "boost/date_time/posix_time/posix_time.hpp"
-
-/*void print(const boost::system::error_code&) {
-  std::cout << "async waited" << std::endl;
-}
-
-void print_count(const boost::system::error_code&,
-                 boost::asio::deadline_timer* t,
-                 int* count) {
-  if (*count < 5) {
-    std::cout << "count " << *count << std::endl;
-    ++(*count);
-
-    t->expires_at(t->expires_at() + boost::posix_time::seconds(1));
-    t->async_wait(boost::bind(print_count, boost::asio::placeholders::error, t, count));
-  }
-}*/
 
 
 namespace osoa {
@@ -83,21 +65,6 @@ int Comms::ResolveServices(const std::vector<std::string>& services) {
 
       tcp::socket socket(io_service_);
 
-      /*asio::connect(socket, endpoint_iterator);
-
-      for (;;) {
-        boost::array<char, 128> buf;
-        boost::system::error_code error;
-
-        size_t len = socket.read_some(asio::buffer(buf), error);
-        if (error == asio::error::eof)
-          break;
-        else if (error)  // ie not boost::system::errc::success
-          throw boost::system::system_error(error);
-
-        std::cout.write(buf.data(), len);
-      }*/
-
       std::cout << std::endl;
     } catch (std::exception& e) {
       std::cerr << e.what() << std::endl;
@@ -135,6 +102,27 @@ void Comms::Connect(const std::string& service) const {
     }
   }
 }
+}  // namespace osoa
+
+// Timer examples
+// #include "boost/bind.hpp"
+// #include "boost/date_time/posix_time/posix_time.hpp"
+
+/*void print(const boost::system::error_code&) {
+  std::cout << "async waited" << std::endl;
+}
+
+void print_count(const boost::system::error_code&,
+                 boost::asio::deadline_timer* t,
+                 int* count) {
+  if (*count < 5) {
+    std::cout << "count " << *count << std::endl;
+    ++(*count);
+
+    t->expires_at(t->expires_at() + boost::posix_time::seconds(1));
+    t->async_wait(boost::bind(print_count, boost::asio::placeholders::error, t, count));
+  }
+}*/
 
 /*void Comms::Test() {
   // sync wait
@@ -160,4 +148,3 @@ void Comms::Connect(const std::string& service) const {
 
   std::cout << "final countdown " << count << std::endl;
 }*/
-}  // namespace osoa

@@ -15,6 +15,7 @@ namespace po = boost::program_options;
 namespace osoa {
 
 Test::Test() : msg_count_(10) {}
+
 Test::~Test() {}
 
 int Test::Initialize(int argc, const char *argv[]) {

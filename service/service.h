@@ -8,8 +8,6 @@
 
 namespace osoa {
 
-typedef std::chrono::time_point<std::chrono::steady_clock> timepoint;
-
 class Args;
 class Logging;
 class Comms;
@@ -30,6 +28,8 @@ class Service {
   std::shared_ptr<Comms> comms() { return comms_; }
 
  private:
+  typedef std::chrono::time_point<std::chrono::steady_clock> timepoint;
+
   std::shared_ptr<Args> args_;
 
   std::shared_ptr<Logging> logging_;

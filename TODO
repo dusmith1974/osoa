@@ -1,6 +1,11 @@
-+ 127.0.0.1 not found (when not connected to network?)
-+ failover services
-+ const member functions
+final, override, h in h
+function order -> impl order && const fn && comments
+keep unique_ptrs, pass ref for usage (keep owndership)
+unnamed namespace for helper functions
+factory functions for Init classes
+127.0.0.1 not found (when not connected to network?)
+failover services
+const member functions
 resolve all services in base class and keep sockets in service map
 " for listening ports
 mv Publish to Listen, Subscribe to Connect

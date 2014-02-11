@@ -17,11 +17,6 @@ namespace osoa {
 namespace asio = boost::asio;
 using boost::asio::ip::tcp;
 
-typedef std::pair<std::shared_ptr<tcp::socket>, 
-                  std::shared_ptr<tcp::resolver::iterator>> SocketPointPair;
-
-typedef std::map<std::string, SocketPointPair> ServiceMap;
-
 class Comms : boost::noncopyable {
  public:
   Comms() : io_service_(), service_map_{} {}
@@ -32,9 +27,15 @@ class Comms : boost::noncopyable {
  
   void Connect(const std::string& service) const;
 
-  const ServiceMap& service_map() const { return service_map_; }
 
  private:
+  typedef std::pair<std::shared_ptr<tcp::socket>, 
+                    std::shared_ptr<tcp::resolver::iterator>> SocketPointPair;
+                    
+  typedef std::map<std::string, SocketPointPair> ServiceMap;
+
+  const ServiceMap& service_map() const { return service_map_; }
+
   asio::io_service io_service_;
   asio::io_service& io_service() { return io_service_; }
   

@@ -14,8 +14,6 @@ namespace osoa {
 
 class Test final : public Service, private boost::noncopyable {
  public:
-  typedef Service super;
-
   Test();
   virtual ~Test();
 
@@ -25,10 +23,12 @@ class Test final : public Service, private boost::noncopyable {
   int Stop() override;
 
  private:
-  int msg_count_;
+  typedef Service super;
+
   int msg_count() { return msg_count_; }
+
+  int msg_count_;
 };
 
 }  // namespace osoa
 #endif  // TEST_TEST_H_
-

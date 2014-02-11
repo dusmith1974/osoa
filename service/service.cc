@@ -15,12 +15,12 @@ namespace osoa {
 
 namespace blt = boost::log::trivial;
 
-Service::Service() :
-  args_(new Args()),
-  logging_(new Logging()),
-  svc_start_time_(std::chrono::steady_clock::now()),
-  svc_end_time_(std::chrono::steady_clock::now()),
-  comms_(std::make_shared<Comms>()) {}
+Service::Service() 
+    : args_(new Args()),
+      logging_(new Logging()),
+      svc_start_time_(std::chrono::steady_clock::now()),
+      svc_end_time_(std::chrono::steady_clock::now()),
+      comms_(std::make_shared<Comms>()) {}
 
 Service::~Service() {
 }

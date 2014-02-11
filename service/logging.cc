@@ -61,9 +61,9 @@ void SetupSink(T sink) {
   bl::core::get()->add_sink(sink);
 }
 
-Logging::Logging() :
-  svc_logger_(new src::severity_logger_mt<blt::severity_level>()),
-  async_sink_(nullptr) {}
+Logging::Logging() 
+    : svc_logger_(new src::severity_logger_mt<blt::severity_level>()),
+      async_sink_(nullptr) {}
 
 Logging::~Logging() {
 }
@@ -90,8 +90,9 @@ int Logging::Initialize(std::shared_ptr<const Args> args) {
   return 0;
 }
 
-TextFileBackend Logging::SetupTextfileBackend(std::shared_ptr<const Args> args,
-                                              const fs::path& path) {
+Logging::TextFileBackend Logging::SetupTextfileBackend(
+    std::shared_ptr<const Args> args,
+    const fs::path& path) {
   return boost::make_shared<sinks::text_file_backend>(
     bl::keywords::file_name = path.string() +
       "_%Y-%m-%d_%H-%M-%S.%N.log",
