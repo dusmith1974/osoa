@@ -15,7 +15,7 @@ class Comms;
 class Service {
  public:
   Service();
-  virtual ~Service();
+  virtual ~Service() {}
 
   virtual int Initialize(int argc, const char *argv[]);
 
@@ -30,18 +30,17 @@ class Service {
  private:
   typedef std::chrono::time_point<std::chrono::steady_clock> timepoint;
 
-  std::shared_ptr<Args> args_;
+  const timepoint& svc_start_time() const { return svc_start_time_; }
+  void set_svc_start_time(const timepoint& val) { svc_start_time_ = val; }
 
-  std::shared_ptr<Logging> logging_;
+  const timepoint& svc_end_time() const { return svc_end_time_; }
+  void set_svc_end_time(const timepoint& val) { svc_end_time_ = val; }
 
   timepoint svc_start_time_;
-  void set_svc_start_time(const timepoint& val) { svc_start_time_ = val; }
-  const timepoint& svc_start_time() { return svc_start_time_; }
-
   timepoint svc_end_time_;
-  void set_svc_end_time(const timepoint& val) { svc_end_time_ = val; }
-  const timepoint& svc_end_time() { return svc_end_time_; }
 
+  std::shared_ptr<Args> args_;
+  std::shared_ptr<Logging> logging_;
   std::shared_ptr<Comms> comms_;
 };
 

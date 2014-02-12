@@ -1,4 +1,5 @@
-final, override, h in h
+fugitive git plugin for vim (& pathogen installer)
+final, override, minimum h in h
 function order -> impl order && const fn && comments
 keep unique_ptrs, pass ref for usage (keep owndership)
 unnamed namespace for helper functions

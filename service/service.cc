@@ -2,7 +2,7 @@
 
 #include "service/service.h"
 
-#include <iostream>
+//#include <iostream>
 
 #include "boost/log/core.hpp"
 
@@ -16,13 +16,11 @@ namespace osoa {
 namespace blt = boost::log::trivial;
 
 Service::Service() 
-    : args_(new Args()),
-      logging_(new Logging()),
-      svc_start_time_(std::chrono::steady_clock::now()),
+    : svc_start_time_(std::chrono::steady_clock::now()),
       svc_end_time_(std::chrono::steady_clock::now()),
-      comms_(std::make_shared<Comms>()) {}
-
-Service::~Service() {
+      args_(new Args()),
+      logging_(new Logging()),
+      comms_(std::make_shared<Comms>()) {
 }
 
 int Service::Initialize(int argc, const char *argv[]) {
@@ -41,7 +39,6 @@ int Service::Start() {
   BOOST_LOG_SEV(*lg, blt::debug) << "really Started the service.";
 
   set_svc_start_time(std::chrono::steady_clock::now());
-
 
   if (args()->var_map().count("services"))
     comms()->ResolveServices(args()->services());
@@ -72,4 +69,5 @@ int Service::Stop() {
 
   return 0;
 }
+
 }  // namespace osoa

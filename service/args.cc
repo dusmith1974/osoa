@@ -5,7 +5,6 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
-#include <string>
 
 namespace po = boost::program_options;
 
@@ -15,24 +14,21 @@ const int Args::version_major_no_ = 0;
 const int Args::version_minor_no_ = 1;
 
 Args::Args()
-    : generic_(new po::options_description("Genric Options:")),
-      config_(new po::options_description("Configuration:")),
-      hidden_(new po::options_description("Hidden Options:")),
-      var_map_(new po::variables_map()),
-      log_dir_(""),
-      module_path_(""),
-      no_log_file_(false),
+    : module_path_(""),
       config_file_(""),
+      log_dir_(""),
+      no_log_file_(false),
+      verbose_(false),
+      silent_(false),
+      listening_ports_{},
+      services_{},
       async_log_(false),
       auto_flush_log_(false),
       rotation_size_(1e2),
-      verbose_(false),
-      listening_ports_{},
-      services_{},
-      silent_(false) {
-}
-
-Args::~Args() {
+      config_(new po::options_description("Configuration:")),
+      generic_(new po::options_description("Genric Options:")),
+      hidden_(new po::options_description("Hidden Options:")),
+      var_map_(new po::variables_map()) {
 }
 
 int Args::Initialize(int argc, const char* argv[]) {
@@ -124,7 +120,7 @@ int Args::Initialize(int argc, const char* argv[]) {
   return 0;
 }
 
-std::string Args::Version() {
+const std::string Args::Version() const {
   std::stringstream ss;
   ss << "osoa " << std::to_string(version_major_no()) << "."
     << version_minor_no() << std::endl

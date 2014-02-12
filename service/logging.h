@@ -27,9 +27,9 @@ class Logging : boost::noncopyable {
   Logging();
   ~Logging();
 
-  static const std::string& log_header() { return Logging::log_header_; }
-
   int Initialize(std::shared_ptr<const Args> args);
+
+  static const std::string& log_header() { return Logging::log_header_; }
 
   std::shared_ptr<src::severity_logger_mt<blt::severity_level>> svc_logger() {
     return svc_logger_;
@@ -47,17 +47,16 @@ class Logging : boost::noncopyable {
   TextFileBackend SetupTextfileBackend(std::shared_ptr<const Args> args,
                                        const fs::path& path);
   
-  
   static void set_log_header(const std::string& val) {
     Logging::log_header_ = val;
   }
+
+  static std::string log_header_;
 
   std::shared_ptr<
     src::severity_logger_mt<boost::log::trivial::severity_level>> svc_logger_;
 
   boost::shared_ptr<AsyncSink> async_sink_;
-
-  static std::string log_header_;
 };
 
 }  // namespace osoa

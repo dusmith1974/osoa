@@ -7,7 +7,6 @@
 #include "boost/algorithm/string.hpp"
 #include "boost/array.hpp"
 
-
 namespace osoa {
 
 // Iterative Server (handle one connection at a time).
@@ -102,6 +101,7 @@ void Comms::Connect(const std::string& service) const {
     }
   }
 }
+
 }  // namespace osoa
 
 // Timer examples

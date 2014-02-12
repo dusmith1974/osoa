@@ -3,9 +3,6 @@
 #ifndef TEST_TEST_H_
 #define TEST_TEST_H_
 
-#include <string>
-#include <vector>
-
 #include "boost/noncopyable.hpp"
 
 #include "service/service.h"
@@ -14,8 +11,8 @@ namespace osoa {
 
 class Test final : public Service, private boost::noncopyable {
  public:
-  Test();
-  virtual ~Test();
+  Test() : msg_count_(10) {}
+  virtual ~Test() {}
 
   int Initialize(int argc, const char *argv[]) override;
 

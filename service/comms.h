@@ -27,20 +27,19 @@ class Comms : boost::noncopyable {
  
   void Connect(const std::string& service) const;
 
-
  private:
   typedef std::pair<std::shared_ptr<tcp::socket>, 
                     std::shared_ptr<tcp::resolver::iterator>> SocketPointPair;
                     
   typedef std::map<std::string, SocketPointPair> ServiceMap;
 
-  const ServiceMap& service_map() const { return service_map_; }
-
-  asio::io_service io_service_;
   asio::io_service& io_service() { return io_service_; }
   
-  ServiceMap service_map_;
   ServiceMap& service_map() { return service_map_; }
+  const ServiceMap& service_map() const { return service_map_; }
+  
+  asio::io_service io_service_;
+  ServiceMap service_map_;
 };
 
 }  // namespace osoa
