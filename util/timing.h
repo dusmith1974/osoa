@@ -4,9 +4,8 @@
 #define UTIL_TIMING_H_
 
 #include <chrono>
-#include <iostream>
-#include <utility>
 #include <string>
+#include <utility>
 
 namespace osoa {
 

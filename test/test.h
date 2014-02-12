@@ -12,7 +12,7 @@ namespace osoa {
 class Test final : public Service, private boost::noncopyable {
  public:
   Test() : msg_count_(10) {}
-  virtual ~Test() {}
+  ~Test() {}
 
   int Initialize(int argc, const char *argv[]) override;
 

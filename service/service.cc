@@ -2,8 +2,6 @@
 
 #include "service/service.h"
 
-//#include <iostream>
-
 #include "boost/log/core.hpp"
 
 #include "service/args.h"
@@ -15,7 +13,7 @@ namespace osoa {
 
 namespace blt = boost::log::trivial;
 
-Service::Service() 
+Service::Service()
     : svc_start_time_(std::chrono::steady_clock::now()),
       svc_end_time_(std::chrono::steady_clock::now()),
       args_(new Args()),

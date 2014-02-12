@@ -4,7 +4,6 @@
 
 #include <iostream>
 #include <sstream>
-#include <string>
 
 #include "boost/asio/ip/host_name.hpp"
 #include "boost/log/attributes/current_process_name.hpp"
@@ -24,10 +23,13 @@ namespace osoa {
 
 std::string Logging::log_header_("");
 
+namespace {
 void RotateHeader(sinks::text_file_backend::stream_type& file) {  // NOLINT
   file << Logging::log_header() << std::endl;
 }
+}  // namespace
 
+namespace {
 fs::path GetFullPath(std::shared_ptr<const Args> args) {
   fs::path full_path(args->module_path());
   fs::path leaf(full_path.filename().string());
@@ -38,7 +40,9 @@ fs::path GetFullPath(std::shared_ptr<const Args> args) {
 
   return full_path;
 }
+}  // namespace
 
+namespace {
 template<typename T>
 void SetupSink(T sink) {
   if (nullptr == sink) return;
@@ -60,13 +64,11 @@ void SetupSink(T sink) {
   sink->locked_backend()->set_open_handler(&RotateHeader);
   bl::core::get()->add_sink(sink);
 }
+}  // namespace
 
-Logging::Logging() 
+Logging::Logging()
     : svc_logger_(new src::severity_logger_mt<blt::severity_level>()),
       async_sink_(nullptr) {}
-
-Logging::~Logging() {
-}
 
 int Logging::Initialize(std::shared_ptr<const Args> args) {
   bl::add_common_attributes();
@@ -90,17 +92,6 @@ int Logging::Initialize(std::shared_ptr<const Args> args) {
   return 0;
 }
 
-Logging::TextFileBackend Logging::SetupTextfileBackend(
-    std::shared_ptr<const Args> args,
-    const fs::path& path) {
-  return boost::make_shared<sinks::text_file_backend>(
-    bl::keywords::file_name = path.string() +
-      "_%Y-%m-%d_%H-%M-%S.%N.log",
-    bl::keywords::rotation_size = args->rotation_size() * 1024 * 1024,
-    bl::keywords::time_based_rotation =
-      sinks::file::rotation_at_time_point(0, 0, 0));
-}
-
 void Logging::SetupLogFile(std::shared_ptr<const Args> args,
                            const fs::path& path) {
   TextFileBackend backend = SetupTextfileBackend(args, path);
@@ -116,7 +107,7 @@ void Logging::SetupLogFile(std::shared_ptr<const Args> args,
   }
 }
 
-void Logging::WriteLogHeader(std::shared_ptr<const Args> args) {
+void Logging::WriteLogHeader(std::shared_ptr<const Args> args) const {
   std::stringstream ss;
 
   char* user_name = getenv("USER");
@@ -153,4 +144,16 @@ void Logging::WriteLogHeader(std::shared_ptr<const Args> args) {
 
   set_log_header(ss.str());
 }
+
+const Logging::TextFileBackend Logging::SetupTextfileBackend(
+    std::shared_ptr<const Args> args,
+    const fs::path& path) const {
+  return boost::make_shared<sinks::text_file_backend>(
+    bl::keywords::file_name = path.string() +
+      "_%Y-%m-%d_%H-%M-%S.%N.log",
+    bl::keywords::rotation_size = args->rotation_size() * 1024 * 1024,
+    bl::keywords::time_based_rotation =
+      sinks::file::rotation_at_time_point(0, 0, 0));
+}
+
 }  // namespace osoa

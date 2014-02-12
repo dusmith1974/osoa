@@ -5,6 +5,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "boost/noncopyable.hpp"
 #include "boost/program_options.hpp"
@@ -13,16 +14,16 @@ namespace osoa {
 
 namespace po = boost::program_options;
 
-class Args : boost::noncopyable {
+class Args final : boost::noncopyable {
  public:
   Args();
-  virtual ~Args() {}
+  ~Args() {}
 
   int Initialize(int argc, const char* argv[]);
 
   // Generic options.
   const std::string& config_file() const { return config_file_; }
-  
+
   // Configuration options.
   const std::string& log_dir() const { return log_dir_; }
   bool no_log_file() const { return no_log_file_; }
@@ -32,7 +33,7 @@ class Args : boost::noncopyable {
   const std::vector<std::string> listening_ports() const {
     return listening_ports_;
   }
-  
+
   const std::vector<std::string> services() const {
     return services_;
   }
@@ -56,7 +57,7 @@ class Args : boost::noncopyable {
   int version_minor_no() const { return version_minor_no_; }
 
   void set_module_path(const std::string& val) { module_path_ = val; }
-  
+
   // Configuration options.
   void set_no_log_file(bool val) { no_log_file_ = val; }
   void set_verbose(bool val) { verbose_ = val; }

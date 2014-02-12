@@ -16,10 +16,10 @@ int Comms::Listen(const std::vector<std::string>& ports) {
       tcp::resolver resolver(io_service());
       tcp::resolver::query query(tcp::v4(), "127.0.0.1", port);
       tcp::resolver::iterator endpoint_iterator = resolver.resolve(query);
-      
+
       int port_number = 0;
-      for (; endpoint_iterator != tcp::resolver::iterator(); 
-            ++ endpoint_iterator)
+      for (; endpoint_iterator != tcp::resolver::iterator();
+            ++endpoint_iterator)
         port_number = endpoint_iterator->endpoint().port();
 
       tcp::acceptor acceptor(io_service(),
@@ -46,7 +46,6 @@ int Comms::Listen(const std::vector<std::string>& ports) {
 
 // Make a synchronous connection.
 int Comms::ResolveServices(const std::vector<std::string>& services) {
-
   for (auto& service : services) {
     std::vector<std::string> server_service;
     boost::split(server_service, service, boost::is_any_of(":"));
@@ -59,7 +58,7 @@ int Comms::ResolveServices(const std::vector<std::string>& services) {
       tcp::resolver::iterator endpoint_iterator = resolver.resolve(query);
 
       service_map()[server_service[1]] = std::make_pair(
-        std::make_shared<tcp::socket>(io_service()), 
+        std::make_shared<tcp::socket>(io_service()),
         std::make_shared<tcp::resolver::iterator>(resolver.resolve(query)));
 
       tcp::socket socket(io_service_);

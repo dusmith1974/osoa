@@ -20,12 +20,12 @@ namespace osoa {
 
 class Args;
 
-class Logging : boost::noncopyable {
+class Logging final : boost::noncopyable {
  public:
   typedef sinks::asynchronous_sink<sinks::text_file_backend> AsyncSink;
 
   Logging();
-  ~Logging();
+  ~Logging() {}
 
   int Initialize(std::shared_ptr<const Args> args);
 
@@ -40,13 +40,13 @@ class Logging : boost::noncopyable {
  private:
   typedef sinks::synchronous_sink<sinks::text_file_backend> SyncSink;
   typedef boost::shared_ptr<sinks::text_file_backend> TextFileBackend;
-  
-  void SetupLogFile(std::shared_ptr<const Args> args, const fs::path& path);
-  void WriteLogHeader(std::shared_ptr<const Args> args);
 
-  TextFileBackend SetupTextfileBackend(std::shared_ptr<const Args> args,
-                                       const fs::path& path);
-  
+  void SetupLogFile(std::shared_ptr<const Args> args, const fs::path& path);
+  void WriteLogHeader(std::shared_ptr<const Args> args) const;
+
+  const TextFileBackend SetupTextfileBackend(std::shared_ptr<const Args> args,
+                                       const fs::path& path) const;
+
   static void set_log_header(const std::string& val) {
     Logging::log_header_ = val;
   }
