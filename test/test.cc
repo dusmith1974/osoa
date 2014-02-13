@@ -1,4 +1,5 @@
-// Copyright 2013 Duncan Smith
+// Copyright 2013 Duncan Smith 
+// https://github.com/dusmith1974/osoa
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,6 +27,7 @@ namespace po = boost::program_options;
 
 namespace osoa {
 
+// Adds options to the command line args and initializes the base class.
 int Test::Initialize(int argc, const char *argv[]) {
   po::options_description& config = args()->config();
 
@@ -39,6 +41,7 @@ int Test::Initialize(int argc, const char *argv[]) {
   return Service::Initialize(argc, argv);
 }
 
+// Starts the base class service, logs messages and connects to other services.
 int Test::Start() {
   int result = super::Start();
   if (0 != result) return result;
@@ -56,12 +59,14 @@ int Test::Start() {
   return 0;
 }
 
+// No tidy up is required except to stop the base class service.
 int Test::Stop() {
   return super::Stop();
 }
 
 }  // namespace osoa
 
+// Creates and runs the service.
 int main(int argc, const char *argv[]) {
   osoa::Test service;
 

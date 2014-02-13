@@ -1,5 +1,6 @@
-// Copyright 2013 Duncan Smith
-//
+// Copyright 2013 Duncan Smith 
+// https://github.com/dusmith1974/osoa
+
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
@@ -12,6 +13,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// Contains an example service 'Test' which excercises the 'Service' base class.
+// test -h shows all available options.
+// Example usage:
+//  test -p osoa ;Creates a listening port for the osoa service.
+//  test -s localhost:daytime localhost osoa ;Connects to two local sercices.
+
 #ifndef TEST_TEST_H_
 #define TEST_TEST_H_
 
@@ -21,14 +28,23 @@
 
 namespace osoa {
 
+// Example service class which listens for, or connects to other services,
+// parses command line args and writes to a logfile.
+// See comment at top of file for a complete description.
 class Test final : public Service, private boost::noncopyable {
  public:
+  // msg_count is the default number of messages written to the logfile.
   Test() : msg_count_(10) {}
   ~Test() {}
 
+  // Initializes the service ready for use and adds command line options 
+  // specific to this service. 
   int Initialize(int argc, const char *argv[]) override;
 
+  // Starts the service, logs messages and connects to other services.
   int Start() override;
+
+  // Stops the service.
   int Stop() override;
 
  private:
