@@ -17,7 +17,7 @@
 // test -h shows all available options.
 // Example usage:
 //  test -p osoa ;Creates a listening port for the osoa service.
-//  test -s localhost:daytime localhost osoa ;Connects to two local sercices.
+//  test -s localhost:daytime localhost:osoa ;Connects to two local sercices.
 
 #ifndef TEST_TEST_H_
 #define TEST_TEST_H_
@@ -52,6 +52,7 @@ class Test final : public Service, private boost::noncopyable {
 
   int msg_count() { return msg_count_; }
 
+  // Holds a count of the number of times we should log the test message.
   int msg_count_;
 };
 

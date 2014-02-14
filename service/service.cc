@@ -31,7 +31,7 @@ Service::Service()
       svc_end_time_(std::chrono::steady_clock::now()),
       args_(new Args()),
       logging_(new Logging()),
-      comms_(std::make_shared<Comms>()) {
+      comms_(std::make_shared<Comms>(logging()->svc_logger())) {
 }
 
 int Service::Initialize(int argc, const char *argv[]) {

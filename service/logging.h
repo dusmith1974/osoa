@@ -36,6 +36,8 @@ class Args;
 class Logging final : boost::noncopyable {
  public:
   typedef sinks::asynchronous_sink<sinks::text_file_backend> AsyncSink;
+  typedef src::severity_logger_mt<blt::severity_level> SeverityLogger;
+  typedef std::shared_ptr<SeverityLogger> SeverityLoggerPtr;
 
   Logging();
   ~Logging() {}
@@ -44,9 +46,7 @@ class Logging final : boost::noncopyable {
 
   static const std::string& log_header() { return Logging::log_header_; }
 
-  std::shared_ptr<src::severity_logger_mt<blt::severity_level>> svc_logger() {
-    return svc_logger_;
-  }
+  SeverityLoggerPtr svc_logger() { return svc_logger_; }
 
   boost::shared_ptr<AsyncSink> async_sink() { return async_sink_; }
 
@@ -66,8 +66,7 @@ class Logging final : boost::noncopyable {
 
   static std::string log_header_;
 
-  std::shared_ptr<
-    src::severity_logger_mt<boost::log::trivial::severity_level>> svc_logger_;
+  SeverityLoggerPtr svc_logger_;
 
   boost::shared_ptr<AsyncSink> async_sink_;
 };

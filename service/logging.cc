@@ -80,7 +80,7 @@ void SetupSink(T sink) {
 }  // namespace
 
 Logging::Logging()
-    : svc_logger_(new src::severity_logger_mt<blt::severity_level>()),
+    : svc_logger_(new SeverityLogger()),
       async_sink_(nullptr) {}
 
 int Logging::Initialize(std::shared_ptr<const Args> args) {

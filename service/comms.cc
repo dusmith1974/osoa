@@ -20,12 +20,16 @@
 #include "boost/algorithm/string.hpp"
 #include "boost/array.hpp"
 
+#include "service/logging.h"
+
 namespace osoa {
 
 // Iterative Server (handle one connection at a time).
 int Comms::Listen(const std::vector<std::string>& ports) {
   for (auto& port : ports) {
     try {
+      BOOST_LOG_SEV(*svc_logger(), blt::debug) << "Listening for port <" << port << ">";
+
       tcp::resolver resolver(io_service());
       tcp::resolver::query query(tcp::v4(), "127.0.0.1", port);
       tcp::resolver::iterator endpoint_iterator = resolver.resolve(query);

@@ -27,17 +27,34 @@
 #include "boost/asio.hpp"
 #include "boost/noncopyable.hpp"
 
+#include "service/logging.h"
+
 namespace osoa {
+
+//class Logging;
 
 namespace asio = boost::asio;
 using boost::asio::ip::tcp;
 
+// Handles the creation and/or resolution of services, and provides methods to
+// transmit or receive data between those services.
 class Comms final : boost::noncopyable {
  public:
-  Comms() : io_service_(), service_map_{} {}
+  Comms(Logging::SeverityLoggerPtr svc_logger_val) 
+    : io_service_(), 
+      service_map_{},
+      svc_logger_(svc_logger_val) {}
+
   ~Comms() {}
 
+  // Creates a synchronous listening port for an iterative server (one request
+  // at a time, handled in its entirty). Suitable for discrete simplex services
+  // eg daytime. A list of ports to open are passed in the vector ports.
+  //
+  // Returns 0 on success.
+  // TODO(Duncan Smith) Can this fail? Log errors? Can we have multiple ports?
   int Listen(const std::vector<std::string>& ports);
+  
   int ResolveServices(const std::vector<std::string>& services);
 
   void Connect(const std::string& service) const;
@@ -52,9 +69,11 @@ class Comms final : boost::noncopyable {
 
   ServiceMap& service_map() { return service_map_; }
   const ServiceMap& service_map() const { return service_map_; }
+  Logging::SeverityLoggerPtr svc_logger() { return svc_logger_; } // can add const?
 
   asio::io_service io_service_;
   ServiceMap service_map_;
+  Logging::SeverityLoggerPtr svc_logger_;
 };
 
 }  // namespace osoa
