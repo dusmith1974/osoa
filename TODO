@@ -1,3 +1,4 @@
+rm inlines
 resolve, don't continue, fail
 error codes enum k, cerr
 fugitive git plugin for vim (& pathogen installer)

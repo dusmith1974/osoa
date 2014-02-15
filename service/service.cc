@@ -31,32 +31,32 @@ Service::Service()
       comms_(std::make_shared<Comms>()) {
 }
 
-int Service::Initialize(int argc, const char *argv[]) {
-  int result = args()->Initialize(argc, argv);
-  if (0 != result) return result;
+Error Service::Initialize(int argc, const char *argv[]) {
+  Error code = args()->Initialize(argc, argv);
+  if (Error::kSuccess != code) return code;
 
-  result = Logging::Instance().Initialize(args());
-  if (0 != result) return result;
+  code = Logging::Instance().Initialize(args());
+  if (Error::kSuccess != code) return code;
 
-  return 0;
+  return Error::kSuccess;
 }
 
-int Service::Start() {
+Error Service::Start() {
   BOOST_LOG_SEV(*Logging::logger(), blt::info) << "Started the service.";
 
   set_svc_start_time(std::chrono::steady_clock::now());
 
-  int result = 0;
+  Error code = Error::kSuccess;
   if (args()->var_map().count("services"))
-    result = comms()->ResolveServices(args()->services());
+    code = comms()->ResolveServices(args()->services());
 
-  if (!result && args()->var_map().count("listening-ports"))
-    result = comms()->Listen(args()->listening_ports());
+  if (Error::kSuccess == code && args()->var_map().count("listening-ports"))
+    code = comms()->Listen(args()->listening_ports());
 
-  return result;
+  return code;
 }
 
-int Service::Stop() {
+Error Service::Stop() {
   BOOST_LOG_SEV(*Logging::logger(), blt::info) << "service stop";
 
   set_svc_end_time(std::chrono::steady_clock::now());
@@ -67,7 +67,7 @@ int Service::Stop() {
 
   Logging::Instance().Detach();
 
-  return 0;
+  return Error::kSuccess;
 }
 
 }  // namespace osoa

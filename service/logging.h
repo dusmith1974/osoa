@@ -17,6 +17,7 @@
 #define SERVICE_LOGGING_H_
 
 #include "logging_fwd.h"
+#include "service_fwd.h"
 
 #include <string>
 
@@ -35,7 +36,7 @@ class Logging final : boost::noncopyable {
 
   static Logging& Instance();
 
-  int Initialize(std::shared_ptr<const Args> args);
+  Error Initialize(std::shared_ptr<const Args> args);
   void Detach();
 
   static const std::string& log_header() { return Logging::log_header_; }

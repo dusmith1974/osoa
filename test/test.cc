@@ -22,13 +22,14 @@
 #include "service/args.h"
 #include "service/comms.h"
 #include "service/logging.h"
+#include "service/service.h"
 
 namespace po = boost::program_options;
 
 namespace osoa {
 
 // Adds options to the command line args and initializes the base class.
-int Test::Initialize(int argc, const char *argv[]) {
+Error Test::Initialize(int argc, const char *argv[]) {
   po::options_description& config = args()->config();
 
   auto msg_count_option =
@@ -42,9 +43,9 @@ int Test::Initialize(int argc, const char *argv[]) {
 }
 
 // Starts the base class service, logs messages and connects to other services.
-int Test::Start() {
-  int result = super::Start();
-  if (0 != result) return result;
+Error Test::Start() {
+  Error code = super::Start();
+  if (Error::kSuccess != code) return code;
 
   for (int j = 0; j < msg_count();  ++j)
     BOOST_LOG_SEV(*Logging::logger(), blt::debug)
@@ -55,11 +56,11 @@ int Test::Start() {
   comms()->Connect("daytime");
   comms()->Connect("daytime");
 
-  return 0;
+  return Error::kSuccess;
 }
 
 // No tidy up is required except to stop the base class service.
-int Test::Stop() {
+Error Test::Stop() {
   return super::Stop();
 }
 
@@ -69,12 +70,12 @@ int Test::Stop() {
 int main(int argc, const char *argv[]) {
   osoa::Test service;
 
-  int result = service.Initialize(argc, argv);
-  if (0 != result)
-    return result;
+  osoa::Error code = service.Initialize(argc, argv);
+  if (osoa::Error::kSuccess != code)
+    return static_cast<int>(code);
 
-  if (0 == service.Start())
+  if (osoa::Error::kSuccess == service.Start())
     service.Stop();
 
-  return 0;
+  return static_cast<int>(osoa::Error::kSuccess);
 }

@@ -24,15 +24,23 @@ namespace osoa {
 class Args;
 class Comms;
 
+enum class Error {
+  kSuccess,
+  kCouldNotResolveService,
+  kCouldNotOpenListeningPort,
+  kCannotParseArgs
+};
+
 class Service {
  public:
+
   Service();
   virtual ~Service() {}
 
-  virtual int Initialize(int argc, const char *argv[]);
+  virtual Error Initialize(int argc, const char *argv[]);
 
-  virtual int Start();
-  virtual int Stop();
+  virtual Error Start();
+  virtual Error Stop();
 
  protected:
   std::shared_ptr<Args> args() { return args_; }

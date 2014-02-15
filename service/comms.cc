@@ -21,14 +21,16 @@
 #include "boost/array.hpp"
 
 #include "service/logging.h"
+#include "service/service.h"
 
 namespace osoa {
 
 // Iterative Server (handle one connection at a time).
-int Comms::Listen(const std::vector<std::string>& ports) {
+Error Comms::Listen(const std::vector<std::string>& ports) {
   for (auto& port : ports) {
     try {
-      BOOST_LOG_SEV(*Logging::logger(), blt::debug) << "Listening for port <" << port << ">";
+      BOOST_LOG_SEV(*Logging::logger(), blt::debug) << "Listening for port <" 
+        << port << ">";
 
       tcp::resolver resolver(io_service());
       tcp::resolver::query query(tcp::v4(), "127.0.0.1", port);
@@ -57,20 +59,20 @@ int Comms::Listen(const std::vector<std::string>& ports) {
       BOOST_LOG_SEV(*Logging::logger(), blt::info) 
         << "Could not open listening port <" << port << ">" 
         << std::endl << e.what();
-      return 1;
+      return Error::kCouldNotOpenListeningPort;
     }
   }
 
-  return 0;
+  return Error::kSuccess;
 }
 
 // Make a synchronous connection.
-int Comms::ResolveServices(const std::vector<std::string>& services) {
+Error Comms::ResolveServices(const std::vector<std::string>& services) {
   for (auto& service : services) {
     std::vector<std::string> server_service;
     boost::split(server_service, service, boost::is_any_of(":"));
     if (server_service.size() < 2)
-      continue;
+      continue; // TODO(ds) or fail?
 
     try {
       tcp::resolver resolver(io_service());
@@ -85,11 +87,14 @@ int Comms::ResolveServices(const std::vector<std::string>& services) {
 
       std::cout << std::endl;
     } catch (std::exception& e) {
-      std::cerr << e.what() << std::endl;
+      BOOST_LOG_SEV(*Logging::logger(), blt::info) 
+        << "Could not resolve service <" << service << ">" 
+        << std::endl << e.what();
+      return Error::kCouldNotResolveService;
     }
   }
 
-  return 0;
+  return Error::kSuccess;
 }
 
 void Comms::Connect(const std::string& service) const {

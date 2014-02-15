@@ -27,6 +27,7 @@
 #include "boost/log/utility/setup/console.hpp"
 
 #include "service/args.h"
+#include "service/service.h"
 
 namespace attrs = boost::log::attributes;
 namespace bl = boost::log;
@@ -86,7 +87,7 @@ Logging& Logging::Instance() {
   return instance;
 }
 
-int Logging::Initialize(std::shared_ptr<const Args> args) {
+Error Logging::Initialize(std::shared_ptr<const Args> args) {
   bl::add_common_attributes();
   bl::register_simple_formatter_factory<blt::severity_level, char>("Severity");
 
@@ -105,7 +106,7 @@ int Logging::Initialize(std::shared_ptr<const Args> args) {
 
   WriteLogHeader(args);
 
-  return 0;
+  return Error::kSuccess;
 }
 
 void Logging::Detach() { 

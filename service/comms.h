@@ -27,6 +27,8 @@
 #include "boost/asio.hpp"
 #include "boost/noncopyable.hpp"
 
+#include "service/service_fwd.h"
+
 namespace osoa {
 
 namespace asio = boost::asio;
@@ -47,9 +49,9 @@ class Comms final : boost::noncopyable {
   // eg daytime. A list of ports to open are passed in the vector ports.
   //
   // Returns 0 on success.
-  int Listen(const std::vector<std::string>& ports);
+  Error Listen(const std::vector<std::string>& ports);
   
-  int ResolveServices(const std::vector<std::string>& services);
+  Error ResolveServices(const std::vector<std::string>& services);
 
   void Connect(const std::string& service) const;
 

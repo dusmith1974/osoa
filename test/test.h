@@ -39,13 +39,13 @@ class Test final : public Service, private boost::noncopyable {
 
   // Initializes the service ready for use and adds command line options 
   // specific to this service. 
-  int Initialize(int argc, const char *argv[]) override;
+  Error Initialize(int argc, const char *argv[]) override;
 
   // Starts the service, logs messages and connects to other services.
-  int Start() override;
+  Error Start() override;
 
   // Stops the service.
-  int Stop() override;
+  Error Stop() override;
 
  private:
   typedef Service super;

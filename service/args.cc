@@ -19,6 +19,8 @@
 #include <iostream>
 #include <sstream>
 
+#include "service/service.h"
+
 namespace po = boost::program_options;
 
 namespace osoa {
@@ -44,7 +46,7 @@ Args::Args()
       var_map_(new po::variables_map()) {
 }
 
-int Args::Initialize(int argc, const char* argv[]) {
+Error Args::Initialize(int argc, const char* argv[]) {
   set_module_path(argv[0]);
 
   auto log_dir_option = new po::typed_value<decltype(log_dir_)>(&log_dir_);
@@ -102,26 +104,27 @@ int Args::Initialize(int argc, const char* argv[]) {
     if (var_map().count("config")) {
       std::ifstream ifs(config_file().c_str());
       if (!ifs) {
-        std::cout << "Cannot open config file: " << config_file() << std::endl;
-        return 1;
+        std::cerr << "Cannot open config file: " << config_file() << std::endl;
+        return Error::kCannotParseArgs;
       } else {
         po::store(po::parse_config_file(ifs, config_file_options), var_map());
         po::notify(var_map());
       }
     }
   } catch (std::exception& e) {
-    std::cout << e.what() << std::endl;
-    return 1;
+    std::cerr << e.what() << std::endl;
+    return Error::kCannotParseArgs;
   }
 
   if (var_map().count("help") /*|| 1 == argc*/) {
     std::cout << visible_options << std::endl;
-    return 1;
+    return Error::kCannotParseArgs;  // Not strictly true, 
+                              // but we don't want to continue running either.
   }
 
   if (var_map().count("version")) {
     std::cout << Version() << std::endl;
-    return 1;
+    return Error::kCannotParseArgs;
   }
 
   if (var_map().count("verbose")) set_verbose(true);
@@ -130,7 +133,7 @@ int Args::Initialize(int argc, const char* argv[]) {
   if (var_map().count("async-log")) set_async_log(true);
   if (var_map().count("auto-flush-log")) set_auto_flush_log(true);
 
-  return 0;
+  return Error::kSuccess;
 }
 
 const std::string Args::Version() const {

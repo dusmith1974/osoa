@@ -23,6 +23,8 @@
 #include "boost/noncopyable.hpp"
 #include "boost/program_options.hpp"
 
+#include "service/service_fwd.h"
+
 namespace osoa {
 
 namespace po = boost::program_options;
@@ -32,7 +34,7 @@ class Args final : boost::noncopyable {
   Args();
   ~Args() {}
 
-  int Initialize(int argc, const char* argv[]);
+  Error Initialize(int argc, const char* argv[]);
 
   // Generic options.
   const std::string& config_file() const { return config_file_; }
