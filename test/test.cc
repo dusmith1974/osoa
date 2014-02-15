@@ -46,9 +46,8 @@ int Test::Start() {
   int result = super::Start();
   if (0 != result) return result;
 
-  auto lg = logging()->svc_logger();
   for (int j = 0; j < msg_count();  ++j)
-    BOOST_LOG_SEV(*lg, blt::debug)
+    BOOST_LOG_SEV(*Logging::logger(), blt::debug)
       << "The quick brown fox jumped over the lazy dog.";
 
   comms()->Connect("osoa");

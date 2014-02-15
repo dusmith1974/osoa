@@ -22,7 +22,6 @@
 namespace osoa {
 
 class Args;
-class Logging;
 class Comms;
 
 class Service {
@@ -37,7 +36,6 @@ class Service {
 
  protected:
   std::shared_ptr<Args> args() { return args_; }
-  std::shared_ptr<Logging> logging() { return logging_; }
   std::shared_ptr<Comms> comms() { return comms_; }
 
  private:
@@ -53,7 +51,6 @@ class Service {
   timepoint svc_end_time_;
 
   std::shared_ptr<Args> args_;
-  std::shared_ptr<Logging> logging_;
   std::shared_ptr<Comms> comms_;
 };
 

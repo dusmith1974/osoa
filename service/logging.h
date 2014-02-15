@@ -1,6 +1,6 @@
 // Copyright 2013 Duncan Smith 
 // https://github.com/dusmith1974/osoa
-//
+
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
@@ -16,18 +16,14 @@
 #ifndef SERVICE_LOGGING_H_
 #define SERVICE_LOGGING_H_
 
-#include <memory>
+#include "logging_fwd.h"
+
 #include <string>
 
-#include "boost/log/sinks.hpp"
-#include "boost/log/trivial.hpp"
 #include "boost/noncopyable.hpp"
 #include "boost/shared_ptr.hpp"
 
 namespace fs = boost::filesystem;
-namespace src = boost::log::sources;
-namespace sinks = boost::log::sinks;
-namespace blt = boost::log::trivial;
 
 namespace osoa {
 
@@ -35,24 +31,24 @@ class Args;
 
 class Logging final : boost::noncopyable {
  public:
-  typedef sinks::asynchronous_sink<sinks::text_file_backend> AsyncSink;
-  typedef src::severity_logger_mt<blt::severity_level> SeverityLogger;
-  typedef std::shared_ptr<SeverityLogger> SeverityLoggerPtr;
-
-  Logging();
   ~Logging() {}
 
+  static Logging& Instance();
+
   int Initialize(std::shared_ptr<const Args> args);
+  void Detach();
 
   static const std::string& log_header() { return Logging::log_header_; }
 
-  SeverityLoggerPtr svc_logger() { return svc_logger_; }
+  static SeverityLoggerPtr logger() { return logger_; }
 
   boost::shared_ptr<AsyncSink> async_sink() { return async_sink_; }
 
  private:
   typedef sinks::synchronous_sink<sinks::text_file_backend> SyncSink;
   typedef boost::shared_ptr<sinks::text_file_backend> TextFileBackend;
+
+  Logging() : async_sink_(nullptr) {}
 
   void SetupLogFile(std::shared_ptr<const Args> args, const fs::path& path);
   void WriteLogHeader(std::shared_ptr<const Args> args) const;
@@ -66,7 +62,7 @@ class Logging final : boost::noncopyable {
 
   static std::string log_header_;
 
-  SeverityLoggerPtr svc_logger_;
+  static SeverityLoggerPtr logger_;
 
   boost::shared_ptr<AsyncSink> async_sink_;
 };

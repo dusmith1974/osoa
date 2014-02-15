@@ -79,9 +79,12 @@ void SetupSink(T sink) {
 }
 }  // namespace
 
-Logging::Logging()
-    : svc_logger_(new SeverityLogger()),
-      async_sink_(nullptr) {}
+SeverityLoggerPtr Logging::logger_(new SeverityLogger()); 
+
+Logging& Logging::Instance() {
+  static Logging instance;
+  return instance;
+}
 
 int Logging::Initialize(std::shared_ptr<const Args> args) {
   bl::add_common_attributes();
@@ -103,6 +106,16 @@ int Logging::Initialize(std::shared_ptr<const Args> args) {
   WriteLogHeader(args);
 
   return 0;
+}
+
+void Logging::Detach() { 
+  if (nullptr != async_sink()) {
+    auto core = boost::log::core::get();
+    core->remove_sink(async_sink());
+    Logging::async_sink()->stop();
+    Logging::async_sink()->flush();
+    Logging::async_sink().reset();
+  }
 }
 
 void Logging::SetupLogFile(std::shared_ptr<const Args> args,

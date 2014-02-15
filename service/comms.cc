@@ -28,7 +28,7 @@ namespace osoa {
 int Comms::Listen(const std::vector<std::string>& ports) {
   for (auto& port : ports) {
     try {
-      BOOST_LOG_SEV(*svc_logger(), blt::debug) << "Listening for port <" << port << ">";
+      BOOST_LOG_SEV(*Logging::logger(), blt::debug) << "Listening for port <" << port << ">";
 
       tcp::resolver resolver(io_service());
       tcp::resolver::query query(tcp::v4(), "127.0.0.1", port);
@@ -54,7 +54,10 @@ int Comms::Listen(const std::vector<std::string>& ports) {
         asio::write(socket, asio::buffer(ss.str()), ignored_error);
       }
     } catch (std::exception& e) {
-      std::cerr << e.what() << std::endl;
+      BOOST_LOG_SEV(*Logging::logger(), blt::info) 
+        << "Could not open listening port <" << port << ">" 
+        << std::endl << e.what();
+      return 1;
     }
   }
 
