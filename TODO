@@ -1,3 +1,5 @@
+valgrind script accept args
+ref.cc ref.h + check against sources
 rm inlines
 resolve, don't continue, fail
 error codes enum k, cerr

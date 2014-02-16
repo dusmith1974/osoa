@@ -1,4 +1,4 @@
-// Copyright 2013 Duncan Smith 
+// Copyright 2013 Duncan Smith
 // https://github.com/dusmith1974/osoa
 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Defines forward declares for using the logging class.
+// Defines forward declatations for the Logging class.
 
 #ifndef SERVICE_LOGGING_FWD_H_
 #define SERVICE_LOGGING_FWD_H_

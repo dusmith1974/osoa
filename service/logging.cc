@@ -1,4 +1,4 @@
-// Copyright 2013 Duncan Smith 
+// Copyright 2013 Duncan Smith
 // https://github.com/dusmith1974/osoa
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -80,7 +80,7 @@ void SetupSink(T sink) {
 }
 }  // namespace
 
-SeverityLoggerPtr Logging::logger_(new SeverityLogger()); 
+Logging::~Logging() {}
 
 Logging& Logging::Instance() {
   static Logging instance;
@@ -109,7 +109,7 @@ Error Logging::Initialize(std::shared_ptr<const Args> args) {
   return Error::kSuccess;
 }
 
-void Logging::Detach() { 
+void Logging::Detach() {
   if (nullptr != async_sink()) {
     auto core = boost::log::core::get();
     core->remove_sink(async_sink());
@@ -118,6 +118,15 @@ void Logging::Detach() {
     Logging::async_sink().reset();
   }
 }
+
+const std::string& Logging::log_header() { return Logging::log_header_; }
+
+SeverityLoggerPtr Logging::logger() { return logger_; }
+
+boost::shared_ptr<AsyncSink> Logging::async_sink() { return async_sink_; }
+
+
+Logging::Logging() : async_sink_(nullptr) {}
 
 void Logging::SetupLogFile(std::shared_ptr<const Args> args,
                            const fs::path& path) {
@@ -182,5 +191,11 @@ const Logging::TextFileBackend Logging::SetupTextfileBackend(
     bl::keywords::time_based_rotation =
       sinks::file::rotation_at_time_point(0, 0, 0));
 }
+
+void Logging::set_log_header(const std::string& val) {
+  Logging::log_header_ = val;
+}
+
+SeverityLoggerPtr Logging::logger_(new SeverityLogger());
 
 }  // namespace osoa

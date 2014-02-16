@@ -1,4 +1,4 @@
-// Copyright 2013 Duncan Smith 
+// Copyright 2013 Duncan Smith
 // https://github.com/dusmith1974/osoa
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -30,6 +30,8 @@ Service::Service()
       args_(new Args()),
       comms_(std::make_shared<Comms>()) {
 }
+
+Service::~Service() {}
 
 Error Service::Initialize(int argc, const char *argv[]) {
   Error code = args()->Initialize(argc, argv);
@@ -68,6 +70,25 @@ Error Service::Stop() {
   Logging::Instance().Detach();
 
   return Error::kSuccess;
+}
+
+std::shared_ptr<Args> Service::args() { return args_; }
+std::shared_ptr<Comms> Service::comms() { return comms_; }
+
+const Service::Timepoint& Service::svc_start_time() const {
+  return svc_start_time_;
+}
+
+void Service::set_svc_start_time(const Service::Timepoint& val) {
+  svc_start_time_ = val;
+}
+
+const Service::Timepoint& Service::svc_end_time() const {
+  return svc_end_time_;
+}
+
+void Service::set_svc_end_time(const Service::Timepoint& val) {
+  svc_end_time_ = val;
 }
 
 }  // namespace osoa

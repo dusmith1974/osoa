@@ -1,4 +1,4 @@
-// Copyright 2013 Duncan Smith 
+// Copyright 2013 Duncan Smith
 // https://github.com/dusmith1974/osoa
 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -33,12 +33,11 @@ namespace osoa {
 // See comment at top of file for a complete description.
 class Test final : public Service, private boost::noncopyable {
  public:
-  // msg_count is the default number of messages written to the logfile.
-  Test() : msg_count_(10) {}
-  ~Test() {}
+  Test();
+  ~Test();
 
-  // Initializes the service ready for use and adds command line options 
-  // specific to this service. 
+  // Initializes the service ready for use and adds command line options
+  // specific to this service.
   Error Initialize(int argc, const char *argv[]) override;
 
   // Starts the service, logs messages and connects to other services.
@@ -50,10 +49,10 @@ class Test final : public Service, private boost::noncopyable {
  private:
   typedef Service super;
 
-  int msg_count() { return msg_count_; }
+  size_t msg_count();
 
   // Holds a count of the number of times we should log the test message.
-  int msg_count_;
+  size_t msg_count_;
 };
 
 }  // namespace osoa

@@ -1,4 +1,4 @@
-// Copyright 2013 Duncan Smith 
+// Copyright 2013 Duncan Smith
 // https://github.com/dusmith1974/osoa
 //
 // Licensed under the Apache License, Version 2.0 (the "License");

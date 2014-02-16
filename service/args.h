@@ -1,4 +1,4 @@
-// Copyright 2013 Duncan Smith 
+// Copyright 2013 Duncan Smith
 // https://github.com/dusmith1974/osoa
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -32,61 +32,57 @@ namespace po = boost::program_options;
 class Args final : boost::noncopyable {
  public:
   Args();
-  ~Args() {}
+  ~Args();
 
   Error Initialize(int argc, const char* argv[]);
 
   // Generic options.
-  const std::string& config_file() const { return config_file_; }
+  const std::string& config_file() const;
 
   // Configuration options.
-  const std::string& log_dir() const { return log_dir_; }
-  bool no_log_file() const { return no_log_file_; }
-  bool verbose() const { return verbose_; }
-  bool silent() const { return silent_; }
+  const std::string& log_dir() const;
+  bool no_log_file() const;
+  bool verbose() const;
+  bool silent() const;
 
-  const std::vector<std::string> listening_ports() const {
-    return listening_ports_;
-  }
+  const std::vector<std::string> listening_ports() const;
 
-  const std::vector<std::string> services() const {
-    return services_;
-  }
+  const std::vector<std::string> services() const;
 
   // Hidden options.
-  bool async_log() const { return async_log_; }
-  bool auto_flush_log() const { return auto_flush_log_; }
-  int rotation_size() const { return rotation_size_; }
+  bool async_log() const;
+  bool auto_flush_log() const;
+  int rotation_size() const;
 
   // program_options objects.
-  po::options_description& config() { return *(config_.get()); }
-  po::variables_map& var_map() { return *(var_map_.get()); }
+  po::options_description& config();
+  po::variables_map& var_map();
 
   // Path to this app.
-  const std::string& module_path() const { return module_path_; }
+  const std::string& module_path() const;
 
  private:
-  const std::string Version() const;
-
-  int version_major_no() const { return version_major_no_; }
-  int version_minor_no() const { return version_minor_no_; }
-
-  void set_module_path(const std::string& val) { module_path_ = val; }
-
-  // Configuration options.
-  void set_no_log_file(bool val) { no_log_file_ = val; }
-  void set_verbose(bool val) { verbose_ = val; }
-  void set_silent(bool val) { silent_ = val; }
-
-  // Hidden options.
-  void set_async_log(bool val) { async_log_ = val; }
-  void set_auto_flush_log(bool val) { auto_flush_log_ = val; }
-
-  po::options_description& generic() { return *(generic_.get()); }
-  po::options_description& hidden() { return *(hidden_.get()); }
-
   static const int version_major_no_;
   static const int version_minor_no_;
+
+  const std::string Version() const;
+
+  int version_major_no() const;
+  int version_minor_no() const;
+
+  void set_module_path(const std::string& val);
+
+  // Configuration options.
+  void set_no_log_file(bool val);
+  void set_verbose(bool val);
+  void set_silent(bool val);
+
+  // Hidden options.
+  void set_async_log(bool val);
+  void set_auto_flush_log(bool val);
+
+  po::options_description& generic();
+  po::options_description& hidden();
 
   std::string module_path_;
 

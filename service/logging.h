@@ -1,4 +1,4 @@
-// Copyright 2013 Duncan Smith 
+// Copyright 2013 Duncan Smith
 // https://github.com/dusmith1974/osoa
 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,13 +16,13 @@
 #ifndef SERVICE_LOGGING_H_
 #define SERVICE_LOGGING_H_
 
-#include "logging_fwd.h"
-#include "service_fwd.h"
-
 #include <string>
 
 #include "boost/noncopyable.hpp"
 #include "boost/shared_ptr.hpp"
+
+#include "service/logging_fwd.h"
+#include "service/service_fwd.h"
 
 namespace fs = boost::filesystem;
 
@@ -32,24 +32,24 @@ class Args;
 
 class Logging final : boost::noncopyable {
  public:
-  ~Logging() {}
+  ~Logging();
 
   static Logging& Instance();
 
   Error Initialize(std::shared_ptr<const Args> args);
   void Detach();
 
-  static const std::string& log_header() { return Logging::log_header_; }
+  static const std::string& log_header();
 
-  static SeverityLoggerPtr logger() { return logger_; }
+  static SeverityLoggerPtr logger();
 
-  boost::shared_ptr<AsyncSink> async_sink() { return async_sink_; }
+  boost::shared_ptr<AsyncSink> async_sink();
 
  private:
   typedef sinks::synchronous_sink<sinks::text_file_backend> SyncSink;
   typedef boost::shared_ptr<sinks::text_file_backend> TextFileBackend;
 
-  Logging() : async_sink_(nullptr) {}
+  Logging();
 
   void SetupLogFile(std::shared_ptr<const Args> args, const fs::path& path);
   void WriteLogHeader(std::shared_ptr<const Args> args) const;
@@ -57,9 +57,7 @@ class Logging final : boost::noncopyable {
   const TextFileBackend SetupTextfileBackend(std::shared_ptr<const Args> args,
                                        const fs::path& path) const;
 
-  static void set_log_header(const std::string& val) {
-    Logging::log_header_ = val;
-  }
+  static void set_log_header(const std::string& val);
 
   static std::string log_header_;
 

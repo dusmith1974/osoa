@@ -1,4 +1,4 @@
-// Copyright 2013 Duncan Smith 
+// Copyright 2013 Duncan Smith
 // https://github.com/dusmith1974/osoa
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -33,9 +33,8 @@ enum class Error {
 
 class Service {
  public:
-
   Service();
-  virtual ~Service() {}
+  virtual ~Service();
 
   virtual Error Initialize(int argc, const char *argv[]);
 
@@ -43,20 +42,20 @@ class Service {
   virtual Error Stop();
 
  protected:
-  std::shared_ptr<Args> args() { return args_; }
-  std::shared_ptr<Comms> comms() { return comms_; }
+  std::shared_ptr<Args> args();
+  std::shared_ptr<Comms> comms();
 
  private:
-  typedef std::chrono::time_point<std::chrono::steady_clock> timepoint;
+  typedef std::chrono::time_point<std::chrono::steady_clock> Timepoint;
 
-  const timepoint& svc_start_time() const { return svc_start_time_; }
-  void set_svc_start_time(const timepoint& val) { svc_start_time_ = val; }
+  const Timepoint& svc_start_time() const;
+  void set_svc_start_time(const Timepoint& val);
 
-  const timepoint& svc_end_time() const { return svc_end_time_; }
-  void set_svc_end_time(const timepoint& val) { svc_end_time_ = val; }
+  const Timepoint& svc_end_time() const;
+  void set_svc_end_time(const Timepoint& val);
 
-  timepoint svc_start_time_;
-  timepoint svc_end_time_;
+  Timepoint svc_start_time_;
+  Timepoint svc_end_time_;
 
   std::shared_ptr<Args> args_;
   std::shared_ptr<Comms> comms_;

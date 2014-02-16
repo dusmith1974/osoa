@@ -1,4 +1,4 @@
-// Copyright 2014 Duncan Smith 
+// Copyright 2014 Duncan Smith
 // https://github.com/dusmith1974/osoa
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,11 +25,17 @@
 
 namespace osoa {
 
+Comms::Comms()
+  : io_service_(),
+    service_map_{} {}
+
+Comms::~Comms() {}
+
 // Iterative Server (handle one connection at a time).
 Error Comms::Listen(const std::vector<std::string>& ports) {
   for (auto& port : ports) {
     try {
-      BOOST_LOG_SEV(*Logging::logger(), blt::debug) << "Listening for port <" 
+      BOOST_LOG_SEV(*Logging::logger(), blt::debug) << "Listening for port <"
         << port << ">";
 
       tcp::resolver resolver(io_service());
@@ -56,8 +62,8 @@ Error Comms::Listen(const std::vector<std::string>& ports) {
         asio::write(socket, asio::buffer(ss.str()), ignored_error);
       }
     } catch (std::exception& e) {
-      BOOST_LOG_SEV(*Logging::logger(), blt::info) 
-        << "Could not open listening port <" << port << ">" 
+      BOOST_LOG_SEV(*Logging::logger(), blt::info)
+        << "Could not open listening port <" << port << ">"
         << std::endl << e.what();
       return Error::kCouldNotOpenListeningPort;
     }
@@ -72,7 +78,7 @@ Error Comms::ResolveServices(const std::vector<std::string>& services) {
     std::vector<std::string> server_service;
     boost::split(server_service, service, boost::is_any_of(":"));
     if (server_service.size() < 2)
-      continue; // TODO(ds) or fail?
+      continue;  // TODO(ds) or fail?
 
     try {
       tcp::resolver resolver(io_service());
@@ -87,8 +93,8 @@ Error Comms::ResolveServices(const std::vector<std::string>& services) {
 
       std::cout << std::endl;
     } catch (std::exception& e) {
-      BOOST_LOG_SEV(*Logging::logger(), blt::info) 
-        << "Could not resolve service <" << service << ">" 
+      BOOST_LOG_SEV(*Logging::logger(), blt::info)
+        << "Could not resolve service <" << service << ">"
         << std::endl << e.what();
       return Error::kCouldNotResolveService;
     }
@@ -125,6 +131,11 @@ void Comms::Connect(const std::string& service) const {
     }
   }
 }
+
+asio::io_service& Comms::io_service() { return io_service_; }
+
+Comms::ServiceMap& Comms::service_map() { return service_map_; }
+const Comms::ServiceMap& Comms::service_map() const { return service_map_; }
 
 }  // namespace osoa
 

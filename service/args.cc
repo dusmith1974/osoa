@@ -1,4 +1,4 @@
-// Copyright 2013 Duncan Smith 
+// Copyright 2013 Duncan Smith
 // https://github.com/dusmith1974/osoa
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,8 +25,6 @@ namespace po = boost::program_options;
 
 namespace osoa {
 
-const int Args::version_major_no_ = 0;
-const int Args::version_minor_no_ = 1;
 
 Args::Args()
     : module_path_(""),
@@ -45,6 +43,8 @@ Args::Args()
       hidden_(new po::options_description("Hidden Options:")),
       var_map_(new po::variables_map()) {
 }
+
+Args::~Args() {}
 
 Error Args::Initialize(int argc, const char* argv[]) {
   set_module_path(argv[0]);
@@ -118,7 +118,7 @@ Error Args::Initialize(int argc, const char* argv[]) {
 
   if (var_map().count("help") /*|| 1 == argc*/) {
     std::cout << visible_options << std::endl;
-    return Error::kCannotParseArgs;  // Not strictly true, 
+    return Error::kCannotParseArgs;  // Not strictly true,
                               // but we don't want to continue running either.
   }
 
@@ -136,6 +136,38 @@ Error Args::Initialize(int argc, const char* argv[]) {
   return Error::kSuccess;
 }
 
+// Generic options.
+const std::string& Args::config_file() const { return config_file_; }
+
+// Configuration options.
+const std::string& Args::log_dir() const { return log_dir_; }
+bool Args::no_log_file() const { return no_log_file_; }
+bool Args::verbose() const { return verbose_; }
+bool Args::silent() const { return silent_; }
+
+const std::vector<std::string> Args::listening_ports() const {
+  return listening_ports_;
+}
+
+const std::vector<std::string> Args::services() const {
+  return services_;
+}
+
+// Hidden options.
+bool Args::async_log() const { return async_log_; }
+bool Args::auto_flush_log() const { return auto_flush_log_; }
+int Args::rotation_size() const { return rotation_size_; }
+
+// program_options objects.
+po::options_description& Args::config() { return *(config_.get()); }
+po::variables_map& Args::var_map() { return *(var_map_.get()); }
+
+// Path to this app.
+const std::string& Args::module_path() const { return module_path_; }
+
+const int Args::version_major_no_ = 0;
+const int Args::version_minor_no_ = 1;
+
 const std::string Args::Version() const {
   std::stringstream ss;
   ss << "osoa " << std::to_string(version_major_no()) << "."
@@ -144,5 +176,22 @@ const std::string Args::Version() const {
 
   return ss.str();
 }
+
+int Args::version_major_no() const { return version_major_no_; }
+int Args::version_minor_no() const { return version_minor_no_; }
+
+void Args::set_module_path(const std::string& val) { module_path_ = val; }
+
+// Configuration options.
+void Args::set_no_log_file(bool val) { no_log_file_ = val; }
+void Args::set_verbose(bool val) { verbose_ = val; }
+void Args::set_silent(bool val) { silent_ = val; }
+
+// Hidden options.
+void Args::set_async_log(bool val) { async_log_ = val; }
+void Args::set_auto_flush_log(bool val) { auto_flush_log_ = val; }
+
+po::options_description& Args::generic() { return *(generic_.get()); }
+po::options_description& Args::hidden() { return *(hidden_.get()); }
 
 }  // namespace osoa

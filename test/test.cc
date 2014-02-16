@@ -1,4 +1,4 @@
-// Copyright 2013 Duncan Smith 
+// Copyright 2013 Duncan Smith
 // https://github.com/dusmith1974/osoa
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -28,6 +28,11 @@ namespace po = boost::program_options;
 
 namespace osoa {
 
+// msg_count is the default number of messages to write to the logfile.
+Test::Test() : msg_count_(10) {}
+
+Test::~Test() {}
+
 // Adds options to the command line args and initializes the base class.
 Error Test::Initialize(int argc, const char *argv[]) {
   po::options_description& config = args()->config();
@@ -47,7 +52,7 @@ Error Test::Start() {
   Error code = super::Start();
   if (Error::kSuccess != code) return code;
 
-  for (int j = 0; j < msg_count();  ++j)
+  for (size_t j = 0; j < msg_count();  ++j)
     BOOST_LOG_SEV(*Logging::logger(), blt::debug)
       << "The quick brown fox jumped over the lazy dog.";
 
@@ -63,6 +68,8 @@ Error Test::Start() {
 Error Test::Stop() {
   return super::Stop();
 }
+
+size_t Test::msg_count() { return msg_count_; }
 
 }  // namespace osoa
 

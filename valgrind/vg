@@ -1,3 +1,0 @@
-#!/bin/bash
-valgrind --leak-check=yes --track-origins=yes --show-reachable=no --show-possibly-lost=yes `dirname $0`/../bin/test -v -l /var/log/osoa 2>&1 
-

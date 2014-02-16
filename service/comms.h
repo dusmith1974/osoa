@@ -38,11 +38,8 @@ using boost::asio::ip::tcp;
 // transmit or receive data between those services.
 class Comms final : boost::noncopyable {
  public:
-  Comms() 
-    : io_service_(), 
-      service_map_{} {}
-
-  ~Comms() {}
+  Comms();
+  ~Comms();
 
   // Creates a synchronous listening port for an iterative server (one request
   // at a time, handled in its entirty). Suitable for discrete simplex services
@@ -50,7 +47,7 @@ class Comms final : boost::noncopyable {
   //
   // Returns 0 on success.
   Error Listen(const std::vector<std::string>& ports);
-  
+
   Error ResolveServices(const std::vector<std::string>& services);
 
   void Connect(const std::string& service) const;
@@ -61,10 +58,10 @@ class Comms final : boost::noncopyable {
 
   typedef std::map<std::string, SocketPointPair> ServiceMap;
 
-  asio::io_service& io_service() { return io_service_; }
+  asio::io_service& io_service();
 
-  ServiceMap& service_map() { return service_map_; }
-  const ServiceMap& service_map() const { return service_map_; }
+  ServiceMap& service_map();
+  const ServiceMap& service_map() const;
 
   asio::io_service io_service_;
   ServiceMap service_map_;
