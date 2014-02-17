@@ -45,11 +45,16 @@ class Comms final : boost::noncopyable {
   // at a time, handled in its entirty). Suitable for discrete simplex services
   // eg daytime. A list of ports to open are passed in the vector ports.
   //
-  // Returns 0 on success.
+  // Returns kSuccess or kCouldNotOpenListeningPort. 
   Error Listen(const std::vector<std::string>& ports);
 
+  // Resolves any supplied services from args and populates the service map with
+  // the sockets.
+  //
+  // Returns kSuccess or kCouldNotResolveService.
   Error ResolveServices(const std::vector<std::string>& services);
 
+  // TODO(ds) use boost optional for return type with kError
   void Connect(const std::string& service) const;
 
  private:

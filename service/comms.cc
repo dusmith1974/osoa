@@ -72,14 +72,26 @@ Error Comms::Listen(const std::vector<std::string>& ports) {
   return Error::kSuccess;
 }
 
-// Make a synchronous connection.
+// For each service URI passed in services, resolve the service and populate the
+// service map with the socket.
+//
+// Returns:
+// kSuccess
+// kInvalidURI if the service URI was an unexpected format.
+// kCouldNotResolveService
 Error Comms::ResolveServices(const std::vector<std::string>& services) {
   for (auto& service : services) {
+    // Split the hostname and service/port. 
     std::vector<std::string> server_service;
     boost::split(server_service, service, boost::is_any_of(":"));
-    if (server_service.size() < 2)
-      continue;  // TODO(ds) or fail?
+    if (2 != server_service.size()) {
+      BOOST_LOG_SEV(*Logging::logger(), blt::info)
+        << "Invalid URI specified for service <" << service << ">" << std::endl
+        << "Expected: hostname:port|service";
+        return Error::kInvalidURI;
+    } 
 
+    // Resolve each service and place the connection socket in the service map.
     try {
       tcp::resolver resolver(io_service());
       tcp::resolver::query query(server_service[0], server_service[1]);

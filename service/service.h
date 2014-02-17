@@ -28,7 +28,8 @@ enum class Error {
   kSuccess,
   kCouldNotResolveService,
   kCouldNotOpenListeningPort,
-  kCannotParseArgs
+  kCannotParseArgs,
+  kInvalidURI
 };
 
 class Service {
