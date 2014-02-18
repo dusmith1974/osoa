@@ -26,6 +26,7 @@
 
 #include "boost/asio.hpp"
 #include "boost/noncopyable.hpp"
+#include "boost/optional.hpp"
 
 #include "service/service_fwd.h"
 
@@ -43,25 +44,29 @@ class Comms final : boost::noncopyable {
 
   // Creates a synchronous listening port for an iterative server (one request
   // at a time, handled in its entirty). Suitable for discrete simplex services
-  // eg daytime. A list of ports to open are passed in the vector ports.
+  // eg daytime.
   //
   // Returns kSuccess or kCouldNotOpenListeningPort. 
-  Error Listen(const std::vector<std::string>& ports);
+  Error Listen(const std::string port);
 
   // Resolves any supplied services from args and populates the service map with
   // the sockets.
   //
-  // Returns kSuccess or kCouldNotResolveService.
+  // Returns:
+  // kSuccess
+  // kInvalidURI if the service URI was an unexpected format.
+  // kCouldNotResolveService
   Error ResolveServices(const std::vector<std::string>& services);
 
-  // TODO(ds) use boost optional for return type with kError
-  void Connect(const std::string& service) const;
+  boost::optional<std::string> Connect(const std::string& service) const;
 
  private:
   typedef std::pair<std::shared_ptr<tcp::socket>,
                     std::shared_ptr<tcp::resolver::iterator>> SocketPointPair;
 
   typedef std::map<std::string, SocketPointPair> ServiceMap;
+
+  virtual std::string OnConnect();
 
   asio::io_service& io_service();
 

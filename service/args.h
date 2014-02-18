@@ -45,7 +45,7 @@ class Args final : boost::noncopyable {
   bool verbose() const;
   bool silent() const;
 
-  const std::vector<std::string> listening_ports() const;
+  const std::string listening_port() const;
 
   const std::vector<std::string> services() const;
 
@@ -94,7 +94,7 @@ class Args final : boost::noncopyable {
   bool no_log_file_;
   bool verbose_;
   bool silent_;
-  std::vector<std::string> listening_ports_;
+  std::string listening_port_;
   std::vector<std::string> services_;
 
   // Hidden options.

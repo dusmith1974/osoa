@@ -17,6 +17,8 @@
 
 #include <iostream>
 
+#include "boost/algorithm/string/trim.hpp"
+#include "boost/optional.hpp"
 #include "boost/program_options.hpp"
 
 #include "service/args.h"
@@ -47,6 +49,14 @@ Error Test::Initialize(int argc, const char *argv[]) {
   return Service::Initialize(argc, argv);
 }
 
+namespace {
+std::string* TrimLastNewline(std::string* str) {
+  if (!str) return nullptr;
+  boost::algorithm::trim_right_if(*str, boost::is_any_of("\r\n"));
+  return str;
+}
+}  // namespace
+
 // Starts the base class service, logs messages and connects to other services.
 Error Test::Start() {
   Error code = super::Start();
@@ -56,10 +66,18 @@ Error Test::Start() {
     BOOST_LOG_SEV(*Logging::logger(), blt::debug)
       << "The quick brown fox jumped over the lazy dog.";
 
-  comms()->Connect("osoa");
-  comms()->Connect("osoa");
-  comms()->Connect("daytime");
-  comms()->Connect("daytime");
+  auto result = comms()->Connect("osoa");
+  if (result) BOOST_LOG_SEV(*Logging::logger(), blt::info) 
+    << *TrimLastNewline(&*result);
+  result = comms()->Connect("osoa");
+  if (result) BOOST_LOG_SEV(*Logging::logger(), blt::info) 
+    << *TrimLastNewline(&*result);
+  result = comms()->Connect("daytime");
+  if (result) BOOST_LOG_SEV(*Logging::logger(), blt::info) 
+    << *TrimLastNewline(&*result);
+  result = comms()->Connect("daytime");
+  if (result) BOOST_LOG_SEV(*Logging::logger(), blt::info) 
+    << *TrimLastNewline(&*result);
 
   return Error::kSuccess;
 }

@@ -33,7 +33,7 @@ Args::Args()
       no_log_file_(false),
       verbose_(false),
       silent_(false),
-      listening_ports_{},
+      listening_port_{},
       services_{},
       async_log_(false),
       auto_flush_log_(false),
@@ -56,9 +56,9 @@ Error Args::Initialize(int argc, const char* argv[]) {
     new po::typed_value<decltype(config_file_)>(&config_file_);
   config_file_option->value_name("filename");
 
-  auto listening_ports_option =
-    new po::typed_value<decltype(listening_ports_)>(&listening_ports_);
-  listening_ports_option->value_name("{service_name|port}");
+  auto listening_port_option =
+    new po::typed_value<decltype(listening_port_)>(&listening_port_);
+  listening_port_option->value_name("service_name|port");
 
   auto services_option =
     new po::typed_value<decltype(services_)>(&services_);
@@ -74,8 +74,7 @@ Error Args::Initialize(int argc, const char* argv[]) {
     ("no-log-file,n", "no logging to file")
     ("verbose,v", "set verbose logging")
     ("silent,S", "minimal console logging")
-    ("listening-ports,p", listening_ports_option->multitoken(),
-      "open listening port(s)")
+    ("listening-port,p", listening_port_option, "open listening port(s)")
     ("services,s", services_option->multitoken(),
       "list of service(s)");
 
@@ -145,8 +144,8 @@ bool Args::no_log_file() const { return no_log_file_; }
 bool Args::verbose() const { return verbose_; }
 bool Args::silent() const { return silent_; }
 
-const std::vector<std::string> Args::listening_ports() const {
-  return listening_ports_;
+const std::string Args::listening_port() const {
+  return listening_port_;
 }
 
 const std::vector<std::string> Args::services() const {

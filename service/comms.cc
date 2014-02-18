@@ -31,42 +31,39 @@ Comms::Comms()
 
 Comms::~Comms() {}
 
-// Iterative Server (handle one connection at a time).
-Error Comms::Listen(const std::vector<std::string>& ports) {
-  for (auto& port : ports) {
-    try {
-      BOOST_LOG_SEV(*Logging::logger(), blt::debug) << "Listening for port <"
-        << port << ">";
+// Create the listening port for an iterative server (that handles one 
+// connection at a time). Resolve the service name or port against localhost to
+// get the port number and then open the listening port to accept connections.
+Error Comms::Listen(const std::string port) {
+  try {
+    BOOST_LOG_SEV(*Logging::logger(), blt::debug) << "Listening for port <"
+      << port << ">";
 
-      tcp::resolver resolver(io_service());
-      tcp::resolver::query query(tcp::v4(), "127.0.0.1", port);
-      tcp::resolver::iterator endpoint_iterator = resolver.resolve(query);
+    // Get the port number (as we may be dealing with a service name).
+    int port_number = 0;
+    tcp::resolver resolver(io_service());
+    tcp::resolver::query query(tcp::v4(), "127.0.0.1", port);
+    tcp::resolver::iterator endpoint_iterator = resolver.resolve(query);
+    for (; endpoint_iterator != tcp::resolver::iterator();
+          ++endpoint_iterator)
+      port_number = endpoint_iterator->endpoint().port();
 
-      int port_number = 0;
-      for (; endpoint_iterator != tcp::resolver::iterator();
-            ++endpoint_iterator)
-        port_number = endpoint_iterator->endpoint().port();
+    // Open the listening port and handle incoming connections.
+    tcp::acceptor acceptor(io_service(),
+                           tcp::endpoint(tcp::v4(), port_number));
+    for (;;) {
+      tcp::socket socket(io_service());
+      acceptor.accept(socket);
 
-      tcp::acceptor acceptor(io_service(),
-                             tcp::endpoint(tcp::v4(), port_number));
-
-      int connections = 0;
-      for (;;) {
-        tcp::socket socket(io_service());
-        acceptor.accept(socket);
-
-        std::stringstream ss;
-        ss << "OSOA comms connection: " << ++connections;
-
-        boost::system::error_code ignored_error;
-        asio::write(socket, asio::buffer(ss.str()), ignored_error);
-      }
-    } catch (std::exception& e) {
-      BOOST_LOG_SEV(*Logging::logger(), blt::info)
-        << "Could not open listening port <" << port << ">"
-        << std::endl << e.what();
-      return Error::kCouldNotOpenListeningPort;
+      boost::system::error_code ignored_error;
+      asio::write(socket, asio::buffer(OnConnect()), ignored_error);
     }
+  }
+  catch (std::exception& e) {
+    BOOST_LOG_SEV(*Logging::logger(), blt::info)
+      << "Could not open listening port <" << port << ">"
+      << std::endl << e.what();
+    return Error::kCouldNotOpenListeningPort;
   }
 
   return Error::kSuccess;
@@ -74,11 +71,6 @@ Error Comms::Listen(const std::vector<std::string>& ports) {
 
 // For each service URI passed in services, resolve the service and populate the
 // service map with the socket.
-//
-// Returns:
-// kSuccess
-// kInvalidURI if the service URI was an unexpected format.
-// kCouldNotResolveService
 Error Comms::ResolveServices(const std::vector<std::string>& services) {
   for (auto& service : services) {
     // Split the hostname and service/port. 
@@ -101,13 +93,11 @@ Error Comms::ResolveServices(const std::vector<std::string>& services) {
         std::make_shared<tcp::socket>(io_service()),
         std::make_shared<tcp::resolver::iterator>(resolver.resolve(query)));
 
-      tcp::socket socket(io_service_);
-
-      std::cout << std::endl;
     } catch (std::exception& e) {
       BOOST_LOG_SEV(*Logging::logger(), blt::info)
         << "Could not resolve service <" << service << ">"
         << std::endl << e.what();
+
       return Error::kCouldNotResolveService;
     }
   }
@@ -115,7 +105,9 @@ Error Comms::ResolveServices(const std::vector<std::string>& services) {
   return Error::kSuccess;
 }
 
-void Comms::Connect(const std::string& service) const {
+boost::optional<std::string> Comms::Connect(const std::string& service) const {
+  // TODO(ds) find in map w/o loop
+  std::stringstream ss;
   for (const auto& socket_pair : service_map()) {
     if (socket_pair.first == service) {
       try {
@@ -132,16 +124,26 @@ void Comms::Connect(const std::string& service) const {
           else if (error)  // ie not boost::system::errc::success
             throw boost::system::system_error(error);
 
-          std::cout.write(buf.data(), len);
+          ss.write(buf.data(), len);
         }
       } catch (std::exception& e) {
-        std::cerr << e.what() << std::endl;
+        BOOST_LOG_SEV(*Logging::logger(), blt::debug)
+          << "Exception thrown in Comms::Connect <" << e.what() << ">";
+
+        return boost::optional<std::string>();
       }
 
-      std::cout << std::endl;
       break;
     }
   }
+
+  return boost::optional<std::string>(ss.str());
+}
+
+std::string Comms::OnConnect() {
+  std::stringstream ss;
+  ss << "OSOA comms connection" << std::endl;
+  return ss.str();
 }
 
 asio::io_service& Comms::io_service() { return io_service_; }

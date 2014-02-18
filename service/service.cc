@@ -52,8 +52,8 @@ Error Service::Start() {
   if (args()->var_map().count("services"))
     code = comms()->ResolveServices(args()->services());
 
-  if (Error::kSuccess == code && args()->var_map().count("listening-ports"))
-    code = comms()->Listen(args()->listening_ports());
+  if (Error::kSuccess == code && args()->var_map().count("listening-port"))
+    code = comms()->Listen(args()->listening_port());
 
   return code;
 }

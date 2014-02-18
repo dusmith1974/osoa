@@ -1,3 +1,6 @@
+comms - test connect 1ps and break network, re-connect?, log-error?
+comms - direct error msgs to cerr
+comms - push iterative server payload into derived class via lambda (SO C++11-styled-callbacks)
 utilities.h
 valgrind script accept args
 ref.cc ref.h + check against sources
