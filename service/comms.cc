@@ -27,7 +27,8 @@ namespace osoa {
 
 Comms::Comms()
   : io_service_(),
-    service_map_{} {}
+    service_map_{},
+    on_connect_callback_(std::bind(&Comms::OnConnect, this)) {}
 
 Comms::~Comms() {}
 
@@ -42,7 +43,9 @@ Error Comms::Listen(const std::string port) {
     // Get the port number (as we may be dealing with a service name).
     int port_number = 0;
     tcp::resolver resolver(io_service());
-    tcp::resolver::query query(tcp::v4(), "127.0.0.1", port);
+    tcp::resolver::query query(tcp::v4(), "127.0.0.1", port,
+                               asio::ip::resolver_query_base::flags());
+
     tcp::resolver::iterator endpoint_iterator = resolver.resolve(query);
     for (; endpoint_iterator != tcp::resolver::iterator();
           ++endpoint_iterator)
@@ -56,7 +59,7 @@ Error Comms::Listen(const std::string port) {
       acceptor.accept(socket);
 
       boost::system::error_code ignored_error;
-      asio::write(socket, asio::buffer(OnConnect()), ignored_error);
+      asio::write(socket, asio::buffer(on_connect_callback()()), ignored_error);
     }
   }
   catch (std::exception& e) {
@@ -86,7 +89,9 @@ Error Comms::ResolveServices(const std::vector<std::string>& services) {
     // Resolve each service and place the connection socket in the service map.
     try {
       tcp::resolver resolver(io_service());
-      tcp::resolver::query query(server_service[0], server_service[1]);
+      tcp::resolver::query query(server_service[0], server_service[1],
+                                 asio::ip::resolver_query_base::flags());
+
       tcp::resolver::iterator endpoint_iterator = resolver.resolve(query);
 
       service_map()[server_service[1]] = std::make_pair(

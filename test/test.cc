@@ -35,16 +35,19 @@ Test::Test() : msg_count_(10) {}
 
 Test::~Test() {}
 
-// Adds options to the command line args and initializes the base class.
+// Add customizations specific to this particular service.
 Error Test::Initialize(int argc, const char *argv[]) {
   po::options_description& config = args()->config();
 
+  // Add a command line option (for the number of times to log the test msg).
   auto msg_count_option =
     new po::typed_value<decltype(msg_count_)>(&msg_count_);
   msg_count_option->value_name("number");
-
   config.add_options()
     ("msg-count,o", msg_count_option, "number of msgs");
+
+  // Set the callback handler for the listening port when connections are made.
+  comms()->set_on_connect_callback(std::bind(&Test::OnConnect, this));
 
   return Service::Initialize(argc, argv);
 }
@@ -85,6 +88,10 @@ Error Test::Start() {
 // No tidy up is required except to stop the base class service.
 Error Test::Stop() {
   return super::Stop();
+}
+
+std::string Test::OnConnect() {
+  return "FROM TEST XXX";
 }
 
 size_t Test::msg_count() { return msg_count_; }

@@ -49,6 +49,8 @@ class Test final : public Service, private boost::noncopyable {
  private:
   typedef Service super;
 
+  std::string OnConnect();
+
   size_t msg_count();
 
   // Holds a count of the number of times we should log the test message.

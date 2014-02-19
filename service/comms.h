@@ -18,6 +18,7 @@
 #ifndef SERVICE_COMMS_H_
 #define SERVICE_COMMS_H_
 
+#include <functional>
 #include <map>
 #include <memory>
 #include <string>
@@ -39,6 +40,8 @@ using boost::asio::ip::tcp;
 // transmit or receive data between those services.
 class Comms final : boost::noncopyable {
  public:
+  typedef std::function<std::string()> OnConnectCallback;
+
   Comms();
   ~Comms();
 
@@ -60,21 +63,28 @@ class Comms final : boost::noncopyable {
 
   boost::optional<std::string> Connect(const std::string& service) const;
 
+  void set_on_connect_callback(OnConnectCallback val) { 
+    on_connect_callback_ = val;
+  }
+
  private:
   typedef std::pair<std::shared_ptr<tcp::socket>,
                     std::shared_ptr<tcp::resolver::iterator>> SocketPointPair;
 
   typedef std::map<std::string, SocketPointPair> ServiceMap;
 
-  virtual std::string OnConnect();
+  std::string OnConnect();
 
   asio::io_service& io_service();
 
   ServiceMap& service_map();
   const ServiceMap& service_map() const;
 
+  OnConnectCallback& on_connect_callback() { return on_connect_callback_; }
+
   asio::io_service io_service_;
   ServiceMap service_map_;
+  OnConnectCallback on_connect_callback_;
 };
 
 }  // namespace osoa
