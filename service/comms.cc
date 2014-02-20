@@ -110,41 +110,48 @@ Error Comms::ResolveServices(const std::vector<std::string>& services) {
   return Error::kSuccess;
 }
 
-boost::optional<std::string> Comms::Connect(const std::string& service) const {
-  // TODO(ds) find in map w/o loop
+// Makes a connection to the iterative service and on success returns any
+// received data.
+optional<std::string> Comms::Connect(const std::string& service) const {
   std::stringstream ss;
-  for (const auto& socket_pair : service_map()) {
-    if (socket_pair.first == service) {
-      try {
-        asio::connect(*socket_pair.second.first, *socket_pair.second.second);
 
-        for (;;) {
-          boost::array<char, 128> buf;
-          boost::system::error_code error;
+  const auto& socket_pair = service_map().find(service);
+  if (socket_pair != service_map().end()) {
+    try {
+      asio::connect(*socket_pair->second.first, *socket_pair->second.second);
 
-          size_t len = socket_pair.second.first->read_some(asio::buffer(buf),
-                                                           error);
-          if (error == asio::error::eof)
-            break;
-          else if (error)  // ie not boost::system::errc::success
-            throw boost::system::system_error(error);
+      for (;;) {
+        boost::array<char, 128> buf;
+        boost::system::error_code error;
 
-          ss.write(buf.data(), len);
-        }
-      } catch (std::exception& e) {
-        BOOST_LOG_SEV(*Logging::logger(), blt::debug)
-          << "Exception thrown in Comms::Connect <" << e.what() << ">";
+        size_t len = socket_pair->second.first->read_some(asio::buffer(buf),
+                                                         error);
+        if (error == asio::error::eof)
+          break;
+        else if (error)  // ie not boost::system::errc::success
+          throw boost::system::system_error(error);
 
-        return boost::optional<std::string>();
+        ss.write(buf.data(), len);
       }
+    } catch (std::exception& e) {
+      BOOST_LOG_SEV(*Logging::logger(), blt::debug)
+        << "Exception thrown in Comms::Connect <" << e.what() << ">";
 
-      break;
+      return boost::optional<std::string>();
     }
   }
 
   return boost::optional<std::string>(ss.str());
 }
 
+void Comms::set_on_connect_callback(OnConnectCallback val) { 
+  on_connect_callback_ = val;
+}
+
+// Provides a default implementation for the OnConnect callback handler,
+// usually the owning class would make a call to set_on_connect_callback to
+// provide their own functionality for when a connection is made to the 
+// listening socket.
 std::string Comms::OnConnect() {
   std::stringstream ss;
   ss << "OSOA comms connection" << std::endl;
@@ -155,6 +162,10 @@ asio::io_service& Comms::io_service() { return io_service_; }
 
 Comms::ServiceMap& Comms::service_map() { return service_map_; }
 const Comms::ServiceMap& Comms::service_map() const { return service_map_; }
+
+Comms::OnConnectCallback& Comms::on_connect_callback() { 
+  return on_connect_callback_; 
+}
 
 }  // namespace osoa
 

@@ -15,19 +15,22 @@
 
 // General utility functions.
 
-#ifndef UTIL_UTILITIES_H_
-#define UTIL_UTILITIES_H_
+#include "util/utilities.h"
 
 #include "boost/algorithm/string/trim.hpp"
 
 namespace osoa {
 
-// Cancels unused parameter warnings.
-template<class T> void unused(const T &);
+// Template function with unnamed parameter and no-op to remove compiler
+// warnings about unused parameters.
+template<class T> void unused(const T&) {}
 
-// Removes EOL chars from end of strings.
-std::string* TrimLastNewline(std::string* str);
+// Remove the right hand side end of line characters from the given str.
+std::string* TrimLastNewline(std::string* str) {
+  if (!str) return nullptr;
+  boost::algorithm::trim_right_if(*str, boost::is_any_of("\r\n"));
+  return str;
+}
 
 }  // namespace osoa
 
-#endif  // UTIL_UTILITIES_H_

@@ -34,7 +34,9 @@
 namespace osoa {
 
 namespace asio = boost::asio;
+
 using boost::asio::ip::tcp;
+using boost::optional;
 
 // Handles the creation and/or resolution of services, and provides methods to
 // transmit or receive data between those services.
@@ -61,11 +63,11 @@ class Comms final : boost::noncopyable {
   // kCouldNotResolveService
   Error ResolveServices(const std::vector<std::string>& services);
 
-  boost::optional<std::string> Connect(const std::string& service) const;
+  // Calls upon the service. Returns the data is successful.
+  optional<std::string> Connect(const std::string& service) const;
 
-  void set_on_connect_callback(OnConnectCallback val) { 
-    on_connect_callback_ = val;
-  }
+  // Accepts a function pointer that overrides the default OnConnect callback.
+  void set_on_connect_callback(OnConnectCallback val);
 
  private:
   typedef std::pair<std::shared_ptr<tcp::socket>,
@@ -73,17 +75,25 @@ class Comms final : boost::noncopyable {
 
   typedef std::map<std::string, SocketPointPair> ServiceMap;
 
+  // The default OnConnect callback handler. Usually changed by the owner 
+  // through a call to set_on_connect_callback.
   std::string OnConnect();
 
   asio::io_service& io_service();
 
+  // Returns the map of available services.
   ServiceMap& service_map();
   const ServiceMap& service_map() const;
 
-  OnConnectCallback& on_connect_callback() { return on_connect_callback_; }
+  // Returns the function pointer to the OnConnect callback handler.
+  OnConnectCallback& on_connect_callback();
 
   asio::io_service io_service_;
+  
+  // The map of available services.
   ServiceMap service_map_;
+
+  // Function pointer to the OnConnect callback handler.
   OnConnectCallback on_connect_callback_;
 };
 
