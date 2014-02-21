@@ -13,6 +13,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// Parses the command line args to the service. Additional args can be defined 
+// by owning classes through the public options_description fields and default
+// settings can be placed in a config file  via the --config option (any command
+// line args will take precedence over those found in the config file).
+
 #ifndef SERVICE_ARGS_H_
 #define SERVICE_ARGS_H_
 
@@ -29,6 +34,8 @@ namespace osoa {
 
 namespace po = boost::program_options;
 
+// Represents the command line args passed to the service (either on the command
+// line or from a config file.
 class Args final : boost::noncopyable {
  public:
   Args();
@@ -64,6 +71,18 @@ class Args final : boost::noncopyable {
  private:
   static const int version_major_no_;
   static const int version_minor_no_;
+
+  // Adds a description for each program option.
+  void AddOptionDescriptions();
+
+  // Adds descriptions for common program options.
+  void AddGenericOptionDescriptions();
+
+  // Adds a description for common service options.
+  void AddConfigOptionDescriptions();
+
+  // Adds a description for detailed options.
+  void AddHiddenOptionDescriptions();
 
   const std::string Version() const;
 

@@ -25,7 +25,6 @@ namespace po = boost::program_options;
 
 namespace osoa {
 
-
 Args::Args()
     : module_path_(""),
       config_file_(""),
@@ -49,43 +48,7 @@ Args::~Args() {}
 Error Args::Initialize(int argc, const char* argv[]) {
   set_module_path(argv[0]);
 
-  auto log_dir_option = new po::typed_value<decltype(log_dir_)>(&log_dir_);
-  log_dir_option->value_name("directory");
-
-  auto config_file_option =
-    new po::typed_value<decltype(config_file_)>(&config_file_);
-  config_file_option->value_name("filename");
-
-  auto listening_port_option =
-    new po::typed_value<decltype(listening_port_)>(&listening_port_);
-  listening_port_option->value_name("service_name|port");
-
-  auto services_option =
-    new po::typed_value<decltype(services_)>(&services_);
-  services_option->value_name("{server:(service_name|port)}");
-
-  generic().add_options()
-    ("help,h", "show help message")
-    ("version,V", "print version information")
-    ("config,c", config_file_option, "name of (optional) config file");
-
-  config().add_options()
-    ("log-dir,d", log_dir_option, "set loggng directory")
-    ("no-log-file,n", "no logging to file")
-    ("verbose,v", "set verbose logging")
-    ("silent,S", "minimal console logging")
-    ("listening-port,p", listening_port_option, "open listening port(s)")
-    ("services,s", services_option->multitoken(),
-      "list of service(s)");
-
-  auto rotation_size_option =
-    new po::typed_value<decltype(rotation_size_)>(&rotation_size_);
-  rotation_size_option->value_name("MB");
-
-  hidden().add_options()
-    ("async-log", "asynchonous logging thread")
-    ("auto-flush-log", "flush log-file on each written record")
-    ("rotation-size", rotation_size_option, "rotate logs every n MB");
+  AddOptionDescriptions();
 
   po::options_description cmdline_options;
   cmdline_options.add(generic()).add(config()).add(hidden());
@@ -166,6 +129,62 @@ const std::string& Args::module_path() const { return module_path_; }
 
 const int Args::version_major_no_ = 0;
 const int Args::version_minor_no_ = 1;
+
+// Sets the long and short identifier and a description for each program option.
+void Args::AddOptionDescriptions() {
+  AddGenericOptionDescriptions();
+  AddConfigOptionDescriptions();
+  AddHiddenOptionDescriptions();
+}
+
+// Adds a description for options to display the usage, vesion and to point to a
+// configuration file.
+void Args::AddGenericOptionDescriptions() {
+  auto config_file_option =
+    new po::typed_value<decltype(config_file_)>(&config_file_);
+  config_file_option->value_name("filename");
+
+  generic().add_options()
+    ("help,h", "show help message")
+    ("version,V", "print version information")
+    ("config,c", config_file_option, "name of (optional) config file");
+}
+
+// Adds a description for common options which control the service behavior.
+void Args::AddConfigOptionDescriptions() {
+  auto log_dir_option = new po::typed_value<decltype(log_dir_)>(&log_dir_);
+  log_dir_option->value_name("directory");
+
+  auto listening_port_option =
+    new po::typed_value<decltype(listening_port_)>(&listening_port_);
+  listening_port_option->value_name("service_name|port");
+
+  auto services_option =
+    new po::typed_value<decltype(services_)>(&services_);
+  services_option->value_name("{server:(service_name|port)}");
+  
+  config().add_options()
+    ("log-dir,d", log_dir_option, "set loggng directory")
+    ("no-log-file,n", "no logging to file")
+    ("verbose,v", "set verbose logging")
+    ("silent,S", "minimal console logging")
+    ("listening-port,p", listening_port_option, "open listening port(s)")
+    ("services,s", services_option->multitoken(),
+      "list of service(s)");
+}
+
+// Adds descriptions for lesser used options that we don't display on the 
+// command line interface. These options are set in the config file only.
+void Args::AddHiddenOptionDescriptions() {
+  auto rotation_size_option =
+    new po::typed_value<decltype(rotation_size_)>(&rotation_size_);
+  rotation_size_option->value_name("MB");
+
+  hidden().add_options()
+    ("async-log", "asynchonous logging thread")
+    ("auto-flush-log", "flush log-file on each written record")
+    ("rotation-size", rotation_size_option, "rotate logs every n MB");
+}
 
 const std::string Args::Version() const {
   std::stringstream ss;
