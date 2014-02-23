@@ -45,55 +45,39 @@ Args::Args()
 
 Args::~Args() {}
 
+// Adds option descriptions and parses the command line args and config file.
 Error Args::Initialize(int argc, const char* argv[]) {
   set_module_path(argv[0]);
 
-  AddOptionDescriptions();
-
   po::options_description cmdline_options;
-  cmdline_options.add(generic()).add(config()).add(hidden());
-
-  po::options_description config_file_options;
-  config_file_options.add(config()).add(hidden());
-
   po::options_description visible_options("Allowed options");
-  visible_options.add(generic()).add(config());
+  po::options_description config_file_options;
+  AddOptionDescriptions(&cmdline_options, &visible_options, 
+                        &config_file_options);
 
-  try {
-    po::store(po::parse_command_line(argc, argv, cmdline_options), var_map());
-    po::notify(var_map());
+  // Parse the options included on the commnd line.
+  po::store(po::parse_command_line(argc, argv, cmdline_options), var_map());
+  po::notify(var_map());
+  
+  // Parse the config file (eg. -c settings.cfg).
+  Error code = ParseConfigFile(&config_file_options);
+  if (Error::kSuccess != code)
+    return code;
 
-    if (var_map().count("config")) {
-      std::ifstream ifs(config_file().c_str());
-      if (!ifs) {
-        std::cerr << "Cannot open config file: " << config_file() << std::endl;
-        return Error::kCannotParseArgs;
-      } else {
-        po::store(po::parse_config_file(ifs, config_file_options), var_map());
-        po::notify(var_map());
-      }
-    }
-  } catch (std::exception& e) {
-    std::cerr << e.what() << std::endl;
-    return Error::kCannotParseArgs;
-  }
-
+  // Display the usage for --help.
   if (var_map().count("help") /*|| 1 == argc*/) {
     std::cout << visible_options << std::endl;
     return Error::kCannotParseArgs;  // Not strictly true,
                               // but we don't want to continue running either.
   }
 
+  // Display the version. TODO(ds) auto-bump this in the makefile?
   if (var_map().count("version")) {
     std::cout << Version() << std::endl;
     return Error::kCannotParseArgs;
   }
 
-  if (var_map().count("verbose")) set_verbose(true);
-  if (var_map().count("silent")) set_silent(true);
-  if (var_map().count("no-log-file")) set_no_log_file(true);
-  if (var_map().count("async-log")) set_async_log(true);
-  if (var_map().count("auto-flush-log")) set_auto_flush_log(true);
+  SetUntypedOptions();
 
   return Error::kSuccess;
 }
@@ -131,10 +115,58 @@ const int Args::version_major_no_ = 0;
 const int Args::version_minor_no_ = 1;
 
 // Sets the long and short identifier and a description for each program option.
-void Args::AddOptionDescriptions() {
+void Args::AddOptionDescriptions(po::options_description* cmdline_options, 
+                                 po::options_description* visible_options,
+                                 po::options_description* config_file_options) {
+  if (!cmdline_options || !visible_options) return;
+
   AddGenericOptionDescriptions();
   AddConfigOptionDescriptions();
   AddHiddenOptionDescriptions();
+
+  // All options are available for input on the command line.
+  cmdline_options->add(generic()).add(config()).add(hidden());
+
+  // The settings file can be parsed for config and hidden options.
+  config_file_options->add(config()).add(hidden());
+
+  // Generic and config options are displayed in --help.
+  visible_options->add(generic()).add(config());
+}
+
+// Parses the config file if present on the command line -c settings.cfg.
+// Command line options will take precedence over options present in the
+// config file.
+Error Args::ParseConfigFile(po::options_description* config_file_options) {
+  if (!config_file_options) return Error::kCannotParseArgs;
+
+  try {
+    if (var_map().count("config")) {
+      std::ifstream ifs(config_file().c_str());
+      if (!ifs) {
+        std::cerr << "Cannot open config file: " << config_file() << std::endl;
+        return Error::kCannotParseArgs;
+      } else {
+        po::store(po::parse_config_file(ifs, *config_file_options), var_map());
+        po::notify(var_map());
+      }
+    }
+  } catch (std::exception& e) {
+    std::cerr << e.what() << std::endl;
+    return Error::kCannotParseArgs;
+  }
+
+  return Error::kSuccess;
+}
+
+// Calls the mutators for the untyped (boolean) options.
+void Args::SetUntypedOptions() {
+  // Set the untyped options. TODO(ds) use boost option handlers?
+  if (var_map().count("verbose")) set_verbose(true);
+  if (var_map().count("silent")) set_silent(true);
+  if (var_map().count("no-log-file")) set_no_log_file(true);
+  if (var_map().count("async-log")) set_async_log(true);
+  if (var_map().count("auto-flush-log")) set_auto_flush_log(true);
 }
 
 // Adds a description for options to display the usage, vesion and to point to a
@@ -186,6 +218,7 @@ void Args::AddHiddenOptionDescriptions() {
     ("rotation-size", rotation_size_option, "rotate logs every n MB");
 }
 
+// Returns a string containing the version.
 const std::string Args::Version() const {
   std::stringstream ss;
   ss << "osoa " << std::to_string(version_major_no()) << "."

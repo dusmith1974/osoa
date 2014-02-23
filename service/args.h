@@ -41,6 +41,7 @@ class Args final : boost::noncopyable {
   Args();
   ~Args();
 
+  // Adds option descriptions and parses all args.
   Error Initialize(int argc, const char* argv[]);
 
   // Generic options.
@@ -51,9 +52,7 @@ class Args final : boost::noncopyable {
   bool no_log_file() const;
   bool verbose() const;
   bool silent() const;
-
   const std::string listening_port() const;
-
   const std::vector<std::string> services() const;
 
   // Hidden options.
@@ -73,7 +72,9 @@ class Args final : boost::noncopyable {
   static const int version_minor_no_;
 
   // Adds a description for each program option.
-  void AddOptionDescriptions();
+  void AddOptionDescriptions(po::options_description* cmdline_options,
+                             po::options_description* visible_options,
+                             po::options_description* config_file_options);
 
   // Adds descriptions for common program options.
   void AddGenericOptionDescriptions();
@@ -84,6 +85,13 @@ class Args final : boost::noncopyable {
   // Adds a description for detailed options.
   void AddHiddenOptionDescriptions();
 
+  // Parses the (optional) config file for generic and hidden options.
+  Error ParseConfigFile(po::options_description* config_file_options);
+
+  // Sets the boolean options.
+  void SetUntypedOptions();
+
+  // Returns the version string.
   const std::string Version() const;
 
   int version_major_no() const;
