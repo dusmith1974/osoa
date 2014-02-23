@@ -62,16 +62,16 @@ Error Test::Start() {
       << "The quick brown fox jumped over the lazy dog.";
 
   auto result = comms()->Connect("osoa");
-  if (result) BOOST_LOG_SEV(*Logging::logger(), blt::info) 
+  if (result) BOOST_LOG_SEV(*Logging::logger(), blt::info)
     << *TrimLastNewline(&*result);
   result = comms()->Connect("osoa");
-  if (result) BOOST_LOG_SEV(*Logging::logger(), blt::info) 
+  if (result) BOOST_LOG_SEV(*Logging::logger(), blt::info)
     << *TrimLastNewline(&*result);
   result = comms()->Connect("daytime");
-  if (result) BOOST_LOG_SEV(*Logging::logger(), blt::info) 
+  if (result) BOOST_LOG_SEV(*Logging::logger(), blt::info)
     << *TrimLastNewline(&*result);
   result = comms()->Connect("daytime");
-  if (result) BOOST_LOG_SEV(*Logging::logger(), blt::info) 
+  if (result) BOOST_LOG_SEV(*Logging::logger(), blt::info)
     << *TrimLastNewline(&*result);
 
   return Error::kSuccess;

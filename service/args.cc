@@ -52,13 +52,13 @@ Error Args::Initialize(int argc, const char* argv[]) {
   po::options_description cmdline_options;
   po::options_description visible_options("Allowed options");
   po::options_description config_file_options;
-  AddOptionDescriptions(&cmdline_options, &visible_options, 
+  AddOptionDescriptions(&cmdline_options, &visible_options,
                         &config_file_options);
 
   // Parse the options included on the commnd line.
   po::store(po::parse_command_line(argc, argv, cmdline_options), var_map());
   po::notify(var_map());
-  
+
   // Parse the config file (eg. -c settings.cfg).
   Error code = ParseConfigFile(&config_file_options);
   if (Error::kSuccess != code)
@@ -115,7 +115,7 @@ const int Args::version_major_no_ = 0;
 const int Args::version_minor_no_ = 1;
 
 // Sets the long and short identifier and a description for each program option.
-void Args::AddOptionDescriptions(po::options_description* cmdline_options, 
+void Args::AddOptionDescriptions(po::options_description* cmdline_options,
                                  po::options_description* visible_options,
                                  po::options_description* config_file_options) {
   if (!cmdline_options || !visible_options) return;
@@ -194,7 +194,7 @@ void Args::AddConfigOptionDescriptions() {
   auto services_option =
     new po::typed_value<decltype(services_)>(&services_);
   services_option->value_name("{server:(service_name|port)}");
-  
+
   config().add_options()
     ("log-dir,d", log_dir_option, "set loggng directory")
     ("no-log-file,n", "no logging to file")
@@ -205,7 +205,7 @@ void Args::AddConfigOptionDescriptions() {
       "list of service(s)");
 }
 
-// Adds descriptions for lesser used options that we don't display on the 
+// Adds descriptions for lesser used options that we don't display on the
 // command line interface. These options are set in the config file only.
 void Args::AddHiddenOptionDescriptions() {
   auto rotation_size_option =

@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Parses the command line args to the service. Additional args can be defined 
+// Parses the command line args to the service. Additional args can be defined
 // by owning classes through the public options_description fields and default
 // settings can be placed in a config file  via the --config option (any command
 // line args will take precedence over those found in the config file).

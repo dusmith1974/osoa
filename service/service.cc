@@ -45,7 +45,7 @@ Error Service::Initialize(int argc, const char *argv[]) {
   return Error::kSuccess;
 }
 
-// Starts this service, sets the start time, resolves any services that may be 
+// Starts this service, sets the start time, resolves any services that may be
 // called upon during execution and opens the main listening port to accept
 // connections.
 Error Service::Start() {

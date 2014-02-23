@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Contains the service base class. For an example of overriding see 
+// Contains the service base class. For an example of overriding see
 // service/test.h.
 
 #ifndef SERVICE_SERVICE_H_

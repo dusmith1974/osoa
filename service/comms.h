@@ -51,8 +51,8 @@ class Comms final : boost::noncopyable {
   // at a time, handled in its entirty). Suitable for discrete simplex services
   // eg daytime.
   //
-  // Returns kSuccess or kCouldNotOpenListeningPort. 
-  Error Listen(const std::string port);
+  // Returns kSuccess or kCouldNotOpenListeningPort.
+  Error Listen(const std::string& port);
 
   // Resolves any supplied services from args and populates the service map with
   // the sockets.
@@ -75,7 +75,7 @@ class Comms final : boost::noncopyable {
 
   typedef std::map<std::string, SocketPointPair> ServiceMap;
 
-  // The default OnConnect callback handler. Usually changed by the owner 
+  // The default OnConnect callback handler. Usually changed by the owner
   // through a call to set_on_connect_callback.
   std::string OnConnect();
 
@@ -89,7 +89,7 @@ class Comms final : boost::noncopyable {
   OnConnectCallback& on_connect_callback();
 
   asio::io_service io_service_;
-  
+
   // The map of available services.
   ServiceMap service_map_;
 

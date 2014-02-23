@@ -44,7 +44,7 @@ void RotateHeader(sinks::text_file_backend::stream_type& file) {  // NOLINT
 }
 }  // namespace
 
-// Returns the path to the logfile using the directory specified in the 
+// Returns the path to the logfile using the directory specified in the
 // --log-dir options (if any).
 namespace {
 fs::path GetFullPath(std::shared_ptr<const Args> args) {
@@ -154,7 +154,7 @@ void Logging::SetupLogFile(std::shared_ptr<const Args> args,
 }
 
 // Writes the header to the top of logfiles. Information in the header includes
-// the user account under which the service was started, service start time, 
+// the user account under which the service was started, service start time,
 // this hostname, and the options that the service was called with.
 void Logging::WriteLogHeader(std::shared_ptr<const Args> args) const {
   std::stringstream ss;

@@ -18,6 +18,8 @@
 #ifndef UTIL_UTILITIES_H_
 #define UTIL_UTILITIES_H_
 
+#include <string>
+
 #include "boost/algorithm/string/trim.hpp"
 
 namespace osoa {

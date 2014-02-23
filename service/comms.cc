@@ -32,10 +32,10 @@ Comms::Comms()
 
 Comms::~Comms() {}
 
-// Create the listening port for an iterative server (that handles one 
+// Create the listening port for an iterative server (that handles one
 // connection at a time). Resolve the service name or port against localhost to
 // get the port number and then open the listening port to accept connections.
-Error Comms::Listen(const std::string port) {
+Error Comms::Listen(const std::string& port) {
   try {
     BOOST_LOG_SEV(*Logging::logger(), blt::debug) << "Listening for port <"
       << port << ">";
@@ -76,7 +76,7 @@ Error Comms::Listen(const std::string port) {
 // service map with the socket.
 Error Comms::ResolveServices(const std::vector<std::string>& services) {
   for (auto& service : services) {
-    // Split the hostname and service/port. 
+    // Split the hostname and service/port.
     std::vector<std::string> server_service;
     boost::split(server_service, service, boost::is_any_of(":"));
     if (2 != server_service.size()) {
@@ -84,7 +84,7 @@ Error Comms::ResolveServices(const std::vector<std::string>& services) {
         << "Invalid URI specified for service <" << service << ">" << std::endl
         << "Expected: hostname:port|service";
         return Error::kInvalidURI;
-    } 
+    }
 
     // Resolve each service and place the connection socket in the service map.
     try {
@@ -97,7 +97,6 @@ Error Comms::ResolveServices(const std::vector<std::string>& services) {
       service_map()[server_service[1]] = std::make_pair(
         std::make_shared<tcp::socket>(io_service()),
         std::make_shared<tcp::resolver::iterator>(resolver.resolve(query)));
-
     } catch (std::exception& e) {
       BOOST_LOG_SEV(*Logging::logger(), blt::info)
         << "Could not resolve service <" << service << ">"
@@ -144,13 +143,13 @@ optional<std::string> Comms::Connect(const std::string& service) const {
   return boost::optional<std::string>(ss.str());
 }
 
-void Comms::set_on_connect_callback(OnConnectCallback val) { 
+void Comms::set_on_connect_callback(OnConnectCallback val) {
   on_connect_callback_ = val;
 }
 
 // Provides a default implementation for the OnConnect callback handler,
 // usually the owning class would make a call to set_on_connect_callback to
-// provide their own functionality for when a connection is made to the 
+// provide their own functionality for when a connection is made to the
 // listening socket.
 std::string Comms::OnConnect() {
   std::stringstream ss;
@@ -163,8 +162,8 @@ asio::io_service& Comms::io_service() { return io_service_; }
 Comms::ServiceMap& Comms::service_map() { return service_map_; }
 const Comms::ServiceMap& Comms::service_map() const { return service_map_; }
 
-Comms::OnConnectCallback& Comms::on_connect_callback() { 
-  return on_connect_callback_; 
+Comms::OnConnectCallback& Comms::on_connect_callback() {
+  return on_connect_callback_;
 }
 
 }  // namespace osoa

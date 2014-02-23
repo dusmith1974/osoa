@@ -33,9 +33,9 @@ namespace osoa {
 class Args;
 
 // Uses the boost log library to provide logging to the console and a logfile.
-// Logging may be synchronous and auto-flushed (slowest, but most reliable logs 
+// Logging may be synchronous and auto-flushed (slowest, but most reliable logs
 // in the event of a failure), or asynchronous and non-flushed (recommended for
-// performant systems). Log files are rotated at a given size and contain a 
+// performant systems). Log files are rotated at a given size and contain a
 // header detailing the options that the service was called with.
 class Logging final : boost::noncopyable {
  public:
@@ -47,8 +47,8 @@ class Logging final : boost::noncopyable {
   // Initialzes the logging environment accrding to the options specified in the
   // args.
   Error Initialize(std::shared_ptr<const Args> args);
-  
-  // Detaches the logging front-ends from the core (shuts down logging before 
+
+  // Detaches the logging front-ends from the core (shuts down logging before
   // service termination).
   void Detach();
 
@@ -70,7 +70,7 @@ class Logging final : boost::noncopyable {
 
   // Sets up the logfile in the specified path.
   void SetupLogFile(std::shared_ptr<const Args> args, const fs::path& path);
-  
+
   // Writes a header at the top of a new logfile.
   void WriteLogHeader(std::shared_ptr<const Args> args) const;
 
