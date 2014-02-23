@@ -37,12 +37,15 @@ namespace osoa {
 
 std::string Logging::log_header_("");
 
+// Writes the header into the rotated file.
 namespace {
 void RotateHeader(sinks::text_file_backend::stream_type& file) {  // NOLINT
   file << Logging::log_header() << std::endl;
 }
 }  // namespace
 
+// Returns the path to the logfile using the directory specified in the 
+// --log-dir options (if any).
 namespace {
 fs::path GetFullPath(std::shared_ptr<const Args> args) {
   fs::path full_path(args->module_path());
@@ -56,6 +59,8 @@ fs::path GetFullPath(std::shared_ptr<const Args> args) {
 }
 }  // namespace
 
+// Sets the sink up for a default message prefix format, filtering and adds the
+// sink to the core.
 namespace {
 template<typename T>
 void SetupSink(T sink) {
@@ -82,11 +87,15 @@ void SetupSink(T sink) {
 
 Logging::~Logging() {}
 
+// Returns the only instance of the logging class.
 Logging& Logging::Instance() {
   static Logging instance;
   return instance;
 }
 
+// Sets the logfile name, adds the common attributes for the message prefix,
+// sets the filter level for console logging (info or none if --silent). Writes
+// a header into the first logfile.
 Error Logging::Initialize(std::shared_ptr<const Args> args) {
   bl::add_common_attributes();
   bl::register_simple_formatter_factory<blt::severity_level, char>("Severity");
@@ -109,6 +118,8 @@ Error Logging::Initialize(std::shared_ptr<const Args> args) {
   return Error::kSuccess;
 }
 
+// Detaches the sinks from the core to stop any logging. Sinks are flushed to
+// ensure there contents are fully written.
 void Logging::Detach() {
   if (nullptr != async_sink()) {
     auto core = boost::log::core::get();
@@ -120,14 +131,13 @@ void Logging::Detach() {
 }
 
 const std::string& Logging::log_header() { return Logging::log_header_; }
-
 SeverityLoggerPtr Logging::logger() { return logger_; }
-
 boost::shared_ptr<AsyncSink> Logging::async_sink() { return async_sink_; }
-
 
 Logging::Logging() : async_sink_(nullptr) {}
 
+// Sets up a textfile back-end with the appropriate options for synchroncity and
+// flushing.
 void Logging::SetupLogFile(std::shared_ptr<const Args> args,
                            const fs::path& path) {
   TextFileBackend backend = SetupTextfileBackend(args, path);
@@ -143,6 +153,9 @@ void Logging::SetupLogFile(std::shared_ptr<const Args> args,
   }
 }
 
+// Writes the header to the top of logfiles. Information in the header includes
+// the user account under which the service was started, service start time, 
+// this hostname, and the options that the service was called with.
 void Logging::WriteLogHeader(std::shared_ptr<const Args> args) const {
   std::stringstream ss;
 
@@ -181,6 +194,8 @@ void Logging::WriteLogHeader(std::shared_ptr<const Args> args) const {
   set_log_header(ss.str());
 }
 
+// Sets the textfile back-ens with the filename including the date and timestamp
+// and rotation size.
 const Logging::TextFileBackend Logging::SetupTextfileBackend(
     std::shared_ptr<const Args> args,
     const fs::path& path) const {

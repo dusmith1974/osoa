@@ -33,6 +33,8 @@ Service::Service()
 
 Service::~Service() {}
 
+// Parses the command line options (and config file) and sets up the logging
+// front ends and back ends.
 Error Service::Initialize(int argc, const char *argv[]) {
   Error code = args()->Initialize(argc, argv);
   if (Error::kSuccess != code) return code;
@@ -43,6 +45,9 @@ Error Service::Initialize(int argc, const char *argv[]) {
   return Error::kSuccess;
 }
 
+// Starts this service, sets the start time, resolves any services that may be 
+// called upon during execution and opens the main listening port to accept
+// connections.
 Error Service::Start() {
   BOOST_LOG_SEV(*Logging::logger(), blt::info) << "Started the service.";
 
@@ -58,6 +63,8 @@ Error Service::Start() {
   return code;
 }
 
+// Stops the service, logs the service uptime and detaches any logging threads/
+// front-ends from the core. Any active threads should be joined here.
 Error Service::Stop() {
   BOOST_LOG_SEV(*Logging::logger(), blt::info) << "service stop";
 

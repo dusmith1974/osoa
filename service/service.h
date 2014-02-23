@@ -13,6 +13,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// Contains the service base class. For an example of overriding see 
+// service/test.h.
+
 #ifndef SERVICE_SERVICE_H_
 #define SERVICE_SERVICE_H_
 
@@ -24,6 +27,7 @@ namespace osoa {
 class Args;
 class Comms;
 
+// Error codes returned from the service related functions,
 enum class Error {
   kSuccess,
   kCouldNotResolveService,
@@ -32,14 +36,20 @@ enum class Error {
   kInvalidURI
 };
 
+// A base class for services, providing common features for parsing args,
+// logging and inter-process communications.
 class Service {
  public:
   Service();
   virtual ~Service();
 
+  // Parses args and sets up the logging.
   virtual Error Initialize(int argc, const char *argv[]);
 
+  // Starts the service and sets up any networking.
   virtual Error Start();
+
+  // Stops the service and disables logging.
   virtual Error Stop();
 
  protected:
