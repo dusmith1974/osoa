@@ -54,6 +54,12 @@ class Comms final : boost::noncopyable {
   // Returns kSuccess or kCouldNotOpenListeningPort.
   Error Listen(const std::string& port);
 
+  // Opens an async listening port for the published topics.
+  // Returns kSuccess.
+  Error PublishTopics(const std::string& port, 
+                      const std::vector<std::string>& topics);
+
+
   // Resolves any supplied services from args and populates the service map with
   // the sockets.
   //
@@ -78,6 +84,8 @@ class Comms final : boost::noncopyable {
   // The default OnConnect callback handler. Usually changed by the owner
   // through a call to set_on_connect_callback.
   std::string OnConnect();
+
+  Error PublishTopic(const std::string& port, const std::string& topic);
 
   asio::io_service& io_service();
 

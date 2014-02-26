@@ -72,6 +72,22 @@ Error Comms::Listen(const std::string& port) {
   return Error::kSuccess;
 }
 
+Error Comms::PublishTopics(const std::string& port, 
+                           const std::vector<std::string>& topics) {
+  for (const auto& topic : topics) {
+    Error code = PublishTopic(port, topic);
+    if (Error::kSuccess != code)
+      return code;
+  }
+  
+  return Error::kSuccess;
+}
+
+typedef std::pair<std::string, std::string> TopicServicePair;
+typedef std::vector<TopicServicePair> TopicVec;
+TopicVec topic_vector;
+
+
 // For each service URI passed in services, resolve the service and populate the
 // service map with the socket.
 Error Comms::ResolveServices(const std::vector<std::string>& services) {
@@ -82,7 +98,7 @@ Error Comms::ResolveServices(const std::vector<std::string>& services) {
     if (2 != server_service.size()) {
       BOOST_LOG_SEV(*Logging::logger(), blt::info)
         << "Invalid URI specified for service <" << service << ">" << std::endl
-        << "Expected: hostname:port|service";
+        << "Expected: hostname:(port|service)";
         return Error::kInvalidURI;
     }
 
@@ -138,6 +154,8 @@ optional<std::string> Comms::Connect(const std::string& service) const {
 
       return boost::optional<std::string>();
     }
+  } else {
+    return boost::optional<std::string>();  // Service not found in map.
   }
 
   return boost::optional<std::string>(ss.str());
@@ -155,6 +173,16 @@ std::string Comms::OnConnect() {
   std::stringstream ss;
   ss << "OSOA comms connection" << std::endl;
   return ss.str();
+}
+
+// TODO(ds) typdefs for containers
+Error Comms::PublishTopic(const std::string& port, const std::string& topic) {
+
+  // TODO(ds) make debug.
+  BOOST_LOG_SEV(*Logging::logger(), blt::info)
+    << "Publishing topic <" << port << ":" << topic << ">";
+
+  return Error::kSuccess;
 }
 
 asio::io_service& Comms::io_service() { return io_service_; }

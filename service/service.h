@@ -32,6 +32,7 @@ enum class Error {
   kSuccess,
   kCouldNotResolveService,
   kCouldNotOpenListeningPort,
+  kCouldNotPublishTopics,
   kCannotParseArgs,
   kInvalidURI
 };

@@ -33,6 +33,7 @@ Args::Args()
       verbose_(false),
       silent_(false),
       listening_port_{},
+      topics_{},
       services_{},
       async_log_(false),
       auto_flush_log_(false),
@@ -46,6 +47,7 @@ Args::Args()
 Args::~Args() {}
 
 // Adds option descriptions and parses the command line args and config file.
+// TODO(ds) catch exception on bad args.
 Error Args::Initialize(int argc, const char* argv[]) {
   set_module_path(argv[0]);
 
@@ -77,6 +79,13 @@ Error Args::Initialize(int argc, const char* argv[]) {
     return Error::kCannotParseArgs;
   }
 
+  // Quick sanity check for certain required combinations.
+  if (var_map().count("publish-topics") && !var_map().count("listening-port")) {
+    std::cout << "Please specify a --listening-port when using --publish-topics"
+      << std::endl;
+    return Error::kCannotParseArgs;
+  }
+
   SetUntypedOptions();
 
   return Error::kSuccess;
@@ -93,6 +102,10 @@ bool Args::silent() const { return silent_; }
 
 const std::string Args::listening_port() const {
   return listening_port_;
+}
+
+const std::vector<std::string> Args::topics() const {
+  return topics_;
 }
 
 const std::vector<std::string> Args::services() const {
@@ -191,16 +204,22 @@ void Args::AddConfigOptionDescriptions() {
     new po::typed_value<decltype(listening_port_)>(&listening_port_);
   listening_port_option->value_name("service_name|port");
 
+  auto topics_option =
+    new po::typed_value<decltype(topics_)>(&topics_);
+  topics_option->value_name("{topic }");
+
   auto services_option =
     new po::typed_value<decltype(services_)>(&services_);
-  services_option->value_name("{server:(service_name|port)}");
+  services_option->value_name("{server:(service_name|port)[:topic] }");
 
   config().add_options()
     ("log-dir,d", log_dir_option, "set loggng directory")
     ("no-log-file,n", "no logging to file")
     ("verbose,v", "set verbose logging")
     ("silent,S", "minimal console logging")
-    ("listening-port,p", listening_port_option, "open listening port(s)")
+    ("listening-port,p", listening_port_option, "open listening port.")
+    ("publish-topics,P", topics_option->multitoken(), 
+      "list of topics to publish")
     ("services,s", services_option->multitoken(),
       "list of service(s)");
 }
