@@ -27,8 +27,10 @@ namespace osoa {
 
 Comms::Comms()
   : io_service_(),
+    server_(new tcp_server(io_service_)),
     service_map_{},
-    on_connect_callback_(std::bind(&Comms::OnConnect, this)) {}
+    on_connect_callback_(std::bind(&Comms::OnConnect, this)),
+    publisher_port_("") {}
 
 Comms::~Comms() {}
 
@@ -74,10 +76,18 @@ Error Comms::Listen(const std::string& port) {
 
 Error Comms::PublishTopics(const std::string& port, 
                            const std::vector<std::string>& topics) {
+  set_publisher_port(port);
+
   for (const auto& topic : topics) {
-    Error code = PublishTopic(port, topic);
+    Error code = PublishTopic(topic);
     if (Error::kSuccess != code)
       return code;
+  }
+
+  try {
+    io_service().run();
+  } catch (std::exception& e) {
+    std::cerr << e.what() << std::endl;
   }
   
   return Error::kSuccess;
@@ -165,6 +175,14 @@ void Comms::set_on_connect_callback(OnConnectCallback val) {
   on_connect_callback_ = val;
 }
 
+const std::string& Comms::publisher_port() const {
+  return publisher_port_;
+}
+
+void Comms::set_publisher_port(const std::string& val) {
+  publisher_port_ = val;
+}
+
 // Provides a default implementation for the OnConnect callback handler,
 // usually the owning class would make a call to set_on_connect_callback to
 // provide their own functionality for when a connection is made to the
@@ -176,16 +194,19 @@ std::string Comms::OnConnect() {
 }
 
 // TODO(ds) typdefs for containers
-Error Comms::PublishTopic(const std::string& port, const std::string& topic) {
+Error Comms::PublishTopic(const std::string& topic) {
 
   // TODO(ds) make debug.
   BOOST_LOG_SEV(*Logging::logger(), blt::info)
-    << "Publishing topic <" << port << ":" << topic << ">";
+    << "Publishing topic <" << publisher_port() << ":" << topic << ">";
+
+
 
   return Error::kSuccess;
 }
 
 asio::io_service& Comms::io_service() { return io_service_; }
+tcp_server& Comms::server() { return *server_.get(); }
 
 Comms::ServiceMap& Comms::service_map() { return service_map_; }
 const Comms::ServiceMap& Comms::service_map() const { return service_map_; }
