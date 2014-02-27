@@ -75,6 +75,8 @@ class Comms final : boost::noncopyable {
   // kCouldNotResolveService
   Error ResolveServices(const std::vector<std::string>& services);
 
+  void Subscribe(const std::string& subscription);
+
   // Calls upon the service. Returns the data is successful.
   optional<std::string> Connect(const std::string& service) const;
 
@@ -90,6 +92,9 @@ class Comms final : boost::noncopyable {
   // The default OnConnect callback handler. Usually changed by the owner
   // through a call to set_on_connect_callback.
   std::string OnConnect();
+
+  void handle_connect(const boost::system::error_code&);
+  void handle_read(const boost::system::error_code&);
 
   Error PublishTopic(const std::string& topic);
 
@@ -118,7 +123,7 @@ class Comms final : boost::noncopyable {
   std::string publisher_port_;
 };
 
-
+// TODO(ds) mv impl to cc
 class tcp_connection 
     : public boost::enable_shared_from_this<tcp_connection> {
  public: 
@@ -131,7 +136,7 @@ class tcp_connection
   tcp::socket& socket() { return socket_; }
 
   void start() {
-    msg_ = "first publish";
+    msg_ = "first publish\r\n";
 
   asio::async_write(socket_, asio::buffer(msg_), 
     boost::bind(&tcp_connection::handle_write, shared_from_this(),
@@ -144,7 +149,7 @@ class tcp_connection
   void handle_write(const boost::system::error_code& /*error*/,
     size_t /*bytes_transferred*/) {
   
-  sleep(1);
+  //sleep(1);
   asio::async_write(socket_, asio::buffer(msg_), 
     boost::bind(&tcp_connection::handle_write, shared_from_this(),
       asio::placeholders::error, asio::placeholders::bytes_transferred));

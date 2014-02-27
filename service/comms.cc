@@ -25,6 +25,8 @@
 
 namespace osoa {
 
+asio::streambuf response_; // TODO(ds) make member
+
 Comms::Comms()
   : io_service_(),
     server_(nullptr),
@@ -137,8 +139,49 @@ Error Comms::ResolveServices(const std::vector<std::string>& services) {
 }
 
 // see http async client
-void Comms::Subscribe() {
+void Comms::Subscribe(const std::string& subscription) {
+  const auto& socket_pair = service_map().find("35008");
+  if (socket_pair != service_map().end()) {
+    // TODO(ds) seh
+    asio::async_connect(*socket_pair->second.first, *socket_pair->second.second,
+        boost::bind(&Comms::handle_connect, this, asio::placeholders::error));
+
+    io_service().run();
+    int a = 5;
+    a++;
+    subscription.size();
+  }
+  //asio::async_connect(); 
+}
+
+void Comms::handle_connect(const boost::system::error_code& err) {
+  if (!err) {
+    const auto& socket_pair = service_map().find("35008");
+    if (socket_pair != service_map().end()) {
+      asio::async_read_until(*socket_pair->second.first, response_, "\r\n", 
+          boost::bind(&Comms::handle_read, this, asio::placeholders::error));
+    }
+  } else {
+    // TODO(ds) handle error. check for other instances of if (!err)
+  }
+}
+
+void Comms::handle_read(const boost::system::error_code& err) {
+  if (!err) {
+    std::istream response_stream(&response_);
+    std::string topic_data;
+    std::getline(response_stream, topic_data);
   
+    std::cout << topic_data << std::endl;
+    //std::cout << std::flush;
+//    sleep(1);
+
+    const auto& socket_pair = service_map().find("35008");
+    if (socket_pair != service_map().end()) {
+      asio::async_read_until(*socket_pair->second.first, response_, "\r\n", 
+          boost::bind(&Comms::handle_read, this, asio::placeholders::error));
+    }
+  }
 }
 
 // Makes a connection to the iterative service and on success returns any
