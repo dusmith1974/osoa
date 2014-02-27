@@ -1,3 +1,7 @@
+-s third : into subscriptions vec, and make subscriptions
+async resolve and re-try with logging
+http async client for sub rec
+boost channel for pub/sub (when avail)..
 typedefs for containers
 html5/css3/js http://software.intel.com/en-us/html5/tools for frontend timing screen
 ipico tags, lite/elite cycle antenna

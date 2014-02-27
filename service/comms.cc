@@ -27,7 +27,7 @@ namespace osoa {
 
 Comms::Comms()
   : io_service_(),
-    server_(new tcp_server(io_service_)),
+    server_(nullptr),
     service_map_{},
     on_connect_callback_(std::bind(&Comms::OnConnect, this)),
     publisher_port_("") {}
@@ -77,6 +77,7 @@ Error Comms::Listen(const std::string& port) {
 Error Comms::PublishTopics(const std::string& port, 
                            const std::vector<std::string>& topics) {
   set_publisher_port(port);
+  server_ = std::unique_ptr<tcp_server>(new tcp_server(io_service_));
 
   for (const auto& topic : topics) {
     Error code = PublishTopic(topic);
@@ -133,6 +134,11 @@ Error Comms::ResolveServices(const std::vector<std::string>& services) {
   }
 
   return Error::kSuccess;
+}
+
+// see http async client
+void Comms::Subscribe() {
+  
 }
 
 // Makes a connection to the iterative service and on success returns any
