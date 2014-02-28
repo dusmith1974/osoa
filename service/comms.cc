@@ -16,6 +16,7 @@
 #include "service/comms.h"
 
 #include <iostream>
+#include <thread>
 
 #include "boost/algorithm/string.hpp"
 #include "boost/array.hpp"
@@ -96,6 +97,7 @@ Error Comms::PublishTopics(const std::string& port,
   return Error::kSuccess;
 }
 
+// TODO(ds) split container into subscriptions and publications.
 typedef std::pair<std::string, std::string> TopicServicePair;
 typedef std::vector<TopicServicePair> TopicVec;
 TopicVec topic_vector;
@@ -143,16 +145,28 @@ void Comms::Subscribe(const std::string& subscription) {
   const auto& socket_pair = service_map().find("35008");
   if (socket_pair != service_map().end()) {
     // TODO(ds) seh
-    asio::async_connect(*socket_pair->second.first, *socket_pair->second.second,
-        boost::bind(&Comms::handle_connect, this, asio::placeholders::error));
+    //asio::async_connect(*socket_pair->second.first, *socket_pair->second.second,
+      //  boost::bind(&Comms::handle_connect, this, asio::placeholders::error));
 
-    io_service().run();
+    //io_service().run();
+    // Start io_service.run() in its own thread so we don't block the UI thread.
+    std::thread t([&](){ io_service_.run(); });
+
+    io_service().post(
+      [this, socket_pair]() {
+        asio::async_connect(*socket_pair->second.first, *socket_pair->second.second,
+          boost::bind(&Comms::handle_connect, this, asio::placeholders::error));
+      });
+
+    t.join();
+
     int a = 5;
     a++;
     subscription.size();
   }
-  //asio::async_connect(); 
 }
+
+// TODO(ds) socket close fn (cpp11/chat)
 
 void Comms::handle_connect(const boost::system::error_code& err) {
   if (!err) {
