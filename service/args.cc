@@ -47,7 +47,6 @@ Args::Args()
 Args::~Args() {}
 
 // Adds option descriptions and parses the command line args and config file.
-// TODO(ds) catch exception on bad args.
 Error Args::Initialize(int argc, const char* argv[]) {
   set_module_path(argv[0]);
 
@@ -58,13 +57,18 @@ Error Args::Initialize(int argc, const char* argv[]) {
                         &config_file_options);
 
   // Parse the options included on the commnd line.
-  po::store(po::parse_command_line(argc, argv, cmdline_options), var_map());
-  po::notify(var_map());
+  try {
+    po::store(po::parse_command_line(argc, argv, cmdline_options), var_map());
+    po::notify(var_map());
 
-  // Parse the config file (eg. -c settings.cfg).
-  Error code = ParseConfigFile(&config_file_options);
-  if (Error::kSuccess != code)
-    return code;
+    // Parse the config file (eg. -c settings.cfg).
+    Error code = ParseConfigFile(&config_file_options);
+    if (Error::kSuccess != code)
+      return code;
+  } catch (const std::exception& ex) {
+    std::cerr << ex.what() << std::endl;
+    return Error::kCannotParseArgs;
+  }
 
   // Display the usage for --help.
   if (var_map().count("help") /*|| 1 == argc*/) {
@@ -218,7 +222,7 @@ void Args::AddConfigOptionDescriptions() {
     ("verbose,v", "set verbose logging")
     ("silent,S", "minimal console logging")
     ("listening-port,p", listening_port_option, "open listening port.")
-    ("publish-topics,P", topics_option->multitoken(), 
+    ("publish-topics,P", topics_option->multitoken(),
       "list of topics to publish")
     ("services,s", services_option->multitoken(),
       "list of service(s)");

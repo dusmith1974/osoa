@@ -26,16 +26,17 @@
 
 namespace osoa {
 
-asio::streambuf response_; // TODO(ds) make member
-
 Comms::Comms()
   : io_service_(),
     server_(nullptr),
     service_map_{},
     on_connect_callback_(std::bind(&Comms::OnConnect, this)),
-    publisher_port_("") {}
+    publisher_port_(""),
+    publications_{},
+    subscriptions_{} {}
 
 Comms::~Comms() {}
+
 
 // Create the listening port for an iterative server (that handles one
 // connection at a time). Resolve the service name or port against localhost to
@@ -45,20 +46,9 @@ Error Comms::Listen(const std::string& port) {
     BOOST_LOG_SEV(*Logging::logger(), blt::debug) << "Listening for port <"
       << port << ">";
 
-    // Get the port number (as we may be dealing with a service name).
-    int port_number = 0;
-    tcp::resolver resolver(io_service());
-    tcp::resolver::query query(tcp::v4(), "127.0.0.1", port,
-                               asio::ip::resolver_query_base::flags());
-
-    tcp::resolver::iterator endpoint_iterator = resolver.resolve(query);
-    for (; endpoint_iterator != tcp::resolver::iterator();
-          ++endpoint_iterator)
-      port_number = endpoint_iterator->endpoint().port();
-
     // Open the listening port and handle incoming connections.
     tcp::acceptor acceptor(io_service(),
-                           tcp::endpoint(tcp::v4(), port_number));
+                           tcp::endpoint(tcp::v4(), ResolvePortNumber(port)));
     for (;;) {
       tcp::socket socket(io_service());
       acceptor.accept(socket);
@@ -77,10 +67,11 @@ Error Comms::Listen(const std::string& port) {
   return Error::kSuccess;
 }
 
-Error Comms::PublishTopics(const std::string& port, 
+Error Comms::PublishTopics(const std::string& port,
                            const std::vector<std::string>& topics) {
   set_publisher_port(port);
-  server_ = std::unique_ptr<tcp_server>(new tcp_server(io_service_));
+  server_ = std::unique_ptr<tcp_server>(new tcp_server(&io_service_,
+                                        ResolvePortNumber(port)));
 
   for (const auto& topic : topics) {
     Error code = PublishTopic(topic);
@@ -93,44 +84,47 @@ Error Comms::PublishTopics(const std::string& port,
   } catch (std::exception& e) {
     std::cerr << e.what() << std::endl;
   }
-  
+
   return Error::kSuccess;
 }
 
-// TODO(ds) split container into subscriptions and publications.
-typedef std::pair<std::string, std::string> TopicServicePair;
-typedef std::vector<TopicServicePair> TopicVec;
-TopicVec topic_vector;
-
-
 // For each service URI passed in services, resolve the service and populate the
 // service map with the socket.
-Error Comms::ResolveServices(const std::vector<std::string>& services) {
-  for (auto& service : services) {
+Error Comms::ResolveServices(const std::vector<std::string>& service_uris) {
+  for (auto& service_uri : service_uris) {
     // Split the hostname and service/port.
-    std::vector<std::string> server_service;
-    boost::split(server_service, service, boost::is_any_of(":"));
-    if (2 != server_service.size()) {
+    UriVec uri;
+    boost::split(uri, service_uri, boost::is_any_of(":"));
+    if (2 != uri.size() && 3 != uri.size()) {
       BOOST_LOG_SEV(*Logging::logger(), blt::info)
-        << "Invalid URI specified for service <" << service << ">" << std::endl
-        << "Expected: hostname:(port|service)";
+        << "Invalid URI specified for service <" << service_uri << ">"
+        << std::endl << "Expected: hostname:(port|service)[:topic]";
         return Error::kInvalidURI;
     }
+
+    // Add any subcriptions along with their associated service to the
+    // subcriptions container.
+    if (3 == uri.size())
+      subscriptions_.push_back(std::make_pair(
+            uri[static_cast<UriVec::size_type>(Uri::kService)],
+            uri[static_cast<UriVec::size_type>(Uri::kTopic)]));
 
     // Resolve each service and place the connection socket in the service map.
     try {
       tcp::resolver resolver(io_service());
-      tcp::resolver::query query(server_service[0], server_service[1],
-                                 asio::ip::resolver_query_base::flags());
+      tcp::resolver::query query(
+          uri[static_cast<UriVec::size_type>(Uri::kServer)],
+          uri[static_cast<UriVec::size_type>(Uri::kService)],
+          asio::ip::resolver_query_base::flags());
 
       tcp::resolver::iterator endpoint_iterator = resolver.resolve(query);
 
-      service_map()[server_service[1]] = std::make_pair(
-        std::make_shared<tcp::socket>(io_service()),
-        std::make_shared<tcp::resolver::iterator>(resolver.resolve(query)));
+      service_map()[uri[static_cast<UriVec::size_type>(Uri::kService)]] =
+        std::make_pair(std::make_shared<tcp::socket>(io_service()),
+          std::make_shared<tcp::resolver::iterator>(resolver.resolve(query)));
     } catch (std::exception& e) {
       BOOST_LOG_SEV(*Logging::logger(), blt::info)
-        << "Could not resolve service <" << service << ">"
+        << "Could not resolve service <" << service_uri << ">"
         << std::endl << e.what();
 
       return Error::kCouldNotResolveService;
@@ -140,61 +134,70 @@ Error Comms::ResolveServices(const std::vector<std::string>& services) {
   return Error::kSuccess;
 }
 
-// see http async client
-void Comms::Subscribe(const std::string& subscription) {
-  const auto& socket_pair = service_map().find("35008");
-  if (socket_pair != service_map().end()) {
-    // TODO(ds) seh
-    //asio::async_connect(*socket_pair->second.first, *socket_pair->second.second,
-      //  boost::bind(&Comms::handle_connect, this, asio::placeholders::error));
-
-    //io_service().run();
-    // Start io_service.run() in its own thread so we don't block the UI thread.
-    std::thread t([&](){ io_service_.run(); });
-
-    io_service().post(
-      [this, socket_pair]() {
-        asio::async_connect(*socket_pair->second.first, *socket_pair->second.second,
-          boost::bind(&Comms::handle_connect, this, asio::placeholders::error));
+Error Comms::Subscribe(const std::string& subscription) {
+  auto service_topic = std::find_if(subscriptions_.begin(),
+                                    subscriptions_.end(),
+      [=](const ServiceTopicPair& pair) {
+        return pair.second == subscription;
       });
 
-    t.join();
+  if (service_topic == subscriptions_.end())
+    return Error::kCouldNotSubscribeToService;
 
-    int a = 5;
-    a++;
-    subscription.size();
+  const auto& socket_pair = service_map().find(service_topic->first);
+  if (socket_pair != service_map().end()) {
+    try {
+      std::thread t([&](){ io_service_.run(); });
+
+      io_service().post(
+        [this, socket_pair, service_topic]() {
+          asio::async_connect(*socket_pair->second.first,
+                              *socket_pair->second.second,
+                              boost::bind(&Comms::handle_connect,
+                                          this,
+                                          asio::placeholders::error,
+                                          socket_pair->second)); });
+      t.join();
+    } catch (const std::exception& ex) {
+      BOOST_LOG_SEV(*Logging::logger(), blt::debug)
+        << "Exception thrown in Comms::Subscribe <" << ex.what() << ">";
+      return Error::kCouldNotSubscribeToService;
+    }
   }
+
+  return Error::kSuccess;
 }
 
 // TODO(ds) socket close fn (cpp11/chat)
 
-void Comms::handle_connect(const boost::system::error_code& err) {
+void Comms::handle_connect(const boost::system::error_code& err,
+                           const ServiceMap::mapped_type& socket_pair) {
   if (!err) {
-    const auto& socket_pair = service_map().find("35008");
-    if (socket_pair != service_map().end()) {
-      asio::async_read_until(*socket_pair->second.first, response_, "\r\n", 
-          boost::bind(&Comms::handle_read, this, asio::placeholders::error));
-    }
+    asio::async_read_until(*socket_pair.first, response_, "\r\n",
+        boost::bind(&Comms::handle_read, this, asio::placeholders::error,
+                    socket_pair));
   } else {
-    // TODO(ds) handle error. check for other instances of if (!err)
+      // TODO(ds) format error code as words.
+      BOOST_LOG_SEV(*Logging::logger(), blt::debug)
+        << "Error received in handle_connect<" << err << ">";
   }
 }
 
-void Comms::handle_read(const boost::system::error_code& err) {
+void Comms::handle_read(const boost::system::error_code& err,
+                        const ServiceMap::mapped_type& socket_pair) {
   if (!err) {
     std::istream response_stream(&response_);
     std::string topic_data;
     std::getline(response_stream, topic_data);
-  
-    std::cout << topic_data << std::endl;
-    //std::cout << std::flush;
-//    sleep(1);
 
-    const auto& socket_pair = service_map().find("35008");
-    if (socket_pair != service_map().end()) {
-      asio::async_read_until(*socket_pair->second.first, response_, "\r\n", 
-          boost::bind(&Comms::handle_read, this, asio::placeholders::error));
-    }
+    std::cout << topic_data << std::endl;
+
+    asio::async_read_until(*socket_pair.first, response_, "\r\n",
+        boost::bind(&Comms::handle_read, this, asio::placeholders::error,
+                    socket_pair));
+  } else {
+    BOOST_LOG_SEV(*Logging::logger(), blt::debug)
+      << "Error received in handle_read<" << err << ">";
   }
 }
 
@@ -256,20 +259,31 @@ std::string Comms::OnConnect() {
   return ss.str();
 }
 
-// TODO(ds) typdefs for containers
 Error Comms::PublishTopic(const std::string& topic) {
-
-  // TODO(ds) make debug.
-  BOOST_LOG_SEV(*Logging::logger(), blt::info)
+  BOOST_LOG_SEV(*Logging::logger(), blt::debug)
     << "Publishing topic <" << publisher_port() << ":" << topic << ">";
 
-
+  publications_.push_back(std::make_pair(publisher_port(), topic));
 
   return Error::kSuccess;
 }
 
+int Comms::ResolvePortNumber(const std::string& port) {
+  // Get the port number (as we may be dealing with a service name).
+  int port_num = 0;
+  tcp::resolver resolver(io_service());
+  tcp::resolver::query query(tcp::v4(), "127.0.0.1", port,
+                             asio::ip::resolver_query_base::flags());
+
+  tcp::resolver::iterator endpoint_iterator = resolver.resolve(query);
+  for (; endpoint_iterator != tcp::resolver::iterator();
+        ++endpoint_iterator)
+    port_num = endpoint_iterator->endpoint().port();
+
+  return port_num;
+}
+
 asio::io_service& Comms::io_service() { return io_service_; }
-tcp_server& Comms::server() { return *server_.get(); }
 
 Comms::ServiceMap& Comms::service_map() { return service_map_; }
 const Comms::ServiceMap& Comms::service_map() const { return service_map_; }

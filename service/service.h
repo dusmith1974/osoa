@@ -34,7 +34,8 @@ enum class Error {
   kCouldNotOpenListeningPort,
   kCouldNotPublishTopics,
   kCannotParseArgs,
-  kInvalidURI
+  kInvalidURI,
+  kCouldNotSubscribeToService
 };
 
 // A base class for services, providing common features for parsing args,

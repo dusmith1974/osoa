@@ -57,7 +57,7 @@ Error Service::Start() {
   if (args()->var_map().count("services"))
     code = comms()->ResolveServices(args()->services());
 
-  // Either open an async listening port for subscribers to connect to 
+  // Either open an async listening port for subscribers to connect to
   // publications, or open a sync listening port for a simple iterative server.
   if (Error::kSuccess == code && args()->var_map().count("publish-topics"))
     code = comms()->PublishTopics(args()->listening_port(), args()->topics());
