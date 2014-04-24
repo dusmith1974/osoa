@@ -10,6 +10,7 @@ TEST = test
 BASE = .
 
 PRJS := $(ITEM) $(SERVICE) $(UTIL) $(BASE) $(TEST)
+LIB_OSOA = libosoa.a
 
 OBJDIR = lib
 BIN_DIR = bin
@@ -24,10 +25,10 @@ INC += -I$(BOOST_DIR)
 $(OBJDIR)/%.o : %.cc 
 	$(COMPILE.cc) $(INC) $(OUTPUT_OPTION) $<
 
-all: $(BIN_DIR)/test 
+all: $(BIN_DIR)/test $(OBJDIR)/$(LIB_OSOA)
 
 debug: CXXFLAGS += -DDEBUG -g -O0
-debug: $(BIN_DIR)/test
+debug: $(BIN_DIR)/test $(OBJDIR)/$(LIB_OSOA)
 
 ifneq ($(MAKECMDGOALS), debug)
 CXXFLAGS += -O3
@@ -46,6 +47,9 @@ $(BIN_DIR)/test: $(OBJS)
 	$(LINK.cc) $(OBJS) -dynamic -pthread -lboost_program_options -lboost_log_setup -lboost_log -lboost_system -lboost_thread -lboost_date_time -lboost_filesystem $(OUTPUT_OPTION)
 	ctags -R --c-kinds=+cdefglmnpstuvx --extra=+f
 	cscope -Rb
+
+$(OBJDIR)/$(LIB_OSOA): $(OBJS)
+	ar cr lib/$(LIB_OSOA) $(OBJS)
 
 $(OBJS) $(DEPS) : | $(OBJDIR) $(BIN_DIR)
 
