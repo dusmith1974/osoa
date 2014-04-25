@@ -52,7 +52,10 @@ enum class Uri {
 
 // Handles the creation and/or resolution of services, and provides methods to
 // transmit or receive data between those services.
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Weffc++"
 class Comms final : boost::noncopyable {
+#pragma GCC diagnostic pop
  public:
   typedef std::function<std::string()> OnConnectCallback;
 
@@ -140,8 +143,11 @@ class Comms final : boost::noncopyable {
 };
 
 // TODO(ds) mv impl to cc
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Weffc++"
 class tcp_connection
     : public boost::enable_shared_from_this<tcp_connection> {
+#pragma GCC diagnostic pop
  public:
   typedef boost::shared_ptr<tcp_connection> pointer;
 

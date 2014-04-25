@@ -37,7 +37,10 @@ class Args;
 // in the event of a failure), or asynchronous and non-flushed (recommended for
 // performant systems). Log files are rotated at a given size and contain a
 // header detailing the options that the service was called with.
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Weffc++"
 class Logging final : boost::noncopyable {
+#pragma GCC diagnostic pop
  public:
   ~Logging();
 

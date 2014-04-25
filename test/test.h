@@ -33,7 +33,10 @@ namespace osoa {
 // Example service class which listens for, or connects to other services,
 // parses command line args and writes to a logfile.
 // See comment at top of file for a complete description.
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Weffc++"
 class Test final : public Service, private boost::noncopyable {
+#pragma GCC diagnostic pop
  public:
   Test();
   ~Test();

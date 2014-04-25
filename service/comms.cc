@@ -32,6 +32,7 @@ Comms::Comms()
     service_map_{},
     on_connect_callback_(std::bind(&Comms::OnConnect, this)),
     publisher_port_(""),
+    response_{},
     publications_{},
     subscriptions_{} {}
 
