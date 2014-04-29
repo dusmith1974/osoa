@@ -289,10 +289,12 @@ asio::io_service& Comms::io_service() { return io_service_; }
 Comms::ServiceMap& Comms::service_map() { return service_map_; }
 const Comms::ServiceMap& Comms::service_map() const { return service_map_; }
 
+const Comms::TopicVec& Comms::publications() const { return publications_; }
+const Comms::TopicVec& Comms::subscriptions() const { return subscriptions_; }
+
 Comms::OnConnectCallback& Comms::on_connect_callback() {
   return on_connect_callback_;
 }
-
 }  // namespace osoa
 
 // Timer examples

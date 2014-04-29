@@ -1,3 +1,6 @@
+try_lexical_cast (with optional)
+boost serialization (built in hpp for vector map)
+ a practical guide to c++ serialization
 thread for comms, asio post req to thread, callback in handler to pass to ui thread. (cpp11/chat_client)
 thread pool and strand (echo_server)
 -s third : into subscriptions vec, and make subscriptions

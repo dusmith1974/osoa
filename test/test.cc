@@ -61,12 +61,13 @@ Error Test::Start() {
     BOOST_LOG_SEV(*Logging::logger(), blt::debug)
       << "The quick brown fox jumped over the lazy dog.";
 
-  // TODO(ds) only log on success eg from handle_connect
-  code = comms()->Subscribe("data");
-  if (Error::kSuccess == code) BOOST_LOG_SEV(*Logging::logger(), blt::debug)
-    << "Subscribed to data";
+  for (const auto& subscription : comms()->subscriptions()) {
+    code = comms()->Subscribe(subscription.second);
+    if (Error::kSuccess == code) BOOST_LOG_SEV(*Logging::logger(), blt::debug)
+      << "Subscribed to data";
+  }
 
-  auto result = comms()->Connect("osoa");
+  auto result = comms()->Connect("35007");
   if (result) BOOST_LOG_SEV(*Logging::logger(), blt::info)
     << *TrimLastNewline(&*result);
   result = comms()->Connect("osoa");

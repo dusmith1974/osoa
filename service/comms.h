@@ -58,6 +58,8 @@ class Comms final : boost::noncopyable {
 #pragma GCC diagnostic pop
  public:
   typedef std::function<std::string()> OnConnectCallback;
+  typedef std::pair<std::string, std::string> ServiceTopicPair;
+  typedef std::vector<ServiceTopicPair> TopicVec;
 
   Comms();
   ~Comms();
@@ -92,13 +94,16 @@ class Comms final : boost::noncopyable {
   // Accepts a function pointer that overrides the default OnConnect callback.
   void set_on_connect_callback(OnConnectCallback val);
 
+  // Returns the list of publications.
+  const TopicVec& publications() const;
+
+  // Returns the list of subscriptions.
+  const TopicVec& subscriptions() const;
  private:
   typedef std::pair<std::shared_ptr<tcp::socket>,
                     std::shared_ptr<tcp::resolver::iterator>> SocketPointPair;
 
   typedef std::map<std::string, SocketPointPair> ServiceMap;
-  typedef std::pair<std::string, std::string> ServiceTopicPair;
-  typedef std::vector<ServiceTopicPair> TopicVec;
   typedef std::vector<std::string> UriVec;
 
   // The default OnConnect callback handler. Usually changed by the owner
@@ -160,9 +165,9 @@ class tcp_connection
   void start() {
     msg_ = "first publish\r\n";
 
-  asio::async_write(socket_, asio::buffer(msg_),
-    boost::bind(&tcp_connection::handle_write, shared_from_this(),
-      asio::placeholders::error, asio::placeholders::bytes_transferred));
+    asio::async_write(socket_, asio::buffer(msg_),
+      boost::bind(&tcp_connection::handle_write, shared_from_this(),
+        asio::placeholders::error, asio::placeholders::bytes_transferred));
   }
 
  private:
