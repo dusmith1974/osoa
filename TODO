@@ -1,3 +1,4 @@
+wrap enum class in class for index into array w/o cast (SO duck)
 pub/sub support different publications
  read on write, read will be subscriptions, eg. +timing -timing +core -core
 try_lexical_cast (with optional)
