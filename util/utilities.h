@@ -32,4 +32,14 @@ std::string* TrimLastNewline(std::string* str);
 
 }  // namespace osoa
 
+// TODO(ds) mv to impl or inl.
+template <typename charT, typename traits>
+inline std::basic_istream<charT,traits>& ignore_line(std::basic_istream<
+    charT,traits>& strm) {
+  strm.ignore(std::numeric_limits<std::streamsize>::max(),
+              strm.widen('\n'));
+
+   return strm;
+}
+
 #endif  // UTIL_UTILITIES_H_
