@@ -30,8 +30,6 @@ template<class T> void unused(const T &);
 // Removes EOL chars from end of strings.
 std::string* TrimLastNewline(std::string* str);
 
-}  // namespace osoa
-
 // TODO(ds) mv to impl or inl.
 template <typename charT, typename traits>
 inline std::basic_istream<charT,traits>& ignore_line(std::basic_istream<
@@ -41,5 +39,6 @@ inline std::basic_istream<charT,traits>& ignore_line(std::basic_istream<
 
    return strm;
 }
+}  // namespace osoa
 
 #endif  // UTIL_UTILITIES_H_
