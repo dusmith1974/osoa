@@ -17,6 +17,8 @@
 
 #include "util/utilities.h"
 
+#include <cmath>
+
 #include "boost/algorithm/string/trim.hpp"
 
 namespace osoa {
@@ -32,5 +34,29 @@ std::string* TrimLastNewline(std::string* str) {
   return str;
 }
 
-}  // namespace osoa
+int BitNum(int bit_val) {
+  return log2(bit_val) / log2(2);
+}
 
+void Round(int places, double* val) {
+  if (!val || 1 > places) return;
+
+  int factor = static_cast<int>(pow(10.0, places));
+  *val = (*val >= 0.0) ?
+    floor(*val * factor + 0.5) / factor :
+    ceil(*val * factor - 0.5) / factor;
+}
+
+bool EqualToPlaces(double lhs, double rhs, int places) {
+  return (abs(lhs - rhs) < pow(10.0, -places));
+}
+
+bool ApproximatelyEqual(float a, float b, float epsilon) {
+  return fabs(a - b) <= ((fabs(a) < fabs(b) ? fabs(b) : fabs(a)) * epsilon);
+}
+
+bool EssentiallyEqual(float a, float b, float epsilon) {
+  return fabs(a - b) <= ((fabs(a) > fabs(b) ? fabs(b) : fabs(a)) * epsilon);
+}
+
+}  // namespace osoa

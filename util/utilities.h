@@ -39,6 +39,21 @@ inline std::basic_istream<charT,traits>& ignore_line(std::basic_istream<
 
    return strm;
 }
-}  // namespace osoa
 
+// Returns the bit position for the given bitmask value, e.g. BitNum(256) = 8.
+int BitNum(int bit_val);
+
+// Rounds a double to n places.
+void Round(int places, double* val);
+
+// Compares a double to n places.
+bool EqualToPlaces(double lhs, double rhs, int places);
+
+// http://stackoverflow.com/questions/3728783/difference-among-approximatelyequal-and-essentiallyequal-in-the-art-of-computer
+// std::numeric_limits<double>::epsilon
+bool ApproximatelyEqual(float a, float b, float epsilon);
+bool EssentiallyEqual(float a, float b, float epsilon);
+
+
+}  // namespace osoa
 #endif  // UTIL_UTILITIES_H_
