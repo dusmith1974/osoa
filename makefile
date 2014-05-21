@@ -72,5 +72,5 @@ $(BIN_DIR):
 
 .PHONY: clean
 clean :
-	rm -f numbers output.log
+	rm -f output.log
 	rm -rf $(OBJ_BASE) $(BIN_DIR) *.o *.d
