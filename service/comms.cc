@@ -33,8 +33,8 @@ Comms::Comms()
     on_connect_callback_(std::bind(&Comms::OnConnect, this)),
     publisher_port_(""),
     response_{},
-    publications_{},
-    subscriptions_{} {}
+    subscriptions_{},
+    topic_message_maps_{} {}
 
 Comms::~Comms() {}
 
@@ -71,8 +71,6 @@ Error Comms::Listen(const std::string& port) {
 Error Comms::PublishTopics(const std::string& port,
                            const std::vector<std::string>& topics) {
   set_publisher_port(port);
-  server_ = std::unique_ptr<tcp_server>(new tcp_server(&io_service_,
-                                        ResolvePortNumber(port)));
 
   for (const auto& topic : topics) {
     Error code = PublishTopic(topic);
@@ -80,6 +78,10 @@ Error Comms::PublishTopics(const std::string& port,
       return code;
   }
 
+  server_ = std::unique_ptr<tcp_server>(
+      new tcp_server(&io_service_,
+                     ResolvePortNumber(port),
+                     topic_message_maps_["data"]));
   try {
     io_service().run();
   } catch (std::exception& e) {
@@ -107,6 +109,7 @@ Error Comms::ResolveServices(const std::vector<std::string>& service_uris) {
     // subcriptions container.
     if (3 == uri.size())
       subscriptions_.push_back(std::make_pair(
+            // TODO(ds) wrap enum class in class to remove need for cast - see SO duck eggs.
             uri[static_cast<UriVec::size_type>(Uri::kService)],
             uri[static_cast<UriVec::size_type>(Uri::kTopic)]));
 
@@ -250,6 +253,14 @@ void Comms::set_publisher_port(const std::string& val) {
   publisher_port_ = val;
 }
 
+Comms::TopicMessageMaps& Comms::topic_message_maps() {
+  return const_cast<TopicMessageMaps&>(static_cast<const Comms&>(*this).topic_message_maps());
+}
+
+const Comms::TopicMessageMaps& Comms::topic_message_maps() const {
+  return topic_message_maps_;
+}
+
 // Provides a default implementation for the OnConnect callback handler,
 // usually the owning class would make a call to set_on_connect_callback to
 // provide their own functionality for when a connection is made to the
@@ -264,7 +275,12 @@ Error Comms::PublishTopic(const std::string& topic) {
   BOOST_LOG_SEV(*Logging::logger(), blt::debug)
     << "Publishing topic <" << publisher_port() << ":" << topic << ">";
 
-  publications_.push_back(std::make_pair(publisher_port(), topic));
+  // no need for publications as topicvec, use topicmessagemaps to hold messages per topic.
+  //publications_.push_back(std::make_pair(publisher_port(), topic));
+
+  // Ensure the topic message map exists..
+  auto& topic_message_map = topic_message_maps()[topic];
+  topic_message_map[0] = "1ST MSG.\r\n";
 
   return Error::kSuccess;
 }
@@ -289,7 +305,6 @@ asio::io_service& Comms::io_service() { return io_service_; }
 Comms::ServiceMap& Comms::service_map() { return service_map_; }
 const Comms::ServiceMap& Comms::service_map() const { return service_map_; }
 
-const Comms::TopicVec& Comms::publications() const { return publications_; }
 const Comms::TopicVec& Comms::subscriptions() const { return subscriptions_; }
 
 Comms::OnConnectCallback& Comms::on_connect_callback() {

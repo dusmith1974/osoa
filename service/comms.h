@@ -61,6 +61,10 @@ class Comms final : boost::noncopyable {
   typedef std::pair<std::string, std::string> ServiceTopicPair;
   typedef std::vector<ServiceTopicPair> TopicVec;
 
+  // TODO(ds) _fwd.h
+  typedef std::map<long, std::string> TopicMessageMap;
+  typedef std::map<std::string, TopicMessageMap> TopicMessageMaps;
+
   Comms();
   ~Comms();
 
@@ -106,6 +110,7 @@ class Comms final : boost::noncopyable {
   typedef std::map<std::string, SocketPointPair> ServiceMap;
   typedef std::vector<std::string> UriVec;
 
+
   // The default OnConnect callback handler. Usually changed by the owner
   // through a call to set_on_connect_callback.
   std::string OnConnect();
@@ -132,6 +137,9 @@ class Comms final : boost::noncopyable {
   const std::string& publisher_port() const;
   void set_publisher_port(const std::string& val);
 
+  Comms::TopicMessageMaps& topic_message_maps();
+  const Comms::TopicMessageMaps& topic_message_maps() const;
+
   asio::io_service io_service_;
   std::unique_ptr<tcp_server> server_;
 
@@ -143,8 +151,11 @@ class Comms final : boost::noncopyable {
 
   std::string publisher_port_;
   asio::streambuf response_;
-  TopicVec publications_;
+  //TopicVec publications_;
   TopicVec subscriptions_;
+
+  // TODO(ds) SWMR shared_lock (for multiple producers) - boost dev
+  TopicMessageMaps topic_message_maps_;
 };
 
 // TODO(ds) mv impl to cc
@@ -156,48 +167,76 @@ class tcp_connection
  public:
   typedef boost::shared_ptr<tcp_connection> pointer;
 
-  static pointer create(asio::io_service* io_service) {
-    return pointer(new tcp_connection(io_service));
+  static pointer create(asio::io_service* io_service,
+                        const Comms::TopicMessageMap& messages) {
+    return pointer(new tcp_connection(io_service, messages));
   }
 
   tcp::socket& socket() { return socket_; }
 
   void start() {
-    msg_ = "first publish\r\n";
+    //msg_ = "first publish\r\n";
 
-    asio::async_write(socket_, asio::buffer(msg_),
-      boost::bind(&tcp_connection::handle_write, shared_from_this(),
-        asio::placeholders::error, asio::placeholders::bytes_transferred));
+    if (!topic_message_map_.empty()) {
+      // TODO(ds) pump will never start if no initial message is present?
+      last_message_ = topic_message_map_.begin();
+      asio::async_write(socket_, asio::buffer(topic_message_map_.begin()->second),
+                        boost::bind(&tcp_connection::handle_write,
+                                    shared_from_this(),
+                                    asio::placeholders::error,
+                                    asio::placeholders::bytes_transferred));
+    }
   }
 
  private:
-  explicit tcp_connection(asio::io_service* io_service)
-    : socket_(*io_service), msg_("") {
+  explicit tcp_connection(asio::io_service* io_service,
+                          const Comms::TopicMessageMap& messages)
+    : socket_(*io_service),
+      msg_(""),
+      topic_message_map_(messages),
+      last_message_{} {
   }
 
   void handle_write(const boost::system::error_code& /*error*/,
-    size_t /*bytes_transferred*/) {
-
-  asio::async_write(socket_, asio::buffer(msg_),
-    boost::bind(&tcp_connection::handle_write, shared_from_this(),
-      asio::placeholders::error, asio::placeholders::bytes_transferred));
+                    size_t /*bytes_transferred*/) {
+    // TODO(ds) wait for next message when empty
+    //   condition var, signal?
+    if (std::next(last_message_) != topic_message_map_.end()) {
+      // Write the next message.
+      ++last_message_;
+      asio::async_write(socket_, asio::buffer(last_message_->second),
+        boost::bind(&tcp_connection::handle_write, shared_from_this(),
+          asio::placeholders::error, asio::placeholders::bytes_transferred));
+    }
   }
 
   tcp::socket socket_;
   std::string msg_;
+
+  // TODO(ds) mv map to comms (topicvec?) >1 connection will share data
+  //std::map<long, std::string> msgs_;
+
+  // TODO(ds) maintain our own TopicMessageMapS and set any {TopicMessageMap}
+  // through the ctor to handle many topics. Just use a single topic for now.
+  const Comms::TopicMessageMap& topic_message_map_;
+  Comms::TopicMessageMap::const_iterator last_message_;
 };
 
+// TODO(ds) one tcp_server per group of topics on the same port.
 class tcp_server {
  public:
-  tcp_server(asio::io_service* io_service, int port)
-    : acceptor_(*io_service, tcp::endpoint(tcp::v4(), port)) {
+  tcp_server(asio::io_service* io_service,
+             int port,
+             const Comms::TopicMessageMap& messages)
+      : acceptor_(*io_service, tcp::endpoint(tcp::v4(), port)),
+        topic_message_map_(messages)  {
     start_accept();
   }
 
  private:
   void start_accept() {
     tcp_connection::pointer new_connection =
-      tcp_connection::create(&acceptor_.get_io_service());
+      tcp_connection::create(&acceptor_.get_io_service(), topic_message_map_);
 
     acceptor_.async_accept(new_connection->socket(),
       boost::bind(&tcp_server::handle_accept, this, new_connection,
@@ -213,6 +252,7 @@ class tcp_server {
   }
 
   tcp::acceptor acceptor_;
+  const Comms::TopicMessageMap& topic_message_map_;
 };
 }  // namespace osoa
 
