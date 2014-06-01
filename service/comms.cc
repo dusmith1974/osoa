@@ -23,6 +23,7 @@
 
 #include "service/logging.h"
 #include "service/service.h"
+#include "util/utilities.h"
 
 namespace osoa {
 
@@ -177,7 +178,7 @@ Error Comms::Subscribe(const std::string& subscription) {
 void Comms::handle_connect(const boost::system::error_code& err,
                            const ServiceMap::mapped_type& socket_pair) {
   if (!err) {
-    asio::async_read_until(*socket_pair.first, response_, "\r\n",
+    asio::async_read_until(*socket_pair.first, response_, "\n",
         boost::bind(&Comms::handle_read, this, asio::placeholders::error,
                     socket_pair));
   } else {
@@ -196,7 +197,7 @@ void Comms::handle_read(const boost::system::error_code& err,
 
     std::cout << topic_data << std::endl;
 
-    asio::async_read_until(*socket_pair.first, response_, "\r\n",
+    asio::async_read_until(*socket_pair.first, response_, "\n",
         boost::bind(&Comms::handle_read, this, asio::placeholders::error,
                     socket_pair));
   } else {
@@ -241,6 +242,19 @@ optional<std::string> Comms::Connect(const std::string& service) const {
   return boost::optional<std::string>(ss.str());
 }
 
+void Comms::AddTopicMessage(const std::string& topic, const std::string& message, long num) {
+  if (message.empty()) return;
+
+  auto& topic_message_map = topic_message_maps()[topic];
+
+  // Add the message to the topic map (and make sure it has \n at the end).
+  if (message[message.size() - 1] != '\n') {
+    topic_message_map[num] = message + "\n";
+  } else {
+    topic_message_map[num] = message;
+  }
+}
+
 void Comms::set_on_connect_callback(OnConnectCallback val) {
   on_connect_callback_ = val;
 }
@@ -280,7 +294,7 @@ Error Comms::PublishTopic(const std::string& topic) {
 
   // Ensure the topic message map exists..
   auto& topic_message_map = topic_message_maps()[topic];
-  topic_message_map[0] = "1ST MSG.\r\n";
+  topic_message_map[0] = "1ST MSG.\n";
 
   return Error::kSuccess;
 }
@@ -311,48 +325,3 @@ Comms::OnConnectCallback& Comms::on_connect_callback() {
   return on_connect_callback_;
 }
 }  // namespace osoa
-
-// Timer examples
-// #include "boost/bind.hpp"
-// #include "boost/date_time/posix_time/posix_time.hpp"
-
-/*void print(const boost::system::error_code&) {
-  std::cout << "async waited" << std::endl;
-}
-
-void print_count(const boost::system::error_code&,
-                 boost::asio::deadline_timer* t,
-                 int* count) {
-  if (*count < 5) {
-    std::cout << "count " << *count << std::endl;
-    ++(*count);
-
-    t->expires_at(t->expires_at() + boost::posix_time::seconds(1));
-    t->async_wait(boost::bind(print_count, boost::asio::placeholders::error, t, count));
-  }
-}*/
-
-/*void Comms::Test() {
-  // sync wait
-  boost::asio::io_service io;
-  boost::asio::deadline_timer t(io, boost::posix_time::seconds(1));
-  std::cout << "waiting" << std::endl;
-  t.wait();
-  std::cout << "waited" << std::endl;
-
-  // async wait
-  std::cout << "async wait" << std::endl;
-  boost::asio::deadline_timer t2(io, boost::posix_time::seconds(1));
-  t2.async_wait(&print);
-  io.run();
-
-  int count = 0;
-  boost::asio::deadline_timer t3(io, boost::posix_time::seconds(1));
-  t3.async_wait(boost::bind(print_count,
-    boost::asio::placeholders::error, &t3, &count));
-
-  io.reset();
-  io.run();
-
-  std::cout << "final countdown " << count << std::endl;
-}*/

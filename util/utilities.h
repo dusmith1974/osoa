@@ -15,8 +15,8 @@
 
 // General utility functions.
 
-#ifndef UTIL_UTILITIES_H_
-#define UTIL_UTILITIES_H_
+#ifndef OSOA_UTIL_UTILITIES_H_
+#define OSOA_UTIL_UTILITIES_H_
 
 #include <string>
 
@@ -56,4 +56,4 @@ bool EssentiallyEqual(float a, float b, float epsilon);
 
 
 }  // namespace osoa
-#endif  // UTIL_UTILITIES_H_
+#endif  // OSOA_UTIL_UTILITIES_H_

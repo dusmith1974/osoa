@@ -95,6 +95,8 @@ class Comms final : boost::noncopyable {
   // Calls upon the service. Returns the data is successful.
   optional<std::string> Connect(const std::string& service) const;
 
+  void AddTopicMessage(const std::string& topic, const std::string& message, long num);
+
   // Accepts a function pointer that overrides the default OnConnect callback.
   void set_on_connect_callback(OnConnectCallback val);
 
@@ -201,8 +203,12 @@ class tcp_connection
                     size_t /*bytes_transferred*/) {
     // TODO(ds) wait for next message when empty
     //   condition var, signal?
+    /*while (std::next(last_message_) == topic_message_map_.end()) {
+      std::cout << "waiting for data.\n";
+      sleep(1);
+    }*/
+
     if (std::next(last_message_) != topic_message_map_.end()) {
-      // Write the next message.
       ++last_message_;
       asio::async_write(socket_, asio::buffer(last_message_->second),
         boost::bind(&tcp_connection::handle_write, shared_from_this(),
