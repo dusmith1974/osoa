@@ -21,7 +21,7 @@
 #include "boost/program_options.hpp"
 
 #include "service/args.h"
-#include "service/comms.h"
+#include "service/comms/comms.h"
 #include "service/logging.h"
 #include "service/service.h"
 #include "util/utilities.h"
