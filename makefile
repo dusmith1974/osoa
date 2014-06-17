@@ -5,11 +5,12 @@ CXXFLAGS += -std=c++11
 
 ITEM = item
 SERVICE = service
+COMMS = $(SERVICE)/comms
 UTIL = util
 TEST = test
 BASE = .
 
-PRJS := $(ITEM) $(SERVICE) $(UTIL) $(BASE) $(TEST)
+PRJS := $(ITEM) $(SERVICE) $(COMMS) $(UTIL) $(BASE) $(TEST)
 
 LIB_OSOA_BASE = libosoa-mt
 ifeq ($(MAKECMDGOALS), debug)

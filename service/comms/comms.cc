@@ -13,7 +13,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "service/comms.h"
+#include "service/comms/comms.h"
+#include "service/comms/server.h"
+#include "service/logging.h"
+#include "service/service.h"
 
 /*#include <iostream>
 #include <thread>
@@ -21,8 +24,6 @@
 #include "boost/algorithm/string.hpp"
 #include "boost/array.hpp"
 
-#include "service/logging.h"
-#include "service/service.h"
 #include "util/utilities.h"*/
 
 namespace osoa {
@@ -49,15 +50,23 @@ Error Comms::PublishTopics(const std::string& port) {
 
 Error Comms::Subscribe(const std::string& subscription) {
     try {
+      (void)subscription;
       // client.start();
     } catch (const std::exception& ex) {
       BOOST_LOG_SEV(*Logging::logger(), blt::debug)
         << "Exception thrown in Comms::Subscribe <" << ex.what() << ">";
       return Error::kCouldNotSubscribeToService;
     }
-  }
 
   return Error::kSuccess;
+}
+
+const std::string& Comms::publisher_port() const {
+  return publisher_port_;
+}
+
+void Comms::set_publisher_port(const std::string& val) {
+  publisher_port_ = val;
 }
 
 }  // namespace osoa

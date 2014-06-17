@@ -46,9 +46,6 @@ Error Test::Initialize(int argc, const char *argv[]) {
   config.add_options()
     ("msg-count,o", msg_count_option, "number of msgs");
 
-  // Set the callback handler for the listening port when connections are made.
-  comms()->set_on_connect_callback(std::bind(&Test::OnConnect, this));
-
   return Service::Initialize(argc, argv);
 }
 
@@ -61,24 +58,10 @@ Error Test::Start() {
     BOOST_LOG_SEV(*Logging::logger(), blt::debug)
       << "The quick brown fox jumped over the lazy dog.";
 
-  for (const auto& subscription : comms()->subscriptions()) {
-    code = comms()->Subscribe(subscription.second);
-    if (Error::kSuccess == code) BOOST_LOG_SEV(*Logging::logger(), blt::debug)
-      << "Subscribed to data";
-  }
-
-  auto result = comms()->Connect("35007");
-  if (result) BOOST_LOG_SEV(*Logging::logger(), blt::info)
-    << *TrimLastNewline(&*result);
-  result = comms()->Connect("osoa");
-  if (result) BOOST_LOG_SEV(*Logging::logger(), blt::info)
-    << *TrimLastNewline(&*result);
-  result = comms()->Connect("daytime");
-  if (result) BOOST_LOG_SEV(*Logging::logger(), blt::info)
-    << *TrimLastNewline(&*result);
-  result = comms()->Connect("daytime");
-  if (result) BOOST_LOG_SEV(*Logging::logger(), blt::info)
-    << *TrimLastNewline(&*result);
+  // TODO(ds) use server arg
+  code = comms()->Subscribe("127.0.0.1");
+  if (Error::kSuccess == code) BOOST_LOG_SEV(*Logging::logger(), blt::debug)
+    << "Subscribed to data";
 
   return Error::kSuccess;
 }

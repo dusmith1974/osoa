@@ -18,15 +18,40 @@
 #ifndef SERVICE__COMMS__CLIENT_H_
 #define SERVICE__COMMS__CLIENT_H_
 
-#include <iostream>
+#include <boost/asio.hpp>
+
+using boost::asio::ip::tcp;
+using boost::system::error_code;
+using boost::asio::deadline_timer;
 
 namespace osoa {
 
-// The Client class.
-class Client /*final : public Base*/ {
+// Async TCP client to a pub/sub server.
+class Client final {
  public:
-  Client();
-  /*virtual*/ ~Client();
+  Client(boost::asio::io_service& io_service);
+  ~Client();
+
+  int Connect(int argc, char* argv[]);
+  void Start(tcp::resolver::iterator endpoint_iter);
+  void Stop();
+
+ private:
+  void StartConnect(tcp::resolver::iterator endpoint_iter);
+
+  void HandleConnect(const error_code& ec,
+                     tcp::resolver::iterator endpoint_iter);
+  void StartRead();
+  void HandleRead(const error_code& ec);
+  void StartWrite();
+  void HandleWrite(const error_code& ec);
+  void CheckDeadline();
+
+  bool stopped_;
+  tcp::socket socket_;
+  boost::asio::streambuf input_buffer_;
+  deadline_timer deadline_;
+  deadline_timer heartbeat_timer_;
 };
 
 }  // namespace osoa

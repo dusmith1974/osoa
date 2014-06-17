@@ -19,10 +19,65 @@
 
 namespace osoa {
 
-Server::Server() {
+Server::Server(asio::io_service& io_service,
+     const tcp::endpoint& listen_endpoint)
+  : io_service_(io_service),
+    acceptor_(io_service, listen_endpoint) {
+  StartAccept();
 }
 
-Server::~Server() {
+int Server::Listen(int argc, char* argv[]) {
+  try {
+    using namespace std;
+
+    if (argc != 2) {
+      std::cerr << "Usage: server <listen_port>\n";
+      return 1;
+    }
+
+    asio::io_service io_service;
+    tcp::endpoint listen_endpoint(tcp::v4(), atoi(argv[1]));
+
+    Server server(io_service, listen_endpoint);
+    io_service.post(bind(&Server::PublishMessage, &server, "000"));
+
+    std::thread t([&](){ io_service.run(); });
+    std::string abc("abc");
+    for (;;) {
+      io_service.post(bind(&Server::PublishMessage, &server, abc));
+      sleep(1);
+    }
+
+    t.join();
+  }
+  catch (std::exception& e) {
+    std::cerr << "Exception: " << e.what() << "\n";
+  }
+
+  return 0;
+}
+
+void Server::StartAccept() {
+  TcpSessionPtr new_session(new TcpSession(io_service_, channel_));
+
+  acceptor_.async_accept(new_session->socket(),
+      bind(&Server::HandleAccept, this, new_session, _1));
+}
+
+void Server::HandleAccept(TcpSessionPtr session, const error_code& ec) {
+  if (!ec) {
+    for (const auto& msg : cache_) { // TODO(ds) use container adapter
+      session->Deliver(msg.second);
+    }
+    session->Start();
+  }
+
+  StartAccept();
+}
+
+void Server::PublishMessage(const std::string& msg) {
+  cache_[cache_.size() + 1] = msg;
+  channel_.Deliver(msg);
 }
 
 }  // namespcae osoa

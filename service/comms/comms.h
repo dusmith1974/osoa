@@ -18,25 +18,29 @@
 #ifndef SERVICE_COMMS_H_
 #define SERVICE_COMMS_H_
 
+#include "boost/noncopyable.hpp"
+
 /*#include <functional>
 #include <map>
-#include <memory>
-#include <string>
 #include <utility>
 #include <vector>
 
 #include "boost/asio.hpp"
 #include "boost/bind.hpp"
 #include "boost/enable_shared_from_this.hpp"
-#include "boost/noncopyable.hpp"
 #include "boost/optional.hpp"
-#include "boost/shared_ptr.hpp"
+#include "boost/shared_ptr.hpp" */
 
-#include "service/service_fwd.h"*/
 
-#include "service/comms/server.h"
+
+#include <memory>
+#include <string>
+
+#include "service/service_fwd.h"
 
 namespace osoa {
+
+class Server;
 
 /*namespace asio = boost::asio;
 
@@ -69,4 +73,5 @@ class Comms final : boost::noncopyable {
   std::string publisher_port_;
 };
 
+}  // naespace osoa
 #endif  // SERVICE_COMMS_H_

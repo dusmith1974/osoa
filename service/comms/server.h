@@ -18,17 +18,44 @@
 #ifndef SERVICE__COMMS__SERVER_H_
 #define SERVICE__COMMS__SERVER_H_
 
-#include <iostream>
+#include "boost/asio.hpp"
+
+#include "service/comms/tcp_session_fwd.h"
+
+using boost::asio::ip::tcp;
+using boost::system::error_code;
+
+/*using boost::asio::deadline_timer;
+using boost::bind;
+using boost::shared_ptr;
+using boost::system::error_code;
+
+namespace asio = boost::asio;
+namespace posix_time = boost::posix_time;*/
+
+namespace asio = boost::asio;
+namespace posix_time = boost::posix_time;
 
 namespace osoa {
 
 // The Server class.
-class Server /*final : public Base*/ {
+class Server final {
  public:
-  Server();
-  /*virtual*/ ~Server();
+  Server(asio::io_service& io_service,
+         const tcp::endpoint& listen_endpoint);
+
+  int Listen(int argc, char* argv[]);
+  void StartAccept();
+  void HandleAccept(TcpSessionPtr session, const error_code& ec);
+  void PublishMessage(const std::string& msg);
+
+ private:
+  asio::io_service& io_service_;
+  tcp::acceptor acceptor_;
+  Channel channel_;
+
+  std::map<long, std::string> cache_;
 };
 
 }  // namespace osoa
-
 #endif  // SERVICE__COMMS__SERVER_H_
