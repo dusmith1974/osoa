@@ -35,7 +35,8 @@ enum class Error {
   kCouldNotPublishTopics,
   kCannotParseArgs,
   kInvalidURI,
-  kCouldNotSubscribeToService
+  kCouldNotSubscribeToService,
+  kInvalidArgs
 };
 
 // A base class for services, providing common features for parsing args,
@@ -54,9 +55,10 @@ class Service {
   // Stops the service and disables logging.
   virtual Error Stop();
 
+  // TODO(ds) return to protected
+  std::shared_ptr<Comms> comms();
  protected:
   std::shared_ptr<Args> args();
-  std::shared_ptr<Comms> comms();
 
  private:
   typedef std::chrono::time_point<std::chrono::steady_clock> Timepoint;

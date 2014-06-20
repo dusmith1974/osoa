@@ -60,7 +60,7 @@ Error Service::Start() {
   // Either open an async listening port for subscribers to connect to
   // publications, or open a sync listening port for a simple iterative server.
   if (Error::kSuccess == code && args()->var_map().count("listening-port"))
-    code = comms()->PublishTopics(args()->listening_port());
+    code = comms()->PublishChannel(args()->listening_port());
 
   return code;
 }

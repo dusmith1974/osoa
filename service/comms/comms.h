@@ -18,6 +18,9 @@
 #ifndef SERVICE_COMMS_H_
 #define SERVICE_COMMS_H_
 
+#include <thread>
+
+#include "boost/asio.hpp"
 #include "boost/noncopyable.hpp"
 
 /*#include <functional>
@@ -25,13 +28,10 @@
 #include <utility>
 #include <vector>
 
-#include "boost/asio.hpp"
 #include "boost/bind.hpp"
 #include "boost/enable_shared_from_this.hpp"
 #include "boost/optional.hpp"
 #include "boost/shared_ptr.hpp" */
-
-
 
 #include <memory>
 #include <string>
@@ -42,9 +42,9 @@ namespace osoa {
 
 class Server;
 
-/*namespace asio = boost::asio;
+namespace asio = boost::asio;
 
-using boost::asio::ip::tcp;
+/*using boost::asio::ip::tcp;
 using boost::optional;*/
 
 // Provides a TCP publisher-subscriber link between a server and clients.
@@ -58,19 +58,24 @@ class Comms final : boost::noncopyable {
 
   // Opens an async listening port for the published topics.
   // Returns kSuccess.
-  Error PublishTopics(const std::string& port
-                      /*,const std::vector<std::string>& topics*/);
+  Error PublishChannel(const std::string& port);
 
-  Error Subscribe(const std::string& subscription);
+  void PublishMessage(const std::string& msg);
 
-  void AddTopicMessage(const std::string& topic, const std::string& message);
+  Error Subscribe(const std::string& host, const std::string& port);
+
+  void Shutdown();
 
   const std::string& publisher_port() const;
   void set_publisher_port(const std::string& val);
 
-  std::unique_ptr<Server> server_;
+  asio::io_service& io_service();
 
+ private:
+  std::unique_ptr<Server> server_;
   std::string publisher_port_;
+  asio::io_service io_service_;
+  std::thread publisher_thread_;
 };
 
 }  // naespace osoa

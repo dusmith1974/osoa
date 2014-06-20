@@ -21,6 +21,7 @@
 #include "boost/asio.hpp"
 
 #include "service/comms/tcp_session_fwd.h"
+#include "service/comms/channel.h"
 
 using boost::asio::ip::tcp;
 using boost::system::error_code;
@@ -44,7 +45,7 @@ class Server final {
   Server(asio::io_service& io_service,
          const tcp::endpoint& listen_endpoint);
 
-  int Listen(int argc, char* argv[]);
+  //int Listen(const std::string& port);
   void StartAccept();
   void HandleAccept(TcpSessionPtr session, const error_code& ec);
   void PublishMessage(const std::string& msg);

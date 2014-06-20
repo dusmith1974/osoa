@@ -58,8 +58,8 @@ Error Test::Start() {
     BOOST_LOG_SEV(*Logging::logger(), blt::debug)
       << "The quick brown fox jumped over the lazy dog.";
 
-  // TODO(ds) use server arg
-  code = comms()->Subscribe("127.0.0.1");
+  // TODO(ds) use server args
+  code = comms()->Subscribe("127.0.0.1", "8000");
   if (Error::kSuccess == code) BOOST_LOG_SEV(*Logging::logger(), blt::debug)
     << "Subscribed to data";
 
