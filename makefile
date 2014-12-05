@@ -55,7 +55,7 @@ $(OBJ_DIR)/%.d : %.cc
 endif
 
 $(BIN_DIR)/test: $(OBJS)
-	$(LINK.cc) $(OBJS) -dynamic -pthread -lboost_program_options -lboost_log_setup -lboost_log -lboost_system -lboost_thread -lboost_date_time -lboost_filesystem $(OUTPUT_OPTION)
+	$(LINK.cc) $(OBJS) -dynamic -pthread -lboost_program_options -lboost_log_setup -lboost_log -lboost_system -lboost_thread -lboost_date_time -lboost_filesystem -lboost_chrono $(OUTPUT_OPTION)
 	ctags -R --c-kinds=+cdefglmnpstuvx --extra=+f
 	cscope -Rb
 

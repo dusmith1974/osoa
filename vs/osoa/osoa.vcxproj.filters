@@ -1,0 +1,66 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="item">
+      <UniqueIdentifier>{c32e4d13-af1e-43b5-9ad5-e73dc700515b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="service">
+      <UniqueIdentifier>{f20db53a-5788-4443-ae0b-f9d2cbc75eb9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="util">
+      <UniqueIdentifier>{a4ee59c6-957e-437b-9419-fbcd59373839}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\item\item.cc">
+      <Filter>item</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\service\args.cc">
+      <Filter>service</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\service\logging.cc">
+      <Filter>service</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\service\service.cc">
+      <Filter>service</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\util\timing.cc">
+      <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\util\utilities.cc">
+      <Filter>util</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\item\item.h">
+      <Filter>item</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\item\item-inl.h">
+      <Filter>item</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\service\args.h">
+      <Filter>service</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\service\logging.h">
+      <Filter>service</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\service\logging_fwd.h">
+      <Filter>service</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\service\service.h">
+      <Filter>service</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\service\service_fwd.h">
+      <Filter>service</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\service\service-inl.h">
+      <Filter>service</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\util\timing.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\util\utilities.h">
+      <Filter>util</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

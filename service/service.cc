@@ -25,8 +25,8 @@
 namespace osoa {
 
 Service::Service()
-    : svc_start_time_(std::chrono::steady_clock::now()),
-      svc_end_time_(std::chrono::steady_clock::now()),
+    : svc_start_time_(boost::chrono::steady_clock::now()),
+      svc_end_time_(boost::chrono::steady_clock::now()),
       args_(new Args()),
       comms_(std::make_shared<Comms>()) {
 }
@@ -51,7 +51,7 @@ Error Service::Initialize(int argc, const char *argv[]) {
 Error Service::Start() {
   BOOST_LOG_SEV(*Logging::logger(), blt::info) << "Started the service.";
 
-  set_svc_start_time(std::chrono::steady_clock::now());
+  set_svc_start_time(boost::chrono::steady_clock::now());
 
   Error code = Error::kSuccess;
   /*if (args()->var_map().count("services"))
@@ -70,7 +70,7 @@ Error Service::Start() {
 Error Service::Stop() {
   BOOST_LOG_SEV(*Logging::logger(), blt::info) << "service stop";
 
-  set_svc_end_time(std::chrono::steady_clock::now());
+  set_svc_end_time(boost::chrono::steady_clock::now());
   BOOST_LOG_SEV(*Logging::logger(), blt::info) << "Service uptime: "
     << add_timestamp(std::make_pair(svc_start_time(), svc_end_time()));
 

@@ -20,18 +20,18 @@
 namespace osoa {
 
 std::string add_timestamp(const SteadyTimepointPair& timepoints) {
-  auto micro = std::chrono::duration_cast<std::chrono::microseconds>(
+  auto micro = boost::chrono::duration_cast<boost::chrono::microseconds>(
     timepoints.second - timepoints.first);
-  auto milli = std::chrono::duration_cast<std::chrono::milliseconds>(
+  auto milli = boost::chrono::duration_cast<boost::chrono::milliseconds>(
     timepoints.second - timepoints.first);
-  auto sec = std::chrono::duration_cast<std::chrono::seconds>(
+  auto sec = boost::chrono::duration_cast<boost::chrono::seconds>(
     timepoints.second - timepoints.first);
 
   std::stringstream ss;
   auto elapsed = timepoints.second - timepoints.first;
   ss << elapsed.count() << " ticks of "
-    << std::chrono::steady_clock::period::num
-    << "/" << std::chrono::steady_clock::period::den << " (";
+    << boost::chrono::steady_clock::period::num
+    << "/" << boost::chrono::steady_clock::period::den << " (";
 
   if (sec.count())
     ss << sec.count() << " seconds)";

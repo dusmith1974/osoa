@@ -16,13 +16,13 @@
 #ifndef UTIL_TIMING_H_
 #define UTIL_TIMING_H_
 
-#include <chrono>
+#include "boost/chrono.hpp"
 #include <string>
 #include <utility>
 
 namespace osoa {
 
-typedef std::chrono::time_point<std::chrono::steady_clock> SteadyTimepoint;
+typedef boost::chrono::time_point<boost::chrono::steady_clock> SteadyTimepoint;
 typedef std::pair<SteadyTimepoint, SteadyTimepoint> SteadyTimepointPair;
 
 std::string add_timestamp(const SteadyTimepointPair& timepoints);

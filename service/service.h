@@ -19,7 +19,7 @@
 #ifndef SERVICE_SERVICE_H_
 #define SERVICE_SERVICE_H_
 
-#include <chrono>
+#include "boost/chrono.hpp"
 #include <memory>
 
 namespace osoa {
@@ -61,7 +61,7 @@ class Service {
   std::shared_ptr<Args> args();
 
  private:
-  typedef std::chrono::time_point<std::chrono::steady_clock> Timepoint;
+  typedef boost::chrono::time_point<boost::chrono::steady_clock> Timepoint;
 
   const Timepoint& svc_start_time() const;
   void set_svc_start_time(const Timepoint& val);
