@@ -10,6 +10,9 @@
     <Filter Include="util">
       <UniqueIdentifier>{a4ee59c6-957e-437b-9419-fbcd59373839}</UniqueIdentifier>
     </Filter>
+    <Filter Include="service\comms">
+      <UniqueIdentifier>{9f52c662-ad40-4166-8f03-475e0dfe2c7b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\item\item.cc">
@@ -29,6 +32,24 @@
     </ClCompile>
     <ClCompile Include="..\..\util\utilities.cc">
       <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\service\comms\channel.cc">
+      <Filter>service\comms</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\service\comms\client.cc">
+      <Filter>service\comms</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\service\comms\comms.cc">
+      <Filter>service\comms</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\service\comms\server.cc">
+      <Filter>service\comms</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\service\comms\subscriber.cc">
+      <Filter>service\comms</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\service\comms\tcp_session.cc">
+      <Filter>service\comms</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -61,6 +82,30 @@
     </ClInclude>
     <ClInclude Include="..\..\util\utilities.h">
       <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\service\comms\channel.h">
+      <Filter>service\comms</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\service\comms\client.h">
+      <Filter>service\comms</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\service\comms\comms.h">
+      <Filter>service\comms</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\service\comms\server.h">
+      <Filter>service\comms</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\service\comms\subscriber.h">
+      <Filter>service\comms</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\service\comms\subscriber_fwd.h">
+      <Filter>service\comms</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\service\comms\tcp_session.h">
+      <Filter>service\comms</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\service\comms\tcp_session_fwd.h">
+      <Filter>service\comms</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

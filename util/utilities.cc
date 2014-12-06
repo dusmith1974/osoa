@@ -27,6 +27,11 @@ namespace osoa {
 // warnings about unused parameters.
 template<class T> void unused(const T&) {}
 
+#if defined(_MSC_VER) && _MSC_VER >= 1400 
+#pragma warning(push) 
+#pragma warning(disable:4996) 
+#endif 
+
 // Remove the right hand side end of line characters from the given str.
 std::string* TrimLastNewline(std::string* str) {
   if (!str) return nullptr;
@@ -34,8 +39,12 @@ std::string* TrimLastNewline(std::string* str) {
   return str;
 }
 
+#if defined(_MSC_VER) && _MSC_VER >= 1400 
+#pragma warning(pop) 
+#endif
+
 int BitNum(int bit_val) {
-  return log2(bit_val) / log2(2);
+  return static_cast<int>(log2(bit_val) / log2(2));
 }
 
 void Round(int places, double* val) {

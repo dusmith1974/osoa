@@ -13,6 +13,12 @@
   <ItemGroup>
     <ClCompile Include="..\..\item\item.cc" />
     <ClCompile Include="..\..\service\args.cc" />
+    <ClCompile Include="..\..\service\comms\channel.cc" />
+    <ClCompile Include="..\..\service\comms\client.cc" />
+    <ClCompile Include="..\..\service\comms\comms.cc" />
+    <ClCompile Include="..\..\service\comms\server.cc" />
+    <ClCompile Include="..\..\service\comms\subscriber.cc" />
+    <ClCompile Include="..\..\service\comms\tcp_session.cc" />
     <ClCompile Include="..\..\service\logging.cc" />
     <ClCompile Include="..\..\service\service.cc" />
     <ClCompile Include="..\..\util\timing.cc" />
@@ -22,6 +28,14 @@
     <ClInclude Include="..\..\item\item-inl.h" />
     <ClInclude Include="..\..\item\item.h" />
     <ClInclude Include="..\..\service\args.h" />
+    <ClInclude Include="..\..\service\comms\channel.h" />
+    <ClInclude Include="..\..\service\comms\client.h" />
+    <ClInclude Include="..\..\service\comms\comms.h" />
+    <ClInclude Include="..\..\service\comms\server.h" />
+    <ClInclude Include="..\..\service\comms\subscriber.h" />
+    <ClInclude Include="..\..\service\comms\subscriber_fwd.h" />
+    <ClInclude Include="..\..\service\comms\tcp_session.h" />
+    <ClInclude Include="..\..\service\comms\tcp_session_fwd.h" />
     <ClInclude Include="..\..\service\logging.h" />
     <ClInclude Include="..\..\service\logging_fwd.h" />
     <ClInclude Include="..\..\service\service-inl.h" />
