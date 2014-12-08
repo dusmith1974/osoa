@@ -19,6 +19,8 @@
 
 class logger;
 
+__declspec(dllexport) void getRidOfLNK4221(){}
+
 namespace osoa {
 
 }  // namespace osoa

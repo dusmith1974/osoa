@@ -15,9 +15,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\item\item.cc">
-      <Filter>item</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\service\args.cc">
       <Filter>service</Filter>
     </ClCompile>
@@ -50,6 +47,9 @@
     </ClCompile>
     <ClCompile Include="..\..\service\comms\tcp_session.cc">
       <Filter>service\comms</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\item\item.cc">
+      <Filter>item</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

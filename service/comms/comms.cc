@@ -13,6 +13,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#if defined(_MSC_VER) && _MSC_VER >= 1400 
+#pragma warning(push) 
+#pragma warning(disable:4996) 
+#pragma warning(disable:4503) 
+#endif
+
 #include "service/comms/comms.h"
 
 
@@ -42,6 +48,7 @@ Comms::~Comms() {
 
 // TODO(ds) trap sigint with asio and stop comms logging threads etc.
 
+// TODO(DS) remove? unused?
 Error Comms::PublishChannel(const std::string& port) {
   // TODO(ds) need property?
   //set_publisher_port(port);
@@ -61,7 +68,7 @@ Error Comms::PublishChannel(const std::string& port) {
     std::string abc("abc");
     for (;;) {
       io_service_.post(bind(&Server::PublishMessage, server_.get(), abc));
-      sleep(1);
+      boost::this_thread::sleep(boost::posix_time::seconds(1));
       break;
     }
 
@@ -125,3 +132,7 @@ asio::io_service& Comms::io_service() {
 
 
 }  // namespace osoa
+
+//#if defined(_MSC_VER) && _MSC_VER >= 1400 
+//#pragma warning(pop)  
+//#endif

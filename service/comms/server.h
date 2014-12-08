@@ -18,7 +18,14 @@
 #ifndef SERVICE__COMMS__SERVER_H_
 #define SERVICE__COMMS__SERVER_H_
 
-#include "boost/asio.hpp"
+#if defined(_MSC_VER) && _MSC_VER >= 1400 
+#pragma warning(push) 
+#pragma warning(disable:4996) 
+#endif
+#include <boost/asio.hpp>
+//#if defined(_MSC_VER) && _MSC_VER >= 1400 
+//#pragma warning(pop)  
+//#endif
 
 #include "service/comms/tcp_session_fwd.h"
 #include "service/comms/channel.h"

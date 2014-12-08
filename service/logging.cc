@@ -18,6 +18,10 @@
 #include <iostream>
 #include <sstream>
 
+#if defined(_MSC_VER) && _MSC_VER >= 1400 
+#pragma warning(push) 
+#pragma warning(disable:4996) 
+#endif
 #include "boost/asio/ip/host_name.hpp"
 #include "boost/log/attributes/current_process_name.hpp"
 #include "boost/log/expressions.hpp"
@@ -25,6 +29,9 @@
 #include "boost/log/support/date_time.hpp"
 #include "boost/log/utility/setup/common_attributes.hpp"
 #include "boost/log/utility/setup/console.hpp"
+#if defined(_MSC_VER) && _MSC_VER >= 1400 
+#pragma warning(pop)  
+#endif
 
 #include "service/args.h"
 #include "service/service.h"
@@ -159,9 +166,11 @@ void Logging::SetupLogFile(std::shared_ptr<const Args> args,
 void Logging::WriteLogHeader(std::shared_ptr<const Args> args) const {
   std::stringstream ss;
 
-  char* user_name = getenv("USER");
+  char* user_name;
+  size_t len;
+  _dupenv_s(&user_name, &len, "USER");
   if (!user_name)
-    user_name = getenv("USERNAME");
+    _dupenv_s(&user_name, &len, "USERNAME");
 
   std::string hostname = boost::asio::ip::host_name();
 

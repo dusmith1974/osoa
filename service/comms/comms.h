@@ -18,9 +18,15 @@
 #ifndef SERVICE_COMMS_H_
 #define SERVICE_COMMS_H_
 
+#if defined(_MSC_VER) && _MSC_VER >= 1400 
+#pragma warning(push) 
+#pragma warning(disable:4996) 
+#pragma warning(disable:4503) 
+#endif
+
 #include <thread>
 
-#include "boost/asio.hpp"
+#include <boost/asio.hpp>
 #include "boost/noncopyable.hpp"
 
 /*#include <functional>
@@ -38,6 +44,7 @@
 
 #include "service/service_fwd.h"
 
+
 namespace osoa {
 
 class Server;
@@ -48,10 +55,14 @@ namespace asio = boost::asio;
 using boost::optional;*/
 
 // Provides a TCP publisher-subscriber link between a server and clients.
+#ifdef __GCC__
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Weffc++"
+#endif
 class Comms final : boost::noncopyable {
+#ifdef __GCC__
 #pragma GCC diagnostic pop
+#endif
  public:
   Comms();
   ~Comms();
@@ -77,6 +88,11 @@ class Comms final : boost::noncopyable {
   asio::io_service io_service_;
   std::thread publisher_thread_;
 };
+
+//#if defined(_MSC_VER) && _MSC_VER >= 1400 
+//#pragma warning(pop)  
+//#endif
+
 
 }  // naespace osoa
 #endif  // SERVICE_COMMS_H_

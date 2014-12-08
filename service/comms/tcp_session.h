@@ -21,7 +21,14 @@
 #include <deque>
 
 #include "boost/enable_shared_from_this.hpp"
-#include "boost/asio.hpp"
+#if defined(_MSC_VER) && _MSC_VER >= 1400 
+#pragma warning(push) 
+#pragma warning(disable:4996) 
+#endif
+#include <boost/asio.hpp>
+//#if defined(_MSC_VER) && _MSC_VER >= 1400 
+//#pragma warning(pop)  
+//#endif
 
 #include "service/comms/subscriber.h"
 
@@ -36,12 +43,16 @@ namespace osoa {
 class Channel;
 
 // The TcpSession class.
+#ifdef __GCC__
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Weffc++"
+#endif
 class TcpSession
   : public Subscriber,
     public boost::enable_shared_from_this<TcpSession> {
+#ifdef __GCC__
 #pragma GCC diagnostic pop
+#endif
  public:
   TcpSession(asio::io_service& io_service, Channel& ch);
 

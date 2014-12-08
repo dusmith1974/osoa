@@ -37,11 +37,11 @@ Args::Args()
       services_{},
       async_log_(false),
       auto_flush_log_(false),
-      rotation_size_(1e2),
+      rotation_size_(static_cast<int>(1e2)),
       config_(new po::options_description("Configuration:")),
       generic_(new po::options_description("Genric Options:")),
       hidden_(new po::options_description("Hidden Options:")),
-      var_map_(new po::variables_map()) {
+      var_map_(new po::variables_map) {
 }
 
 Args::~Args() {}
