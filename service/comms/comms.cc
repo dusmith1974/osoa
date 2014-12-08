@@ -13,26 +13,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#if defined(_MSC_VER) && _MSC_VER >= 1400 
-#pragma warning(push) 
-#pragma warning(disable:4996) 
-#pragma warning(disable:4503) 
-#endif
+#include "osoa_pch.h"
 
 #include "service/comms/comms.h"
-
 
 #include "service/comms/client.h"
 #include "service/comms/server.h"
 #include "service/logging.h"
 #include "service/service.h"
-
-/*#include <iostream>
-
-#include "boost/algorithm/string.hpp"
-#include "boost/array.hpp"
-
-#include "util/utilities.h"*/
 
 namespace osoa {
 
@@ -59,7 +47,7 @@ Error Comms::PublishChannel(const std::string& port) {
   }
 
   try {
-    tcp::endpoint listen_endpoint(tcp::v4(), atoi(port.c_str()));
+    tcp::endpoint listen_endpoint(tcp::v4(), static_cast<unsigned short>(atoi(port.c_str())));
     server_ = std::unique_ptr<Server>(new Server(io_service_, listen_endpoint));
 
     //io_service_.post(bind(&Server::PublishMessage, server_.get(), "000"));
@@ -132,7 +120,3 @@ asio::io_service& Comms::io_service() {
 
 
 }  // namespace osoa
-
-//#if defined(_MSC_VER) && _MSC_VER >= 1400 
-//#pragma warning(pop)  
-//#endif

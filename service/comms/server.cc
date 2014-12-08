@@ -15,6 +15,8 @@
 
 // Implements the Server class.
 
+#include "osoa_pch.h"
+
 #include "service/comms/server.h"
 
 #include <iostream>

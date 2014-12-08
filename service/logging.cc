@@ -13,15 +13,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include "osoa_pch.h"
+
+/*#if defined(_MSC_VER) && _MSC_VER >= 1400 
+#pragma warning(disable:4510)
+#pragma warning(disable:4610)
+#pragma warning(disable:4512)
+#pragma warning(disable:4100)
+#pragma warning(disable:4714)
+#endif*/
+
 #include "service/logging.h"
 
 #include <iostream>
 #include <sstream>
 
-#if defined(_MSC_VER) && _MSC_VER >= 1400 
-#pragma warning(push) 
-#pragma warning(disable:4996) 
-#endif
 #include "boost/asio/ip/host_name.hpp"
 #include "boost/log/attributes/current_process_name.hpp"
 #include "boost/log/expressions.hpp"
@@ -29,9 +35,6 @@
 #include "boost/log/support/date_time.hpp"
 #include "boost/log/utility/setup/common_attributes.hpp"
 #include "boost/log/utility/setup/console.hpp"
-#if defined(_MSC_VER) && _MSC_VER >= 1400 
-#pragma warning(pop)  
-#endif
 
 #include "service/args.h"
 #include "service/service.h"
@@ -223,3 +226,11 @@ void Logging::set_log_header(const std::string& val) {
 SeverityLoggerPtr Logging::logger_(new SeverityLogger());
 
 }  // namespace osoa
+
+/*#if defined(_MSC_VER) && _MSC_VER >= 1400 
+#pragma warning(default:4510)
+#pragma warning(default:4610)
+#pragma warning(default:4512)
+#pragma warning(default:4100)
+#pragma warning(default:4714)
+#endif*/

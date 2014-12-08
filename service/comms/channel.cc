@@ -15,6 +15,8 @@
 
 // Implements the Channel class.
 
+#include "osoa_pch.h"
+
 #include <algorithm>
 
 #include "boost/bind.hpp"

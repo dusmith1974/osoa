@@ -18,41 +18,20 @@
 #ifndef SERVICE_COMMS_H_
 #define SERVICE_COMMS_H_
 
-#if defined(_MSC_VER) && _MSC_VER >= 1400 
-#pragma warning(push) 
-#pragma warning(disable:4996) 
-#pragma warning(disable:4503) 
-#endif
-
-#include <thread>
-
-#include <boost/asio.hpp>
-#include "boost/noncopyable.hpp"
-
-/*#include <functional>
-#include <map>
-#include <utility>
-#include <vector>
-
-#include "boost/bind.hpp"
-#include "boost/enable_shared_from_this.hpp"
-#include "boost/optional.hpp"
-#include "boost/shared_ptr.hpp" */
-
 #include <memory>
 #include <string>
+#include <thread>
+
+#include "boost/asio.hpp"
+#include "boost/noncopyable.hpp"
 
 #include "service/service_fwd.h"
-
 
 namespace osoa {
 
 class Server;
 
 namespace asio = boost::asio;
-
-/*using boost::asio::ip::tcp;
-using boost::optional;*/
 
 // Provides a TCP publisher-subscriber link between a server and clients.
 #ifdef __GCC__

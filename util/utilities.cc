@@ -15,11 +15,19 @@
 
 // General utility functions.
 
+#include "osoa_pch.h"
+
 #include "util/utilities.h"
 
 #include <cmath>
 
 #include "boost/algorithm/string/trim.hpp"
+
+#if defined(_MSC_VER) && _MSC_VER >= 1400 
+#ifndef _SCL_SECURE_NO_WARNINGS
+#define _SCL_SECURE_NO_WARNINGS
+#endif
+#endif
 
 namespace osoa {
 
@@ -27,21 +35,12 @@ namespace osoa {
 // warnings about unused parameters.
 template<class T> void unused(const T&) {}
 
-#if defined(_MSC_VER) && _MSC_VER >= 1400 
-#pragma warning(push) 
-#pragma warning(disable:4996) 
-#endif 
-
 // Remove the right hand side end of line characters from the given str.
 std::string* TrimLastNewline(std::string* str) {
   if (!str) return nullptr;
   boost::algorithm::trim_right_if(*str, boost::is_any_of("\r\n"));
   return str;
 }
-
-#if defined(_MSC_VER) && _MSC_VER >= 1400 
-#pragma warning(pop) 
-#endif
 
 int BitNum(int bit_val) {
   return static_cast<int>(log2(bit_val) / log2(2));

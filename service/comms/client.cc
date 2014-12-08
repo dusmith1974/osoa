@@ -15,6 +15,8 @@
 
 // Implements the Client class.
 
+#include "osoa_pch.h"
+
 #include <iostream>
 
 #include <boost/bind.hpp>

@@ -15,6 +15,8 @@
 
 // Implements the TcpSession class.
 
+#include "osoa_pch.h"
+
 #include "service/comms/tcp_session.h"
 
 #include "boost/bind.hpp"

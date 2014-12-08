@@ -15,15 +15,23 @@
     <ClCompile Include="..\..\service\args.cc" />
     <ClCompile Include="..\..\service\comms\channel.cc" />
     <ClCompile Include="..\..\service\comms\client.cc" />
-    <ClCompile Include="..\..\service\comms\comms.cc" />
+    <ClCompile Include="..\..\service\comms\comms.cc">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/wd4512 /wd4100 /wd4714 %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
     <ClCompile Include="..\..\service\comms\server.cc" />
     <ClCompile Include="..\..\service\comms\subscriber.cc" />
     <ClCompile Include="..\..\service\comms\tcp_session.cc" />
-    <ClCompile Include="..\..\service\logging.cc" />
+    <ClCompile Include="..\..\service\logging.cc">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/wd4510 /wd4610 /wd4512 /wd4100 /wd4714 %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
     <ClCompile Include="..\..\service\service.cc" />
     <ClCompile Include="..\..\util\timing.cc" />
     <ClCompile Include="..\..\util\utilities.cc">
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <ClCompile Include="osoa_pch.cc">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">osoa_pch.h</PrecompiledHeaderFile>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -45,6 +53,7 @@
     <ClInclude Include="..\..\service\service_fwd.h" />
     <ClInclude Include="..\..\util\timing.h" />
     <ClInclude Include="..\..\util\utilities.h" />
+    <ClInclude Include="osoa_pch.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{1A384013-E7F9-4F01-9469-D1B3EEA07646}</ProjectGuid>
@@ -78,12 +87,13 @@
   <PropertyGroup />
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
-      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;_WIN32_WINNT=0x0501;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\..\..\lib\boost\boost_1_55_0;..\..\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PrecompiledHeaderFile>osoa_pch.h</PrecompiledHeaderFile>
+      <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

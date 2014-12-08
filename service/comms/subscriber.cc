@@ -15,6 +15,8 @@
 
 // Implements the Subscriber class.
 
+#include "osoa_pch.h"
+
 #include "service/comms/subscriber.h"
 
 namespace osoa {
