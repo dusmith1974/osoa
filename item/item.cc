@@ -21,7 +21,9 @@
 
 class logger;
 
-__declspec(dllexport) void getRidOfLNK4221(){}
+#if defined(_MSC_VER)
+__declspec(dllexport) void SUPPRESS_LNK4221() {}
+#endif
 
 namespace osoa {
 

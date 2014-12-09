@@ -15,14 +15,6 @@
 
 #include "osoa_pch.h"
 
-/*#if defined(_MSC_VER) && _MSC_VER >= 1400 
-#pragma warning(disable:4510)
-#pragma warning(disable:4610)
-#pragma warning(disable:4512)
-#pragma warning(disable:4100)
-#pragma warning(disable:4714)
-#endif*/
-
 #include "service/logging.h"
 
 #include <iostream>
@@ -226,11 +218,3 @@ void Logging::set_log_header(const std::string& val) {
 SeverityLoggerPtr Logging::logger_(new SeverityLogger());
 
 }  // namespace osoa
-
-/*#if defined(_MSC_VER) && _MSC_VER >= 1400 
-#pragma warning(default:4510)
-#pragma warning(default:4610)
-#pragma warning(default:4512)
-#pragma warning(default:4100)
-#pragma warning(default:4714)
-#endif*/

@@ -23,12 +23,6 @@
 
 #include "boost/algorithm/string/trim.hpp"
 
-#if defined(_MSC_VER) && _MSC_VER >= 1400 
-#ifndef _SCL_SECURE_NO_WARNINGS
-#define _SCL_SECURE_NO_WARNINGS
-#endif
-#endif
-
 namespace osoa {
 
 // Template function with unnamed parameter and no-op to remove compiler

@@ -15,13 +15,6 @@
 
 #include "osoa_pch.h"
 
-#if defined(_MSC_VER) && _MSC_VER >= 1400 
-#pragma warning(disable:4512)
-#pragma warning(disable:4996)
-#pragma warning(disable:4100)
-#pragma warning(disable:4714)
-#endif
-
 #include "service/service.h"
 
 #include "boost/log/core.hpp"
@@ -110,10 +103,3 @@ void Service::set_svc_end_time(const Service::Timepoint& val) {
 }
 
 }  // namespace osoa
-
-#if defined(_MSC_VER) && _MSC_VER >= 1400 
-#pragma warning(default:4512)
-#pragma warning(default:4996)
-#pragma warning(disable:4100)
-#pragma warning(disable:4714)
-#endif

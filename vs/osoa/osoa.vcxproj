@@ -14,28 +14,36 @@
     <ClCompile Include="..\..\item\item.cc" />
     <ClCompile Include="..\..\osoa_pch.cc">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\..\service\args.cc" />
     <ClCompile Include="..\..\service\comms\channel.cc" />
     <ClCompile Include="..\..\service\comms\client.cc" />
     <ClCompile Include="..\..\service\comms\comms.cc">
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/wd4512 /wd4100 /wd4714 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">/wd4512 /wd4100 /wd4714 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <ClCompile Include="..\..\service\comms\server.cc" />
     <ClCompile Include="..\..\service\comms\subscriber.cc" />
     <ClCompile Include="..\..\service\comms\tcp_session.cc" />
     <ClCompile Include="..\..\service\logging.cc">
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/wd4510 /wd4610 /wd4512 /wd4100 /wd4714 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">/wd4510 /wd4610 /wd4512 /wd4100 /wd4714 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
-    <ClCompile Include="..\..\service\service.cc" />
+    <ClCompile Include="..\..\service\service.cc">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">/wd4512 /wd4996 /wd4100 /wd4714 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/wd4512 /wd4996 /wd4100 /wd4714 %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
     <ClCompile Include="..\..\util\timing.cc" />
     <ClCompile Include="..\..\util\utilities.cc">
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\item\item-inl.h" />
     <ClInclude Include="..\..\item\item.h" />
+    <ClInclude Include="..\..\osoa_pch.h" />
     <ClInclude Include="..\..\service\args.h" />
     <ClInclude Include="..\..\service\comms\channel.h" />
     <ClInclude Include="..\..\service\comms\client.h" />
@@ -103,13 +111,15 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
+      <WarningLevel>Level4</WarningLevel>
+      <PrecompiledHeader>Use</PrecompiledHeader>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;_WIN32_WINNT=0x0501;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeaderFile>osoa_pch.h</PrecompiledHeaderFile>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <AdditionalIncludeDirectories>..\..\..\..\lib\boost\boost_1_55_0;..\..\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -117,6 +127,9 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
+    <Lib>
+      <AdditionalLibraryDirectories>c:\sw\lib\boost\boost_1_55_0\stage\lib</AdditionalLibraryDirectories>
+    </Lib>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
