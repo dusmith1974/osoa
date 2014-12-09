@@ -12,6 +12,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\item\item.cc" />
+    <ClCompile Include="..\..\osoa_pch.cc">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="..\..\service\args.cc" />
     <ClCompile Include="..\..\service\comms\channel.cc" />
     <ClCompile Include="..\..\service\comms\client.cc" />
@@ -28,10 +31,6 @@
     <ClCompile Include="..\..\util\timing.cc" />
     <ClCompile Include="..\..\util\utilities.cc">
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-    </ClCompile>
-    <ClCompile Include="osoa_pch.cc">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">osoa_pch.h</PrecompiledHeaderFile>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -53,7 +52,6 @@
     <ClInclude Include="..\..\service\service_fwd.h" />
     <ClInclude Include="..\..\util\timing.h" />
     <ClInclude Include="..\..\util\utilities.h" />
-    <ClInclude Include="osoa_pch.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{1A384013-E7F9-4F01-9469-D1B3EEA07646}</ProjectGuid>

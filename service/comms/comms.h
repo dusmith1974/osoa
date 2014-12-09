@@ -68,10 +68,5 @@ class Comms final : boost::noncopyable {
   std::thread publisher_thread_;
 };
 
-//#if defined(_MSC_VER) && _MSC_VER >= 1400 
-//#pragma warning(pop)  
-//#endif
-
-
 }  // naespace osoa
 #endif  // SERVICE_COMMS_H_

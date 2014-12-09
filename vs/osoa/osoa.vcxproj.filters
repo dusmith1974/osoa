@@ -51,7 +51,7 @@
     <ClCompile Include="..\..\item\item.cc">
       <Filter>item</Filter>
     </ClCompile>
-    <ClCompile Include="osoa_pch.cc" />
+    <ClCompile Include="..\..\osoa_pch.cc" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\item\item.h">
@@ -108,6 +108,5 @@
     <ClInclude Include="..\..\service\comms\tcp_session_fwd.h">
       <Filter>service\comms</Filter>
     </ClInclude>
-    <ClInclude Include="osoa_pch.h" />
   </ItemGroup>
 </Project>
