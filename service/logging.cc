@@ -162,10 +162,9 @@ void Logging::WriteLogHeader(std::shared_ptr<const Args> args) const {
   std::stringstream ss;
 
   char* user_name;
-  size_t len;
-  _dupenv_s(&user_name, &len, "USER");
+  user_name = getenv("USER");
   if (!user_name)
-    _dupenv_s(&user_name, &len, "USERNAME");
+    user_name = getenv("USERNAME");
 
   std::string hostname = boost::asio::ip::host_name();
 

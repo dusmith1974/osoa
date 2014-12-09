@@ -36,14 +36,14 @@ namespace osoa {
 class Channel;
 
 // The TcpSession class.
-#ifdef __GCC__
+#ifdef __GNUC__
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Weffc++"
 #endif
 class TcpSession
   : public Subscriber,
     public boost::enable_shared_from_this<TcpSession> {
-#ifdef __GCC__
+#ifdef __GNUC__
 #pragma GCC diagnostic pop
 #endif
  public:

@@ -34,12 +34,12 @@ class Server;
 namespace asio = boost::asio;
 
 // Provides a TCP publisher-subscriber link between a server and clients.
-#ifdef __GCC__
+#ifdef __GNUC__
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Weffc++"
 #endif
 class Comms final : boost::noncopyable {
-#ifdef __GCC__
+#ifdef __GNUC__
 #pragma GCC diagnostic pop
 #endif
  public:

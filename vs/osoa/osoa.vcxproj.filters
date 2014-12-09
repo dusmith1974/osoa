@@ -51,7 +51,7 @@
     <ClCompile Include="..\..\item\item.cc">
       <Filter>item</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\osoa_pch.cc" />
+    <ClCompile Include="..\..\osoa_pch.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\item\item.h">

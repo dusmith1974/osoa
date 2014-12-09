@@ -12,7 +12,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\item\item.cc" />
-    <ClCompile Include="..\..\osoa_pch.cc">
+    <ClCompile Include="..\..\osoa_pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
@@ -27,8 +27,8 @@
     <ClCompile Include="..\..\service\comms\subscriber.cc" />
     <ClCompile Include="..\..\service\comms\tcp_session.cc" />
     <ClCompile Include="..\..\service\logging.cc">
-      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/wd4510 /wd4610 /wd4512 /wd4100 /wd4714 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">/wd4510 /wd4610 /wd4512 /wd4100 /wd4714 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/wd4510 /wd4610 /wd4512 /wd4100 /wd4714 /wd4996 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">/wd4510 /wd4610 /wd4512 /wd4100 /wd4714 /wd4996 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <ClCompile Include="..\..\service\service.cc">
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">/wd4512 /wd4996 /wd4100 /wd4714 %(AdditionalOptions)</AdditionalOptions>

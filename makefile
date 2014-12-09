@@ -2,6 +2,7 @@ CXXFLAGS = -DBOOST_ALL_DYN_LINK
 CXXFLAGS += -Wall -Wextra -ansi -pedantic -Weffc++ -Wshadow -Werror
 CXXFLAGS += -Wno-error=effc++ # for boost and other libs.
 CXXFLAGS += -std=c++11
+"CXXFLAGS += -H
 
 ITEM = item
 SERVICE = service
@@ -67,6 +68,7 @@ $(OBJS) $(DEPS) : | $(OBJ_DIR) $(BIN_DIR)
 
 $(OBJ_DIR):
 	mkdir -p $(OBJ_DIR)
+	#$(CXX) $(CXXFLAGS) osoa_pch.h -o osoa_pch.h.gch
 
 $(BIN_DIR):
 	mkdir -p $(BIN_DIR)
@@ -75,3 +77,4 @@ $(BIN_DIR):
 clean :
 	rm -f output.log
 	rm -rf $(OBJ_BASE) $(BIN_DIR) *.o *.d
+	rm -f *.gch

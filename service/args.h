@@ -36,12 +36,12 @@ namespace po = boost::program_options;
 
 // Represents the command line args passed to the service (either on the command
 // line or from a config file.
-#ifdef __GCC__
+#ifdef __GNUC__
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Weffc++"
 #endif
 class Args final : boost::noncopyable {
-#ifdef __GCC__
+#ifdef __GNUC__
 #pragma GCC diagnostic pop
 #endif
  public:

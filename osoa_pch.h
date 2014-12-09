@@ -1,8 +1,8 @@
 #if defined(_MSC_VER) && _MSC_VER >= 1400 
+
 #pragma warning(disable:4512)
 #pragma warning(disable:4996)
 #pragma warning(disable:4510)
-#endif
 
 #include <iostream>
 #include <algorithm>
@@ -31,8 +31,8 @@
 #include "boost/chrono.hpp"
 #include "boost/algorithm/string/trim.hpp"
 
-#if defined(_MSC_VER) && _MSC_VER >= 1400 
 #pragma warning(default:4512)
 #pragma warning(default:4996)
 #pragma warning(default:4510)
+
 #endif
