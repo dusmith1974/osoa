@@ -3,6 +3,8 @@
 #pragma warning(disable:4512)
 #pragma warning(disable:4996)
 #pragma warning(disable:4510)
+#pragma warning(disable:4610)
+#pragma warning(disable:4100)
 
 #include <iostream>
 #include <algorithm>
@@ -30,9 +32,18 @@
 #include "boost/log/core.hpp"
 #include "boost/chrono.hpp"
 #include "boost/algorithm/string/trim.hpp"
+#include "boost/log/attributes/current_process_name.hpp"
+#include "boost/log/expressions.hpp"
+#include "boost/log/sinks.hpp"
+#include "boost/log/support/date_time.hpp"
+#include "boost/log/utility/setup/common_attributes.hpp"
+#include "boost/log/utility/setup/console.hpp"
+#include "boost/log/trivial.hpp"
+
 
 #pragma warning(default:4512)
 #pragma warning(default:4996)
-#pragma warning(default:4510)
-
+#pragma warning(default:4510  )
+#pragma warning(default:4610)
+#pragma warning(default:4100)
 #endif
