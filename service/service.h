@@ -19,8 +19,9 @@
 #ifndef SERVICE_SERVICE_H_
 #define SERVICE_SERVICE_H_
 
-#include "boost/chrono.hpp"
 #include <memory>
+
+#include "boost/chrono.hpp"
 
 namespace osoa {
 

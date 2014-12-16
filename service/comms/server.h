@@ -20,8 +20,8 @@
 
 #include <boost/asio.hpp>
 
-#include "service/comms/tcp_session_fwd.h"
 #include "service/comms/channel.h"
+#include "service/comms/tcp_session_fwd.h"
 
 using boost::asio::ip::tcp;
 using boost::system::error_code;

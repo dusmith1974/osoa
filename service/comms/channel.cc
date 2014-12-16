@@ -17,11 +17,12 @@
 
 #include "osoa_pch.h"
 
+#include "service/comms/channel.h"
+
 #include <algorithm>
 
 #include "boost/bind.hpp"
 
-#include "service/comms/channel.h"
 #include "service/comms/subscriber.h"
 
 namespace osoa {

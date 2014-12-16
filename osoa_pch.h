@@ -4,12 +4,6 @@
 #ifdef USE_PCH
 #if defined(_MSC_VER) && _MSC_VER >= 1400 
 
-#pragma warning(disable:4512)
-#pragma warning(disable:4996)
-#pragma warning(disable:4510)
-#pragma warning(disable:4610)
-#pragma warning(disable:4100)
-
 #include <algorithm>
 #include <cmath>
 #include <deque>
@@ -56,11 +50,6 @@
 #include "Poco/Net/WebSocket.h"
 #include "Poco/Util/ServerApplication.h"
 
-#pragma warning(default:4512)
-#pragma warning(default:4996)
-#pragma warning(default:4510  )
-#pragma warning(default:4610)
-#pragma warning(default:4100)
 #endif
 #endif  // USE_PCH
 #endif  // OSOA_PCH_H_

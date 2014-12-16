@@ -16,9 +16,10 @@
 #ifndef UTIL_TIMING_H_
 #define UTIL_TIMING_H_
 
-#include "boost/chrono.hpp"
 #include <string>
 #include <utility>
+
+#include "boost/chrono.hpp"
 
 namespace osoa {
 

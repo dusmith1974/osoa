@@ -17,11 +17,11 @@
 
 #include "osoa_pch.h"
 
+#include "service/comms/client.h"
+
 #include <iostream>
 
 #include <boost/bind.hpp>
-
-#include "service/comms/client.h"
 
 using boost::bind;
 
