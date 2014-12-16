@@ -35,7 +35,7 @@
 #include "Poco/Format.h"
 
 using Poco::Net::ServerSocket;
-using Poco::Net::WebSocket;
+//using Poco::Net::WebSocket;
 using Poco::Net::WebSocketException;
 using Poco::Net::HTTPRequestHandler;
 using Poco::Net::HTTPRequestHandlerFactory;
@@ -71,19 +71,19 @@ class WebSocketRequestHandler : public HTTPRequestHandler {
         n = ws.receiveFrame(buffer, sizeof(buffer), flags);
         std::cout << Poco::format("Frame received (length=%d, flags=0x%x).", n, unsigned(flags)) << std::endl; // use boost format?
         ws.sendFrame(buffer, n, flags);
-      } while (n > 0 || (flags & WebSocket::FRAME_OP_BITMASK) != WebSocket::FRAME_OP_CLOSE);
+      } while (n > 0 || (flags & Poco::Net::WebSocket::FRAME_OP_BITMASK) != Poco::Net::WebSocket::FRAME_OP_CLOSE);
 
       std::cout << "WebSocket connection closed." << std::endl;
     }
     catch (WebSocketException& exc) {
       std::cout << exc.what() << std::endl;
       switch (exc.code()) {
-       case WebSocket::WS_ERR_HANDSHAKE_UNSUPPORTED_VERSION:
-        response.set("Sec-WebSocket-Version", WebSocket::WEBSOCKET_VERSION);
+       case Poco::Net::WebSocket::WS_ERR_HANDSHAKE_UNSUPPORTED_VERSION:
+        response.set("Sec-WebSocket-Version", Poco::Net::WebSocket::WEBSOCKET_VERSION);
         // fallthrough
-       case WebSocket::WS_ERR_NO_HANDSHAKE:
-       case WebSocket::WS_ERR_HANDSHAKE_NO_VERSION:
-       case WebSocket::WS_ERR_HANDSHAKE_NO_KEY:
+       case Poco::Net::WebSocket::WS_ERR_NO_HANDSHAKE:
+       case Poco::Net::WebSocket::WS_ERR_HANDSHAKE_NO_VERSION:
+       case Poco::Net::WebSocket::WS_ERR_HANDSHAKE_NO_KEY:
         response.setStatusAndReason(HTTPResponse::HTTP_BAD_REQUEST);
         response.setContentLength(0);
         response.send();
