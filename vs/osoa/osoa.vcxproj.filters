@@ -52,6 +52,9 @@
       <Filter>item</Filter>
     </ClCompile>
     <ClCompile Include="..\..\osoa_pch.cpp" />
+    <ClCompile Include="..\..\service\comms\web_socket.cc">
+      <Filter>service\comms</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\item\item.h">
@@ -109,5 +112,8 @@
       <Filter>service\comms</Filter>
     </ClInclude>
     <ClInclude Include="..\..\osoa_pch.h" />
+    <ClInclude Include="..\..\service\comms\web_socket.h">
+      <Filter>service\comms</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

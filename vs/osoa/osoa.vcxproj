@@ -26,6 +26,7 @@
     <ClCompile Include="..\..\service\comms\server.cc" />
     <ClCompile Include="..\..\service\comms\subscriber.cc" />
     <ClCompile Include="..\..\service\comms\tcp_session.cc" />
+    <ClCompile Include="..\..\service\comms\web_socket.cc" />
     <ClCompile Include="..\..\service\logging.cc">
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/wd4510 /wd4610 /wd4512 /wd4100 /wd4714 /wd4996 %(AdditionalOptions)</AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">/wd4510 /wd4610 /wd4512 /wd4100 /wd4714 /wd4996 %(AdditionalOptions)</AdditionalOptions>
@@ -53,6 +54,7 @@
     <ClInclude Include="..\..\service\comms\subscriber_fwd.h" />
     <ClInclude Include="..\..\service\comms\tcp_session.h" />
     <ClInclude Include="..\..\service\comms\tcp_session_fwd.h" />
+    <ClInclude Include="..\..\service\comms\web_socket.h" />
     <ClInclude Include="..\..\service\logging.h" />
     <ClInclude Include="..\..\service\logging_fwd.h" />
     <ClInclude Include="..\..\service\service-inl.h" />
@@ -97,7 +99,7 @@
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;_WIN32_WINNT=0x0501;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\..\..\lib\boost\boost_1_55_0;..\..\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\;..\..\..\..\lib\boost\boost_1_55_0;C:\sw\lib\poco\develop\Foundation\include;C:\sw\lib\poco\develop\Net\include;C:\sw\lib\poco\develop\Util\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeaderFile>osoa_pch.h</PrecompiledHeaderFile>
       <TreatWarningAsError>true</TreatWarningAsError>
       <AdditionalOptions>/Zm154 %(AdditionalOptions)</AdditionalOptions>
@@ -120,7 +122,7 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;_WIN32_WINNT=0x0501;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeaderFile>osoa_pch.h</PrecompiledHeaderFile>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <AdditionalIncludeDirectories>..\..\..\..\lib\boost\boost_1_55_0;..\..\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\;..\..\..\..\lib\boost\boost_1_55_0;C:\sw\lib\poco\develop\Foundation\include;C:\sw\lib\poco\develop\Net\include;C:\sw\lib\poco\develop\Util\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/Zm147 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
