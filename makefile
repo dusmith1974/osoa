@@ -1,5 +1,6 @@
 CXXFLAGS = -DBOOST_ALL_DYN_LINK
-CXXFLAGS += -Wall -Wextra -ansi -pedantic -Weffc++ -Wshadow -Werror
+CXXFLAGS += -Wall -Wextra -ansi -pedantic -Werror
+"CXXFLAGS += -Weffc++ -Wshadow // Disabled for Poco 
 CXXFLAGS += -Wno-error=effc++ # for boost and other libs.
 CXXFLAGS += -std=c++11
 "CXXFLAGS += -H
@@ -34,8 +35,21 @@ VPATH := $(addsuffix :, $(PRJS))
 INC := $(addprefix -I, $(PRJS))
 INC += -I$(BOOST_DIR)
 
+INC+=-I$(POCO_BASE)/CppUnit/include
+INC+=-I$(POCO_BASE)/Foundation/include
+INC+=-I$(POCO_BASE)/XML/include
+INC+=-I$(POCO_BASE)/Util/include
+INC+=-I$(POCO_BASE)/Net/include
+
+DEF+=-D_XOPEN_SOURCE=500
+DEF+=-D_REENTRANT
+DEF+=-D_THREAD_SAFE
+DEF+=-D_FILE_OFFSET_BITS=64
+DEF+=-D_LARGEFILE64_SOURCE
+DEF+=-DPOCO_HAVE_FD_EPOLL
+
 $(OBJ_DIR)/%.o : %.cc 
-	$(COMPILE.cc) $(INC) $(OUTPUT_OPTION) $<
+	$(COMPILE.cc) $(INC) $(DEFS) $(OUTPUT_OPTION) $<
 
 all: $(BIN_DIR)/test $(OBJ_DIR)/$(LIB_OSOA)
 
@@ -56,7 +70,7 @@ $(OBJ_DIR)/%.d : %.cc
 endif
 
 $(BIN_DIR)/test: $(OBJS)
-	$(LINK.cc) $(OBJS) -dynamic -pthread -lboost_program_options -lboost_log_setup -lboost_log -lboost_system -lboost_thread -lboost_date_time -lboost_filesystem -lboost_chrono $(OUTPUT_OPTION)
+	$(LINK.cc) $(OBJS) $(DEFS) -L$(POCO_BASE)/lib/Linux/x86_64 -dynamic -lPocoUtild -lPocoNetd -lPocoXMLd -lPocoFoundationd -pthread -lboost_program_options -lboost_log_setup -lboost_log -lboost_system -lboost_thread -lboost_date_time -lboost_filesystem -lboost_chrono $(OUTPUT_OPTION)
 	ctags -R --c-kinds=+cdefglmnpstuvx --extra=+f
 	cscope -Rb
 
@@ -68,7 +82,6 @@ $(OBJS) $(DEPS) : | $(OBJ_DIR) $(BIN_DIR)
 
 $(OBJ_DIR):
 	mkdir -p $(OBJ_DIR)
-	#$(CXX) $(CXXFLAGS) osoa_pch.h -o osoa_pch.h.gch
 
 $(BIN_DIR):
 	mkdir -p $(BIN_DIR)

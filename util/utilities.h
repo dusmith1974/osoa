@@ -18,9 +18,8 @@
 #ifndef OSOA_UTIL_UTILITIES_H_
 #define OSOA_UTIL_UTILITIES_H_
 
+#include <limits>
 #include <string>
-
-#include "boost/algorithm/string/trim.hpp"
 
 namespace osoa {
 
