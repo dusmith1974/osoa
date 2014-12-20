@@ -35,7 +35,6 @@
 #include "Poco/Util/ServerApplication.h"
 
 using Poco::Net::ServerSocket;
-//using Poco::Net::WebSocket;
 using Poco::Net::WebSocketException;
 using Poco::Net::HTTPRequestHandler;
 using Poco::Net::HTTPRequestHandlerFactory;
@@ -49,6 +48,9 @@ using Poco::ThreadPool;
 using Poco::Util::ServerApplication;
 using Poco::Util::Application;
 
+std::unique_ptr<Poco::Net::WebSocket> ws_;
+int flags_;
+
 namespace osoa {
 
 void handler(const boost::system::error_code& error, int /*signal_number*/) {
@@ -60,20 +62,40 @@ void handler(const boost::system::error_code& error, int /*signal_number*/) {
 // Handle a WebSocket connection.
 class WebSocketRequestHandler : public HTTPRequestHandler {
  public:
+   WebSocketRequestHandler::WebSocketRequestHandler() /*: flags_{0}*/ {
+   }
+
   void handleRequest(HTTPServerRequest& request, HTTPServerResponse& response) {
     try {
-      Poco::Net::WebSocket ws(request, response);
+      int opcodes = 0;
+      //Poco::Net::WebSocket ws(request, response);
+      ws_ = std::unique_ptr<Poco::Net::WebSocket>(new Poco::Net::WebSocket(request, response));
       std::cout << std::string("WebSocket connection established.") << std::endl;
       char buffer[1024];
-      int flags;
       int n;
+      int msg_num = 0;
       do {
-        n = ws.receiveFrame(buffer, sizeof(buffer), flags);
-        std::cout << Poco::format("Frame received (length=%d, flags=0x%x).", n, unsigned(flags)) << std::endl; // use boost format?
-        ws.sendFrame(buffer, n, flags);
-      } while (n > 0 || (flags & Poco::Net::WebSocket::FRAME_OP_BITMASK) != Poco::Net::WebSocket::FRAME_OP_CLOSE);
+        n = ws_->receiveFrame(buffer, sizeof(buffer), flags_);
+        opcodes = flags_ & Poco::Net::WebSocket::FRAME_OP_BITMASK;
 
-      std::cout << "WebSocket connection closed." << std::endl;
+        std::cout << Poco::format("Frame received (length=%d, flags_=0x%x, msg=%d).", n, unsigned(flags_), ++msg_num) << std::endl; 
+
+        //ws_->sendFrame(buffer, n, flags_);
+        flags_ &= ~Poco::Net::WebSocket::FRAME_OP_BITMASK;
+        flags_ |= Poco::Net::WebSocket::FRAME_OP_PING;
+        ws_->sendFrame(buffer, 5, flags_);
+        opcodes = flags_ & Poco::Net::WebSocket::FRAME_OP_BITMASK;
+
+        // TODO(DS) Replace sleep with a deadline timer.
+        boost::this_thread::sleep(boost::posix_time::seconds(1));
+
+        /*std::string another = "another message";
+        ws_->sendFrame(another.data(), another.length(), flags_);
+        SendMessage("from call");*/
+
+      } while (n > 0 || opcodes != Poco::Net::WebSocket::FRAME_OP_CLOSE);
+
+      //std::cout << "WebSocket connection closed." << std::endl;
     }
     catch (WebSocketException& exc) {
       std::cout << exc.what() << std::endl;
@@ -91,6 +113,14 @@ class WebSocketRequestHandler : public HTTPRequestHandler {
       }
     }
   }
+
+  void SendMessage(const std::string& message) {
+    ws_->sendFrame(message.data(), message.length(), flags_);
+  }
+
+ public:
+   //std::unique_ptr<Poco::Net::WebSocket> ws_;
+   //int flags_;
 };
 
 class RequestHandlerFactory: public HTTPRequestHandlerFactory
@@ -135,6 +165,10 @@ void WebSocket::Run() {
 
     // start the HTTPServer
     srv.start();
+
+    //std::string message("hooray!");
+    //ws_->sendFrame(message.data(), message.length(), flags_);
+
 
     // wait for CTRL-C or kill
     boost::asio::io_service io_service;
