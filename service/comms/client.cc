@@ -168,4 +168,4 @@ void Client::CheckDeadline() {
 
   deadline_.async_wait(bind(&Client::CheckDeadline, this));
 }
-}  // namespcae osoa
+}  // namespace osoa

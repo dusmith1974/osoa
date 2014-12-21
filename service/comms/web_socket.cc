@@ -62,7 +62,7 @@ void handler(const boost::system::error_code& error, int /*signal_number*/) {
 // Handle a WebSocket connection.
 class WebSocketRequestHandler : public HTTPRequestHandler {
  public:
-   WebSocketRequestHandler::WebSocketRequestHandler() /*: flags_{0}*/ {
+   WebSocketRequestHandler::WebSocketRequestHandler(MessageMap& map) : messages_(map) {
    }
 
   void handleRequest(HTTPServerRequest& request, HTTPServerResponse& response) {
@@ -73,21 +73,33 @@ class WebSocketRequestHandler : public HTTPRequestHandler {
       std::cout << std::string("WebSocket connection established.") << std::endl;
       char buffer[1024];
       int n;
-      int msg_num = 0;
+      int beat_num = 0;
+      size_t msg_num = 1;
       do {
         n = ws_->receiveFrame(buffer, sizeof(buffer), flags_);
         opcodes = flags_ & Poco::Net::WebSocket::FRAME_OP_BITMASK;
 
-        std::cout << Poco::format("Frame received (length=%d, flags_=0x%x, msg=%d).", n, unsigned(flags_), ++msg_num) << std::endl; 
+        std::cout << Poco::format("Frame received (length=%d, flags_=0x%x, msg=%d).", n, unsigned(flags_), ++beat_num) << std::endl; 
 
         //ws_->sendFrame(buffer, n, flags_);
+        flags_ &= ~Poco::Net::WebSocket::FRAME_OP_BITMASK;
+
+        if (messages_.size() >= msg_num) {
+          flags_ |= Poco::Net::WebSocket::FRAME_OP_TEXT;
+          ws_->sendFrame(messages_[msg_num].data(), messages_[msg_num].size(), flags_);
+          msg_num++;
+        }
+
         flags_ &= ~Poco::Net::WebSocket::FRAME_OP_BITMASK;
         flags_ |= Poco::Net::WebSocket::FRAME_OP_PING;
         ws_->sendFrame(buffer, 5, flags_);
         opcodes = flags_ & Poco::Net::WebSocket::FRAME_OP_BITMASK;
 
         // TODO(DS) Replace sleep with a deadline timer.
-        boost::this_thread::sleep(boost::posix_time::seconds(1));
+        if (messages_.size() < msg_num)
+          boost::this_thread::sleep(boost::posix_time::milliseconds(250));
+        
+
 
         /*std::string another = "another message";
         ws_->sendFrame(another.data(), another.length(), flags_);
@@ -121,11 +133,16 @@ class WebSocketRequestHandler : public HTTPRequestHandler {
  public:
    //std::unique_ptr<Poco::Net::WebSocket> ws_;
    //int flags_;
+ private:
+  MessageMap& messages_;
 };
 
 class RequestHandlerFactory: public HTTPRequestHandlerFactory
 {
 public:
+  RequestHandlerFactory(MessageMap& messages) : messages_(messages) {
+  }
+
   HTTPRequestHandler* createRequestHandler(const HTTPServerRequest& request)
   {
     std::string str = "Request from " 
@@ -144,8 +161,11 @@ public:
       std::cout << str << std::endl;
     }
     
-    return new WebSocketRequestHandler;
+    return new WebSocketRequestHandler(messages_);
   }
+
+ private:
+  MessageMap& messages_;
 };
 
 WebSocket::WebSocket() {
@@ -161,7 +181,7 @@ void WebSocket::Run() {
     ServerSocket svs(port);
 
     // set-up a HTTPServer instance
-    HTTPServer srv(new RequestHandlerFactory, svs, new HTTPServerParams);
+    HTTPServer srv(new RequestHandlerFactory(messages_), svs, new HTTPServerParams);
 
     // start the HTTPServer
     srv.start();
@@ -180,4 +200,8 @@ void WebSocket::Run() {
     srv.stop();
 }
 
-}  // namespcae osoa
+void WebSocket::PublishMessage(const std::string& msg) {
+  messages_[messages_.size() + 1] = msg;
+}
+
+}  // namespace osoa

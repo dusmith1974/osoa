@@ -20,6 +20,8 @@
 
 namespace osoa {
 
+typedef std::map<long, std::string> MessageMap;
+
 // The WebSocket class.
 class WebSocket /*final : public Base*/ {
  public:
@@ -27,6 +29,10 @@ class WebSocket /*final : public Base*/ {
   /*virtual*/ ~WebSocket();
 
   void Run();
+  void PublishMessage(const std::string& msg);
+
+ private:
+   MessageMap messages_;
 };
 
 }  // namespace osoa

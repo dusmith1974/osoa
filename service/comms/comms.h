@@ -30,6 +30,7 @@
 namespace osoa {
 
 class Server;
+class WebSocket;
 
 namespace asio = boost::asio;
 
@@ -66,6 +67,9 @@ class Comms final : boost::noncopyable {
   std::string publisher_port_;
   asio::io_service io_service_;
   std::thread publisher_thread_;
+
+  std::unique_ptr<osoa::WebSocket> ws_;
+  std::thread web_socket_thread_;
 };
 
 }  // naespace osoa

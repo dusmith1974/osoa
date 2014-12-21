@@ -19,6 +19,7 @@
 
 #include "service/comms/client.h"
 #include "service/comms/server.h"
+#include "service/comms/web_socket.h"
 #include "service/logging.h"
 #include "service/service.h"
 
@@ -26,6 +27,7 @@ namespace osoa {
 
 Comms::Comms()
   : server_(nullptr),
+    ws_(nullptr),
     publisher_port_(""),
     io_service_{},
     publisher_thread_{} {
@@ -47,24 +49,29 @@ Error Comms::PublishChannel(const std::string& port) {
   }
 
   try {
+    // TODO(ds) ws needs to connect before tcp..
+    ws_ = std::unique_ptr<osoa::WebSocket>(new osoa::WebSocket);
+    std::cout << "olap ws" << std::endl;
+    web_socket_thread_ = std::thread(&osoa::WebSocket::Run, ws_.get());
+
     tcp::endpoint listen_endpoint(tcp::v4(), static_cast<unsigned short>(atoi(port.c_str())));
     server_ = std::unique_ptr<Server>(new Server(io_service_, listen_endpoint));
 
     //io_service_.post(bind(&Server::PublishMessage, server_.get(), "000"));
 
     publisher_thread_ = std::thread([&](){ io_service_.run(); });
-    std::string abc("abc");
-    for (;;) {
-      io_service_.post(bind(&Server::PublishMessage, server_.get(), abc));
-      boost::this_thread::sleep(boost::posix_time::seconds(1));
-      break;
-    }
+    //std::string abc("abc");
+    //for (;;) {
+    //  io_service_.post(bind(&Server::PublishMessage, server_.get(), abc));
+    //  boost::this_thread::sleep(boost::posix_time::seconds(1));
+    //  break;
+    //}
 
     // TODO(ds) return t and join from caller
     //publisher_thread_.join();
     // server_.start();
   } catch (std::exception& e) { // does throw?
-    std::cerr << e.what() << std::endl; // blog
+    std::cerr << e.what() << std::endl; // to log
   }
 
   return Error::kSuccess;
@@ -74,6 +81,9 @@ void Comms::PublishMessage(const std::string& msg) {
   if (server_)
     io_service_.post(bind(&Server::PublishMessage, server_.get(), msg));
   // TODO(ds) else ASSERT, post called before service start (null server).
+
+  if (ws_)
+    ws_->PublishMessage(msg);
 }
 
 Error Comms::Subscribe(const std::string& host, const std::string& port) {

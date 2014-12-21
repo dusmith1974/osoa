@@ -71,4 +71,4 @@ void Server::PublishMessage(const std::string& msg) {
   channel_.Deliver(msg);
 }
 
-}  // namespcae osoa
+}  // namespace osoa

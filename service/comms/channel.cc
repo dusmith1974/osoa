@@ -46,4 +46,4 @@ void Channel::Deliver(const std::string& msg) {
       bind(&Subscriber::Deliver, _1, boost::ref(msg)));
 }
 
-}  // namespcae osoa
+}  // namespace osoa

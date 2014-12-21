@@ -24,4 +24,4 @@ namespace osoa {
 Subscriber::~Subscriber() {
 }
 
-}  // namespcae osoa
+}  // namespace osoa
