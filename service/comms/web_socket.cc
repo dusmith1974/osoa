@@ -106,7 +106,13 @@ class WebSocketRequestHandler : public HTTPRequestHandler {
         // Wait for a new message to arrive or send another PING after 1s.
         {
           std::unique_lock<std::mutex> lk(m);
+//#define OLAP_QUICK_RACE
+#ifdef OLAP_QUICK_RACE
+          status = cv.wait_for(lk, std::chrono::milliseconds(50));
+#else
           status = cv.wait_for(lk, std::chrono::seconds(1));
+#endif
+          //status = cv.wait_for(lk, std::chrono::milliseconds(1));
         }
       } while (n > 0 || opcodes != Poco::Net::WebSocket::FRAME_OP_CLOSE);
 
