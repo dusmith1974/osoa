@@ -65,7 +65,7 @@ void handler(const boost::system::error_code& error, int /*signal_number*/) {
 // Handle a WebSocket connection.
 class WebSocketRequestHandler : public HTTPRequestHandler {
  public:
-   WebSocketRequestHandler::WebSocketRequestHandler(MessageMap& map) : messages_(map) {
+   WebSocketRequestHandler(MessageMap& map) : messages_(map) {
    }
 
   void handleRequest(HTTPServerRequest& request, HTTPServerResponse& response) {

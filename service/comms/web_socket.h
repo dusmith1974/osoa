@@ -18,6 +18,9 @@
 #ifndef SERVICE__COMMS__WEB_SOCKET_H_
 #define SERVICE__COMMS__WEB_SOCKET_H_
 
+#include <map>
+#include <string>
+
 namespace osoa {
 
 typedef std::map<long, std::string> MessageMap;
