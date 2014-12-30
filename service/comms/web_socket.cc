@@ -110,7 +110,7 @@ class WebSocketRequestHandler : public HTTPRequestHandler {
 #ifdef OLAP_QUICK_RACE
           status = cv.wait_for(lk, std::chrono::milliseconds(50));
 #else
-          status = cv.wait_for(lk, std::chrono::seconds(1));
+          status = cv.wait_for(lk, std::chrono::seconds(5));
 #endif
           //status = cv.wait_for(lk, std::chrono::milliseconds(1));
         }
