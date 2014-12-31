@@ -56,7 +56,7 @@ class TcpSession
   void Deliver(const std::string& msg);
 
  private:
-  void Stop();
+  void Stop(error_code ec);
 
   bool Stopped() const;
 

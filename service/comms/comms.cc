@@ -93,19 +93,22 @@ Error Comms::Subscribe(const std::string& host, const std::string& port) {
       return Error::kInvalidArgs;
     }
 
-    tcp::resolver resolver(io_service_);
-    Client client(io_service_);
+    for (;;) { // reconnect on exit
+      tcp::resolver resolver(io_service_);
+      Client client(io_service_);
 
-    client.Start(resolver.resolve(tcp::resolver::query(host, port)));
-    io_service_.run();
+      client.Start(resolver.resolve(tcp::resolver::query(host, port)));
+      io_service_.run();
+
+      io_service_.reset();
+      std::cout << "Reconnecting to server" << std::endl;
+    }
   } catch (const std::exception& ex) {
     // TODO(ds) log errors to cerr also
     BOOST_LOG_SEV(*Logging::logger(), blt::debug)
       << "Exception thrown in Comms::Subscribe <" << ex.what() << ">";
     return Error::kCouldNotSubscribeToService;
   }
-
-  return Error::kSuccess;
 }
 
 // TODO(ds) trap sigint etc via asio (see Trojo).

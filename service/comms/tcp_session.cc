@@ -43,6 +43,9 @@ TcpSession::TcpSession(asio::io_service& io_service, Channel& ch)
 void TcpSession::Start() {
   channel_.Join(shared_from_this());
 
+  std::string remote_address = socket_.remote_endpoint().address().to_string();
+  std::cout << "TcpSession: " << this << " Accepted new client from " << remote_address << std::endl;
+
   StartRead();
   input_deadline_.async_wait(boost::bind(&TcpSession::CheckDeadline,
                                   shared_from_this(),
@@ -62,11 +65,12 @@ void TcpSession::Deliver(const std::string& msg) {
   non_empty_output_queue_.expires_at(posix_time::neg_infin);
 }
 
-void TcpSession::Stop() {
+void TcpSession::Stop(error_code ec) {
   channel_.Leave(shared_from_this());
 
-  error_code ignored_ec;
-  socket_.close(ignored_ec);
+  std::string remote_address = socket_.remote_endpoint().address().to_string();
+  std::cout << "TcpSession: " << this << " " << ec.message() << " " << remote_address << std::endl;
+  socket_.close(ec);
   input_deadline_.cancel();
   non_empty_output_queue_.cancel();
   output_deadline_.cancel();
@@ -87,7 +91,7 @@ void TcpSession::HandleRead(const error_code& ec) {
   if (Stopped()) return;
 
   if (ec) {
-    Stop();
+    Stop(ec);
   } else {
     std::string msg;
     std::istream is(&input_buffer_);
@@ -132,18 +136,21 @@ void TcpSession::HandleWrite(const error_code& ec) {
     output_queue_.pop_front();
     AwaitOutput();
   } else {
-    Stop();
+    Stop(ec);
   }
 }
 
 void TcpSession::CheckDeadline(deadline_timer* deadline) {
+  namespace sys = boost::system;
   if (Stopped()) return;
 
-  if (deadline->expires_at() <= deadline_timer::traits_type::now())
-    Stop();
-  else
+  if (deadline->expires_at() <= deadline_timer::traits_type::now()) {
+    Stop(error_code(sys::errc::timed_out, sys::system_category()));
+  }
+  else {
     deadline->async_wait(bind(&TcpSession::CheckDeadline,
                               shared_from_this(), deadline));
+  }
 }
 
 }  // namespace osoa
