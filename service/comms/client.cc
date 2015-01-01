@@ -18,6 +18,7 @@
 #include "osoa_pch.h"
 
 #include "service/comms/client.h"
+#include "service/logging.h"
 
 #include <iostream>
 
@@ -77,7 +78,7 @@ void Client::Stop() {
 
 void Client::StartConnect(tcp::resolver::iterator endpoint_iter) {
   if (endpoint_iter != tcp::resolver::iterator()) {
-    std::cout << "Trying " << endpoint_iter->endpoint() << "...\n";
+    BOOST_LOG_SEV(*Logging::logger(), blt::info) << "Trying " << endpoint_iter->endpoint();
 
     deadline_.expires_from_now(posix_time::seconds(60));
 
@@ -95,15 +96,15 @@ void Client::HandleConnect(const error_code& ec,
     return;
 
   if (!socket_.is_open()) {
-    std::cout << "Connect timed out\n";
+    BOOST_LOG_SEV(*Logging::logger(), blt::info) << "Connect timed out";
     StartConnect(++endpoint_iter);
   } else if (ec) {
-    std::cout << "Connect error: " << ec.message() << "\n";
+    BOOST_LOG_SEV(*Logging::logger(), blt::info) << "Connect error: " << ec.message();
     socket_.close();
 
     StartConnect(++endpoint_iter);
   } else {
-    std::cout << "Connected to " << endpoint_iter->endpoint() << "\n";
+    BOOST_LOG_SEV(*Logging::logger(), blt::info) << "Connected to " << endpoint_iter->endpoint();
 
     StartRead();
     StartWrite();
@@ -126,11 +127,11 @@ void Client::HandleRead(const error_code& ec) {
     std::getline(is, line);
 
     if (!line.empty())
-      std::cout << "Received: " << line << "\n";
+      BOOST_LOG_SEV(*Logging::logger(), blt::info) << "Received: " << line;
 
     StartRead();
   } else {
-    std::cout << "Error on receive: " << ec.message() << "\n";
+    BOOST_LOG_SEV(*Logging::logger(), blt::info) << "Error on receive: " << ec.message();
     Stop();
   }
 }
@@ -152,7 +153,7 @@ void Client::HandleWrite(const error_code& ec) {
     heartbeat_timer_.async_wait(bind(&Client::StartWrite, this));
   }
   else {
-    std::cout << "Error on heartbeat: " << ec.message() << "\n";
+    BOOST_LOG_SEV(*Logging::logger(), blt::info) << "Error on heartbeat: " << ec.message();
     Stop();
   }
 }

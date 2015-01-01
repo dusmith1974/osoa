@@ -37,6 +37,8 @@
 #include "Poco/Net/WebSocket.h"
 #include "Poco/Util/ServerApplication.h"
 
+#include "service/logging.h"
+
 using Poco::Net::ServerSocket;
 using Poco::Net::WebSocketException;
 using Poco::Net::HTTPRequestHandler;
@@ -74,7 +76,7 @@ class WebSocketRequestHandler : public HTTPRequestHandler {
       Poco::Net::WebSocket ws(request, response);
 
       // TODO(ds) to log
-      std::cout << std::string("WebSocket connection established.") << std::endl;
+      BOOST_LOG_SEV(*Logging::logger(), blt::info) << std::string("WebSocket connection established.");
 
       char buffer[1024];
       int n;
@@ -86,7 +88,7 @@ class WebSocketRequestHandler : public HTTPRequestHandler {
         n = ws.receiveFrame(buffer, sizeof(buffer), flags);
         opcodes = flags & Poco::Net::WebSocket::FRAME_OP_BITMASK;
 
-        std::cout << Poco::format("Frame received (length=%d, flags=0x%x, msg=%d).", n, unsigned(flags), ++beat_num) << std::endl; 
+        BOOST_LOG_SEV(*Logging::logger(), blt::debug) << Poco::format("Frame received (length=%d, flags=0x%x, msg=%d).", n, unsigned(flags), ++beat_num) << std::endl; 
 
         // Send any new messages to the web client..
         if (status == std::cv_status::no_timeout) {
@@ -116,11 +118,10 @@ class WebSocketRequestHandler : public HTTPRequestHandler {
         }
       } while (n > 0 || opcodes != Poco::Net::WebSocket::FRAME_OP_CLOSE);
 
-      // TODO(DS) to log
-      std::cout << "WebSocket connection closed." << std::endl;
+      BOOST_LOG_SEV(*Logging::logger(), blt::info) << "WebSocket connection closed.";
     }
     catch (WebSocketException& exc) {
-      std::cout << exc.what() << std::endl;
+      BOOST_LOG_SEV(*Logging::logger(), blt::info) << exc.what();
       switch (exc.code()) {
        case Poco::Net::WebSocket::WS_ERR_HANDSHAKE_UNSUPPORTED_VERSION:
         response.set("Sec-WebSocket-Version", Poco::Net::WebSocket::WEBSOCKET_VERSION);
@@ -160,11 +161,11 @@ public:
       + " "
       + request.getVersion();
 
-    std::cout << str << std::endl;
+    BOOST_LOG_SEV(*Logging::logger(), blt::info) << str;
       
     for (HTTPServerRequest::ConstIterator it = request.begin(); it != request.end(); ++it) {
       str = (it->first + ": " + it->second);
-      std::cout << str << std::endl;
+      BOOST_LOG_SEV(*Logging::logger(), blt::info) << str;
     }
     
     return new WebSocketRequestHandler(messages_);

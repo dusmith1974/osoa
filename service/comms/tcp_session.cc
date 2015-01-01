@@ -17,9 +17,10 @@
 
 #include "osoa_pch.h"
 
-#include "service/comms/tcp_session.h"
-
 #include "boost/bind.hpp"
+
+#include "service/comms/tcp_session.h"
+#include "service/logging.h"
 
 #include "service/comms/channel.h"
 
@@ -44,7 +45,7 @@ void TcpSession::Start() {
   channel_.Join(shared_from_this());
 
   std::string remote_address = socket_.remote_endpoint().address().to_string();
-  std::cout << "TcpSession: " << this << " Accepted new client from " << remote_address << std::endl;
+  BOOST_LOG_SEV(*Logging::logger(), blt::info) << "TcpSession: " << this << " Accepted new client from " << remote_address;
 
   StartRead();
   input_deadline_.async_wait(boost::bind(&TcpSession::CheckDeadline,
@@ -69,7 +70,7 @@ void TcpSession::Stop(error_code ec) {
   channel_.Leave(shared_from_this());
 
   std::string remote_address = socket_.remote_endpoint().address().to_string();
-  std::cout << "TcpSession: " << this << " " << ec.message() << " " << remote_address << std::endl;
+  BOOST_LOG_SEV(*Logging::logger(), blt::info) << "TcpSession Error: " << this << " " << ec.message() << " " << remote_address;
   socket_.close(ec);
   input_deadline_.cancel();
   non_empty_output_queue_.cancel();

@@ -51,7 +51,7 @@ Error Comms::PublishChannel(const std::string& port) {
   try {
     // TODO(ds) ws needs to connect before tcp..
     ws_ = std::unique_ptr<osoa::WebSocket>(new osoa::WebSocket);
-    std::cout << "olap ws" << std::endl;
+    BOOST_LOG_SEV(*Logging::logger(), blt::info) << "olap ws";
     web_socket_thread_ = std::thread(&osoa::WebSocket::Run, ws_.get());
 
     tcp::endpoint listen_endpoint(tcp::v4(), static_cast<unsigned short>(atoi(port.c_str())));
@@ -101,7 +101,7 @@ Error Comms::Subscribe(const std::string& host, const std::string& port) {
       io_service_.run();
 
       io_service_.reset();
-      std::cout << "Reconnecting to server" << std::endl;
+      BOOST_LOG_SEV(*Logging::logger(), blt::info) << "Reconnecting to server";
     }
   } catch (const std::exception& ex) {
     // TODO(ds) log errors to cerr also

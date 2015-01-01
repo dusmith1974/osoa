@@ -20,15 +20,24 @@
     </ClCompile>
     <ClCompile Include="..\..\service\args.cc" />
     <ClCompile Include="..\..\service\comms\channel.cc" />
-    <ClCompile Include="..\..\service\comms\client.cc" />
+    <ClCompile Include="..\..\service\comms\client.cc">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/wd4714 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">/wd4714 %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
     <ClCompile Include="..\..\service\comms\comms.cc">
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/wd4512 /wd4100 /wd4714 %(AdditionalOptions)</AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">/wd4512 /wd4100 /wd4714 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <ClCompile Include="..\..\service\comms\server.cc" />
     <ClCompile Include="..\..\service\comms\subscriber.cc" />
-    <ClCompile Include="..\..\service\comms\tcp_session.cc" />
-    <ClCompile Include="..\..\service\comms\web_socket.cc" />
+    <ClCompile Include="..\..\service\comms\tcp_session.cc">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/wd4714 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">/wd4714 %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\service\comms\web_socket.cc">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">/wd4714 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/wd4714 %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
     <ClCompile Include="..\..\service\logging.cc">
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/wd4510 /wd4610 /wd4512 /wd4100 /wd4714 /wd4996 %(AdditionalOptions)</AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">/wd4510 /wd4610 /wd4512 /wd4100 /wd4714 /wd4996 %(AdditionalOptions)</AdditionalOptions>
