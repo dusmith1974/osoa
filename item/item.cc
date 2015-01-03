@@ -13,11 +13,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "osoa_pch.h"
+#include "osoa_pch.h"  // NOLINT
 
 #include "item/item.h"
 
-#include <iostream>
+#include <iostream>  // NOLINT
 
 class logger;
 
@@ -26,5 +26,4 @@ __declspec(dllexport) void SUPPRESS_LNK4221() {}
 #endif
 
 namespace osoa {
-
 }  // namespace osoa

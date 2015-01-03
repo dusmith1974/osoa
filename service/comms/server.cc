@@ -15,60 +15,51 @@
 
 // Implements the Server class.
 
-#include "osoa_pch.h"
+#include "osoa_pch.h"  // NOLINT
 
 #include "service/comms/server.h"
 
-#include <iostream>
+#include <iostream>  // NOLINT
+#include <string>  // NOLINT
 
 #include "boost/bind.hpp"
 
 #include "service/comms/tcp_session.h"
 
 namespace osoa {
-
-Server::Server(asio::io_service& io_service,
-     const tcp::endpoint& listen_endpoint)
-  : io_service_(io_service),
-    acceptor_(io_service, listen_endpoint),
-    channel_{},
-    cache_{} {
-  StartAccept();
-}
-
-/*int Server::Listen(const std::string& port) {
-  try {
-    using namespace std;
-
-  }
-  catch (std::exception& e) {
-    std::cerr << "Exception: " << e.what() << "\n";
+  Server::Server(const tcp::endpoint& listen_endpoint,
+                 asio::io_service* io_service
+                 )
+                 : io_service_(*io_service),
+                 acceptor_(*io_service, listen_endpoint),
+                 channel_{},
+                 cache_{} {
+    StartAccept();
   }
 
-  return 0;
-}*/
+  void Server::StartAccept() {
+    TcpSessionPtr new_session(new TcpSession(&io_service_, &channel_));
 
-void Server::StartAccept() {
-  TcpSessionPtr new_session(new TcpSession(io_service_, channel_));
+    acceptor_.async_accept(new_session->socket(),
+                           boost::bind(&Server::HandleAccept,
+                           this,
+                           new_session,
+                           _1));
+  }
 
-  acceptor_.async_accept(new_session->socket(),
-      boost::bind(&Server::HandleAccept, this, new_session, _1));
-}
-
-void Server::HandleAccept(TcpSessionPtr session, const error_code& ec) {
-  if (!ec) {
-    for (const auto& msg : cache_) { // TODO(ds) use container adapter
-      session->Deliver(msg.second);
+  void Server::HandleAccept(TcpSessionPtr session, const error_code& ec) {
+    if (!ec) {
+      for (const auto& msg : cache_) {
+        session->Deliver(msg.second);
+      }
+      session->Start();
     }
-    session->Start();
+
+    StartAccept();
   }
 
-  StartAccept();
-}
-
-void Server::PublishMessage(const std::string& msg) {
-  cache_[cache_.size() + 1] = msg;
-  channel_.Deliver(msg);
-}
-
+  void Server::PublishMessage(const std::string& msg) {
+    cache_[cache_.size() + 1] = msg;
+    channel_.Deliver(msg);
+  }
 }  // namespace osoa

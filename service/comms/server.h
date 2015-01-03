@@ -30,25 +30,23 @@ namespace asio = boost::asio;
 namespace posix_time = boost::posix_time;
 
 namespace osoa {
+  // The Server class.
+  class Server final {
+  public:
+    Server(const tcp::endpoint& listen_endpoint,
+           asio::io_service* io_service);
 
-// The Server class.
-class Server final {
- public:
-  Server(asio::io_service& io_service,
-         const tcp::endpoint& listen_endpoint);
+    //int Listen(const std::string& port);
+    void StartAccept();
+    void HandleAccept(TcpSessionPtr session, const error_code& ec);
+    void PublishMessage(const std::string& msg);
 
-  //int Listen(const std::string& port);
-  void StartAccept();
-  void HandleAccept(TcpSessionPtr session, const error_code& ec);
-  void PublishMessage(const std::string& msg);
+  private:
+    asio::io_service& io_service_;
+    tcp::acceptor acceptor_;
+    Channel channel_;
 
- private:
-  asio::io_service& io_service_;
-  tcp::acceptor acceptor_;
-  Channel channel_;
-
-  std::map<long, std::string> cache_;
-};
-
+    std::map<long, std::string> cache_;
+  };
 }  // namespace osoa
 #endif  // SERVICE__COMMS__SERVER_H_

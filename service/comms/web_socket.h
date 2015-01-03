@@ -22,22 +22,20 @@
 #include <string>
 
 namespace osoa {
+  typedef std::map<long, std::string> MessageMap;
 
-typedef std::map<long, std::string> MessageMap;
+  // The WebSocket class.
+  class WebSocket /*final : public Base*/ {
+  public:
+    WebSocket();
+    /*virtual*/ ~WebSocket();
 
-// The WebSocket class.
-class WebSocket /*final : public Base*/ {
- public:
-  WebSocket();
-  /*virtual*/ ~WebSocket();
+    void Run();
+    void PublishMessage(const std::string& msg);
 
-  void Run();
-  void PublishMessage(const std::string& msg);
-
- private:
-   MessageMap messages_;
-};
-
+  private:
+    MessageMap messages_;
+  };
 }  // namespace osoa
 
 #endif  // SERVICE__COMMS__WEB_SOCKET_H_

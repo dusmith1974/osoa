@@ -21,10 +21,8 @@
 #include "boost/shared_ptr.hpp"
 
 namespace osoa {
-
-class Subscriber;
-typedef boost::shared_ptr<Subscriber> SubscriberPtr;
-
+  class Subscriber;
+  typedef boost::shared_ptr<Subscriber> SubscriberPtr;
 }  // namespace osoa
 
 #endif  // SERVICE__COMMS__SUBSCRIBER_FWD_H_

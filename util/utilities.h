@@ -22,37 +22,34 @@
 #include <string>
 
 namespace osoa {
+  // Cancels unused parameter warnings.
+  template<class T> void unused(const T &);
 
-// Cancels unused parameter warnings.
-template<class T> void unused(const T &);
+  // Removes EOL chars from end of strings.
+  std::string* TrimLastNewline(std::string* str);
 
-// Removes EOL chars from end of strings.
-std::string* TrimLastNewline(std::string* str);
+  // TODO(ds) mv to impl or inl.
+  template <typename charT, typename traits>
+  inline std::basic_istream<charT, traits>& ignore_line(std::basic_istream <
+                                                        charT, traits > & strm) {
+    strm.ignore(std::numeric_limits<std::streamsize>::max(),
+                strm.widen('\n'));
 
-// TODO(ds) mv to impl or inl.
-template <typename charT, typename traits>
-inline std::basic_istream<charT,traits>& ignore_line(std::basic_istream<
-    charT,traits>& strm) {
-  strm.ignore(std::numeric_limits<std::streamsize>::max(),
-              strm.widen('\n'));
+    return strm;
+  }
 
-   return strm;
-}
+  // Returns the bit position for the given bitmask value, e.g. BitNum(256) = 8.
+  int BitNum(int bit_val);
 
-// Returns the bit position for the given bitmask value, e.g. BitNum(256) = 8.
-int BitNum(int bit_val);
+  // Rounds a double to n places.
+  void Round(int places, double* val);
 
-// Rounds a double to n places.
-void Round(int places, double* val);
+  // Compares a double to n places.
+  bool EqualToPlaces(double lhs, double rhs, int places);
 
-// Compares a double to n places.
-bool EqualToPlaces(double lhs, double rhs, int places);
-
-// http://stackoverflow.com/questions/3728783/difference-among-approximatelyequal-and-essentiallyequal-in-the-art-of-computer
-// std::numeric_limits<double>::epsilon
-bool ApproximatelyEqual(float a, float b, float epsilon);
-bool EssentiallyEqual(float a, float b, float epsilon);
-
-
+  // http://stackoverflow.com/questions/3728783/difference-among-approximatelyequal-and-essentiallyequal-in-the-art-of-computer
+  // std::numeric_limits<double>::epsilon
+  bool ApproximatelyEqual(float a, float b, float epsilon);
+  bool EssentiallyEqual(float a, float b, float epsilon);
 }  // namespace osoa
 #endif  // OSOA_UTIL_UTILITIES_H_

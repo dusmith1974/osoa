@@ -15,13 +15,11 @@
 
 // Implements the Subscriber class.
 
-#include "osoa_pch.h"
+#include "osoa_pch.h"  // NOLINT
 
 #include "service/comms/subscriber.h"
 
 namespace osoa {
-
-Subscriber::~Subscriber() {
-}
-
+  Subscriber::~Subscriber() {
+  }
 }  // namespace osoa

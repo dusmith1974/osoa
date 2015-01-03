@@ -17,11 +17,9 @@
 #define ITEM_ITEM_H_
 
 namespace osoa {
-
-class Item {
- public:
-  int id;
-};
-
+  class Item {
+  public:
+    int id;
+  };
 }  // namespace osoa
 #endif  // ITEM_ITEM_H_

@@ -28,48 +28,46 @@
 #include "service/service_fwd.h"
 
 namespace osoa {
+  class Server;
+  class WebSocket;
 
-class Server;
-class WebSocket;
+  namespace asio = boost::asio;
 
-namespace asio = boost::asio;
-
-// Provides a TCP publisher-subscriber link between a server and clients.
+  // Provides a TCP publisher-subscriber link between a server and clients.
 #ifdef __GNUC__
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Weffc++"
 #endif
-class Comms final : boost::noncopyable {
+  class Comms final : boost::noncopyable {
 #ifdef __GNUC__
 #pragma GCC diagnostic pop
 #endif
- public:
-  Comms();
-  ~Comms();
+  public:
+    Comms();
+    ~Comms();
 
-  // Opens an async listening port for the published topics.
-  // Returns kSuccess.
-  Error PublishChannel(const std::string& port);
+    // Opens an async listening port for the published topics.
+    // Returns kSuccess.
+    Error PublishChannel(const std::string& port);
 
-  void PublishMessage(const std::string& msg);
+    void PublishMessage(const std::string& msg);
 
-  Error Subscribe(const std::string& host, const std::string& port);
+    Error Subscribe(const std::string& host, const std::string& port);
 
-  void Shutdown();
+    void Shutdown();
 
-  const std::string& publisher_port() const;
-  void set_publisher_port(const std::string& val);
+    const std::string& publisher_port() const;
+    void set_publisher_port(const std::string& val);
 
-  asio::io_service& io_service();
+    asio::io_service& io_service();
 
- private:
-  std::unique_ptr<Server> server_;
-  std::unique_ptr<osoa::WebSocket> ws_;
-  std::string publisher_port_;
-  asio::io_service io_service_;
-  std::thread publisher_thread_;
-  std::thread web_socket_thread_;
-};
-
+  private:
+    std::unique_ptr<Server> server_;
+    std::unique_ptr<osoa::WebSocket> ws_;
+    std::string publisher_port_;
+    asio::io_service io_service_;
+    std::thread publisher_thread_;
+    std::thread web_socket_thread_;
+  };
 }  // naespace osoa
 #endif  // SERVICE_COMMS_H_

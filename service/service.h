@@ -24,58 +24,56 @@
 #include "boost/chrono.hpp"
 
 namespace osoa {
+  class Args;
+  class Comms;
 
-class Args;
-class Comms;
+  // Error codes returned from the service related functions,
+  enum class Error {
+    kSuccess,
+    kCouldNotResolveService,
+    kCouldNotOpenListeningPort,
+    kCouldNotPublishTopics,
+    kCannotParseArgs,
+    kInvalidURI,
+    kCouldNotSubscribeToService,
+    kInvalidArgs
+  };
 
-// Error codes returned from the service related functions,
-enum class Error {
-  kSuccess,
-  kCouldNotResolveService,
-  kCouldNotOpenListeningPort,
-  kCouldNotPublishTopics,
-  kCannotParseArgs,
-  kInvalidURI,
-  kCouldNotSubscribeToService,
-  kInvalidArgs
-};
+  // A base class for services, providing common features for parsing args,
+  // logging and inter-process communications.
+  class Service {
+  public:
+    Service();
+    virtual ~Service();
 
-// A base class for services, providing common features for parsing args,
-// logging and inter-process communications.
-class Service {
- public:
-  Service();
-  virtual ~Service();
+    // Parses args and sets up the logging.
+    virtual Error Initialize(int argc, const char *argv[]);
 
-  // Parses args and sets up the logging.
-  virtual Error Initialize(int argc, const char *argv[]);
+    // Starts the service and sets up any networking.
+    virtual Error Start();
 
-  // Starts the service and sets up any networking.
-  virtual Error Start();
+    // Stops the service and disables logging.
+    virtual Error Stop();
 
-  // Stops the service and disables logging.
-  virtual Error Stop();
+    // TODO(ds) return to protected
+    std::shared_ptr<Comms> comms();
+  protected:
+    std::shared_ptr<Args> args();
 
-  // TODO(ds) return to protected
-  std::shared_ptr<Comms> comms();
- protected:
-  std::shared_ptr<Args> args();
+  private:
+    typedef boost::chrono::time_point<boost::chrono::steady_clock> Timepoint;
 
- private:
-  typedef boost::chrono::time_point<boost::chrono::steady_clock> Timepoint;
+    const Timepoint& svc_start_time() const;
+    void set_svc_start_time(const Timepoint& val);
 
-  const Timepoint& svc_start_time() const;
-  void set_svc_start_time(const Timepoint& val);
+    const Timepoint& svc_end_time() const;
+    void set_svc_end_time(const Timepoint& val);
 
-  const Timepoint& svc_end_time() const;
-  void set_svc_end_time(const Timepoint& val);
+    Timepoint svc_start_time_;
+    Timepoint svc_end_time_;
 
-  Timepoint svc_start_time_;
-  Timepoint svc_end_time_;
-
-  std::shared_ptr<Args> args_;
-  std::shared_ptr<Comms> comms_;
-};
-
+    std::shared_ptr<Args> args_;
+    std::shared_ptr<Comms> comms_;
+  };
 }  // namespace osoa
 #endif  // SERVICE_SERVICE_H_

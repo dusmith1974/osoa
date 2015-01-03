@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "osoa_pch.h"
+#include "osoa_pch.h"  // NOLINT
 
 #include "service/service.h"
 
@@ -25,81 +25,79 @@
 #include "util/timing.h"
 
 namespace osoa {
-
-Service::Service()
+  Service::Service()
     : svc_start_time_(boost::chrono::steady_clock::now()),
-      svc_end_time_(boost::chrono::steady_clock::now()),
-      args_(new Args()),
-      comms_(std::make_shared<Comms>()) {
-}
+    svc_end_time_(boost::chrono::steady_clock::now()),
+    args_(new Args()),
+    comms_(std::make_shared<Comms>()) {
+  }
 
-Service::~Service() {}
+  Service::~Service() {}
 
-// Parses the command line options (and config file) and sets up the logging
-// front ends and back ends.
-Error Service::Initialize(int argc, const char *argv[]) {
-  Error code = args()->Initialize(argc, argv);
-  if (Error::kSuccess != code) return code;
+  // Parses the command line options (and config file) and sets up the logging
+  // front ends and back ends.
+  Error Service::Initialize(int argc, const char *argv[]) {
+    Error code = args()->Initialize(argc, argv);
+    if (Error::kSuccess != code) return code;
 
-  code = Logging::Instance().Initialize(args());
-  if (Error::kSuccess != code) return code;
+    code = Logging::Instance().Initialize(args());
+    if (Error::kSuccess != code) return code;
 
-  return Error::kSuccess;
-}
+    return Error::kSuccess;
+  }
 
-// Starts this service, sets the start time, resolves any services that may be
-// called upon during execution and opens the main listening port to accept
-// connections.
-Error Service::Start() {
-  BOOST_LOG_SEV(*Logging::logger(), blt::info) << "Started the service.";
+  // Starts this service, sets the start time, resolves any services that may be
+  // called upon during execution and opens the main listening port to accept
+  // connections.
+  Error Service::Start() {
+    BOOST_LOG_SEV(*Logging::logger(), blt::info) << "Started the service.";
 
-  set_svc_start_time(boost::chrono::steady_clock::now());
+    set_svc_start_time(boost::chrono::steady_clock::now());
 
-  Error code = Error::kSuccess;
-  /*if (args()->var_map().count("services"))
-    code = comms()->ResolveServices(args()->services());*/
+    Error code = Error::kSuccess;
+    /*if (args()->var_map().count("services"))
+      code = comms()->ResolveServices(args()->services());*/
 
-  // Either open an async listening port for subscribers to connect to
-  // publications, or open a sync listening port for a simple iterative server.
-  if (Error::kSuccess == code && args()->var_map().count("listening-port"))
-    code = comms()->PublishChannel(args()->listening_port());
+    // Either open an async listening port for subscribers to connect to
+    // publications, or open a sync listening port for a simple iterative server
+    if (Error::kSuccess == code && args()->var_map().count("listening-port"))
+      code = comms()->PublishChannel(args()->listening_port());
 
-  return code;
-}
+    return code;
+  }
 
-// Stops the service, logs the service uptime and detaches any logging threads/
-// front-ends from the core. Any active threads should be joined here.
-Error Service::Stop() {
-  BOOST_LOG_SEV(*Logging::logger(), blt::info) << "service stop";
+  // Stops the service, logs the service uptime and detaches any logging threads
+  // or front-ends from the core. Any active threads should be joined here.
+  Error Service::Stop() {
+    BOOST_LOG_SEV(*Logging::logger(), blt::info) << "service stop";
 
-  set_svc_end_time(boost::chrono::steady_clock::now());
-  BOOST_LOG_SEV(*Logging::logger(), blt::info) << "Service uptime: "
-    << add_timestamp(std::make_pair(svc_start_time(), svc_end_time()));
+    set_svc_end_time(boost::chrono::steady_clock::now());
+    BOOST_LOG_SEV(*Logging::logger(), blt::info) << "Service uptime: "
+      << add_timestamp(std::make_pair(svc_start_time(), svc_end_time()));
 
-  // join/stop all threads before stopping logging.
+    // join/stop all threads before stopping logging.
 
-  Logging::Instance().Detach();
+    Logging::Instance().Detach();
 
-  return Error::kSuccess;
-}
+    return Error::kSuccess;
+  }
 
-std::shared_ptr<Args> Service::args() { return args_; }
-std::shared_ptr<Comms> Service::comms() { return comms_; }
+  std::shared_ptr<Args> Service::args() { return args_; }
+  std::shared_ptr<Comms> Service::comms() { return comms_; }
 
-const Service::Timepoint& Service::svc_start_time() const {
-  return svc_start_time_;
-}
+  const Service::Timepoint& Service::svc_start_time() const {
+    return svc_start_time_;
+  }
 
-void Service::set_svc_start_time(const Service::Timepoint& val) {
-  svc_start_time_ = val;
-}
+  void Service::set_svc_start_time(const Service::Timepoint& val) {
+    svc_start_time_ = val;
+  }
 
-const Service::Timepoint& Service::svc_end_time() const {
-  return svc_end_time_;
-}
+  const Service::Timepoint& Service::svc_end_time() const {
+    return svc_end_time_;
+  }
 
-void Service::set_svc_end_time(const Service::Timepoint& val) {
-  svc_end_time_ = val;
-}
-
+  void Service::set_svc_end_time(const Service::Timepoint& val) {
+    svc_end_time_ = val;
+  }
 }  // namespace osoa
