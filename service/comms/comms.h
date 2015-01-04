@@ -15,8 +15,8 @@
 // Provides socket communications (Tcp) for inter-process communication between
 // services.
 
-#ifndef SERVICE_COMMS_H_
-#define SERVICE_COMMS_H_
+#ifndef SERVICE_COMMS_COMMS_H_
+#define SERVICE_COMMS_COMMS_H_
 
 #include <memory>
 #include <string>
@@ -42,6 +42,7 @@ namespace osoa {
 #ifdef __GNUC__
 #pragma GCC diagnostic pop
 #endif
+
   public:
     Comms();
     ~Comms();
@@ -69,5 +70,5 @@ namespace osoa {
     std::thread publisher_thread_;
     std::thread web_socket_thread_;
   };
-}  // naespace osoa
-#endif  // SERVICE_COMMS_H_
+}  // namespace osoa
+#endif  // SERVICE_COMMS_COMMS_H_

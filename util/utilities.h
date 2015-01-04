@@ -15,8 +15,8 @@
 
 // General utility functions.
 
-#ifndef OSOA_UTIL_UTILITIES_H_
-#define OSOA_UTIL_UTILITIES_H_
+#ifndef UTIL_UTILITIES_H_
+#define UTIL_UTILITIES_H_
 
 #include <limits>
 #include <string>
@@ -30,8 +30,8 @@ namespace osoa {
 
   // TODO(ds) mv to impl or inl.
   template <typename charT, typename traits>
-  inline std::basic_istream<charT, traits>& ignore_line(std::basic_istream <
-                                                        charT, traits > & strm) {
+  inline std::basic_istream<charT, traits>&
+    ignore_line(const std::basic_istream <charT, traits >& strm) {
     strm.ignore(std::numeric_limits<std::streamsize>::max(),
                 strm.widen('\n'));
 
@@ -47,9 +47,9 @@ namespace osoa {
   // Compares a double to n places.
   bool EqualToPlaces(double lhs, double rhs, int places);
 
-  // http://stackoverflow.com/questions/3728783/difference-among-approximatelyequal-and-essentiallyequal-in-the-art-of-computer
+  // http://stackoverflow.com/questions/3728783/difference-among-approximatelyequal-and-essentiallyequal-in-the-art-of-computer  // NOLINT
   // std::numeric_limits<double>::epsilon
   bool ApproximatelyEqual(float a, float b, float epsilon);
   bool EssentiallyEqual(float a, float b, float epsilon);
 }  // namespace osoa
-#endif  // OSOA_UTIL_UTILITIES_H_
+#endif  // UTIL_UTILITIES_H_

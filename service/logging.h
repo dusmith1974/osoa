@@ -32,10 +32,11 @@ namespace osoa {
   class Args;
 
   // Uses the boost log library to provide logging to the console and a logfile.
-  // Logging may be synchronous and auto-flushed (slowest, but most reliable logs
-  // in the event of a failure), or asynchronous and non-flushed (recommended for
-  // performant systems). Log files are rotated at a given size and contain a
-  // header detailing the options that the service was called with.
+  // Logging may be synchronous and auto-flushed (slowest, but most reliable
+  // logs in the event of a failure), or asynchronous and non-flushed
+  // (recommended for performant systems). Log files are rotated at a given size
+  // and contain a header detailing the options that the service was called
+  // with.
 #ifdef __GNUC__
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Weffc++"
@@ -44,14 +45,15 @@ namespace osoa {
 #ifdef __GNUC__
 #pragma GCC diagnostic pop
 #endif
+
   public:
     ~Logging();
 
     // Accesses the singleton.
     static Logging& Instance();
 
-    // Initialzes the logging environment accrding to the options specified in the
-    // args.
+    // Initializes the logging environment accrding to the options specified in
+    // the args.
     Error Initialize(std::shared_ptr<const Args> args);
 
     // Detaches the logging front-ends from the core (shuts down logging before

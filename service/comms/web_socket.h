@@ -15,14 +15,14 @@
 
 // Contains a class representing a WebSocket.
 
-#ifndef SERVICE__COMMS__WEB_SOCKET_H_
-#define SERVICE__COMMS__WEB_SOCKET_H_
+#ifndef SERVICE_COMMS_WEB_SOCKET_H_
+#define SERVICE_COMMS_WEB_SOCKET_H_
 
 #include <map>
 #include <string>
 
 namespace osoa {
-  typedef std::map<long, std::string> MessageMap;
+  typedef std::map<uint64_t, std::string> MessageMap;
 
   // The WebSocket class.
   class WebSocket /*final : public Base*/ {
@@ -38,4 +38,4 @@ namespace osoa {
   };
 }  // namespace osoa
 
-#endif  // SERVICE__COMMS__WEB_SOCKET_H_
+#endif  // SERVICE_COMMS_WEB_SOCKET_H_

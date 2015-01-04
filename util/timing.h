@@ -21,8 +21,10 @@
 
 #include "boost/chrono.hpp"
 
+using boost::chrono::time_point;
+
 namespace osoa {
-  typedef boost::chrono::time_point<boost::chrono::steady_clock> SteadyTimepoint;
+  typedef time_point<boost::chrono::steady_clock> SteadyTimepoint;
   typedef std::pair<SteadyTimepoint, SteadyTimepoint> SteadyTimepointPair;
 
   std::string add_timestamp(const SteadyTimepointPair& timepoints);

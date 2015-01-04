@@ -33,8 +33,8 @@
 namespace osoa {
   namespace po = boost::program_options;
 
-  // Represents the command line args passed to the service (either on the command
-  // line or from a config file.
+  // Represents the command line args passed to the service (either on the
+  // command line or from a config file.
 #ifdef __GNUC__
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Weffc++"
@@ -43,6 +43,7 @@ namespace osoa {
 #ifdef __GNUC__
 #pragma GCC diagnostic pop
 #endif
+
   public:
     Args();
     ~Args();

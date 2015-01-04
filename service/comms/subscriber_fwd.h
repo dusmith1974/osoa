@@ -15,8 +15,8 @@
 
 // Contains forward declarations for the Subscriber class.
 
-#ifndef SERVICE__COMMS__SUBSCRIBER_FWD_H_
-#define SERVICE__COMMS__SUBSCRIBER_FWD_H_
+#ifndef SERVICE_COMMS_SUBSCRIBER_FWD_H_
+#define SERVICE_COMMS_SUBSCRIBER_FWD_H_
 
 #include "boost/shared_ptr.hpp"
 
@@ -25,4 +25,4 @@ namespace osoa {
   typedef boost::shared_ptr<Subscriber> SubscriberPtr;
 }  // namespace osoa
 
-#endif  // SERVICE__COMMS__SUBSCRIBER_FWD_H_
+#endif  // SERVICE_COMMS_SUBSCRIBER_FWD_H_

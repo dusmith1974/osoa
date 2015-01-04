@@ -15,10 +15,11 @@
 
 // Contains a class representing a TcpSession.
 
-#ifndef SERVICE__COMMS__TCP_SESSION_H_
-#define SERVICE__COMMS__TCP_SESSION_H_
+#ifndef SERVICE_COMMS_TCP_SESSION_H_
+#define SERVICE_COMMS_TCP_SESSION_H_
 
 #include <deque>
+#include <string>
 
 #include "boost/asio.hpp"
 #include "boost/enable_shared_from_this.hpp"
@@ -77,4 +78,4 @@ namespace osoa {
   };
 }  // namespace osoa
 
-#endif  // SERVICE__COMMS__TCP_SESSION_H_
+#endif  // SERVICE_COMMS_TCP_SESSION_H_

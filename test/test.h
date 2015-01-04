@@ -29,38 +29,37 @@
 #include "service/service.h"
 
 namespace osoa {
-
-// Example service class which listens for, or connects to other services,
-// parses command line args and writes to a logfile.
-// See comment at top of file for a complete description.
+  // Example service class which listens for, or connects to other services,
+  // parses command line args and writes to a logfile.
+  // See comment at top of file for a complete description.
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Weffc++"
-class Test final : public Service, private boost::noncopyable {
+  class Test final : public Service, private boost::noncopyable {
 #pragma GCC diagnostic pop
- public:
-  Test();
-  ~Test();
 
-  // Initializes the service ready for use and adds command line options
-  // specific to this service.
-  Error Initialize(int argc, const char *argv[]) override;
+  public:
+    Test();
+    ~Test();
 
-  // Starts the service, logs messages and connects to other services.
-  Error Start() override;
+    // Initializes the service ready for use and adds command line options
+    // specific to this service.
+    Error Initialize(int argc, const char *argv[]) override;
 
-  // Stops the service.
-  Error Stop() override;
+    // Starts the service, logs messages and connects to other services.
+    Error Start() override;
 
- private:
-  typedef Service super;
+    // Stops the service.
+    Error Stop() override;
 
-  std::string OnConnect();
+  private:
+    typedef Service super;
 
-  size_t msg_count();
+    std::string OnConnect();
 
-  // Holds a count of the number of times we should log the test message.
-  size_t msg_count_;
-};
+    size_t msg_count();
 
+    // Holds a count of the number of times we should log the test message.
+    size_t msg_count_;
+  };
 }  // namespace osoa
 #endif  // TEST_TEST_H_

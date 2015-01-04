@@ -29,54 +29,53 @@
 namespace po = boost::program_options;
 
 namespace osoa {
+  // msg_count is the default number of messages to write to the logfile.
+  Test::Test() : msg_count_(10) {}
 
-// msg_count is the default number of messages to write to the logfile.
-Test::Test() : msg_count_(10) {}
+  Test::~Test() {}
 
-Test::~Test() {}
+  // Add customizations specific to this particular service.
+  Error Test::Initialize(int argc, const char *argv[]) {
+    po::options_description& config = args()->config();
 
-// Add customizations specific to this particular service.
-Error Test::Initialize(int argc, const char *argv[]) {
-  po::options_description& config = args()->config();
+    // Add a command line option (for the number of times to log the test msg).
+    auto msg_count_option =
+      new po::typed_value<decltype(msg_count_)>(&msg_count_);
+    msg_count_option->value_name("number");
+    config.add_options()
+      ("msg-count,o", msg_count_option, "number of msgs");
 
-  // Add a command line option (for the number of times to log the test msg).
-  auto msg_count_option =
-    new po::typed_value<decltype(msg_count_)>(&msg_count_);
-  msg_count_option->value_name("number");
-  config.add_options()
-    ("msg-count,o", msg_count_option, "number of msgs");
+    return Service::Initialize(argc, argv);
+  }
 
-  return Service::Initialize(argc, argv);
-}
+  // Starts the base class service, logs messages and connects to other
+  // services.
+  Error Test::Start() {
+    Error code = super::Start();
+    if (Error::kSuccess != code) return code;
 
-// Starts the base class service, logs messages and connects to other services.
-Error Test::Start() {
-  Error code = super::Start();
-  if (Error::kSuccess != code) return code;
-
-  for (size_t j = 0; j < msg_count();  ++j)
-    BOOST_LOG_SEV(*Logging::logger(), blt::debug)
+    for (size_t j = 0; j < msg_count(); ++j)
+      BOOST_LOG_SEV(*Logging::logger(), blt::debug)
       << "The quick brown fox jumped over the lazy dog.";
 
-  // TODO(ds) use server args
-  code = comms()->Subscribe("127.0.0.1", "8000");
-  if (Error::kSuccess == code) BOOST_LOG_SEV(*Logging::logger(), blt::debug)
-    << "Subscribed to data";
+    // TODO(ds) use server args
+    code = comms()->Subscribe("127.0.0.1", "8000");
+    if (Error::kSuccess == code) BOOST_LOG_SEV(*Logging::logger(), blt::debug)
+      << "Subscribed to data";
 
-  return Error::kSuccess;
-}
+    return Error::kSuccess;
+  }
 
-// No tidy up is required except to stop the base class service.
-Error Test::Stop() {
-  return super::Stop();
-}
+  // No tidy up is required except to stop the base class service.
+  Error Test::Stop() {
+    return super::Stop();
+  }
 
-std::string Test::OnConnect() {
-  return "FROM TEST XXX";
-}
+  std::string Test::OnConnect() {
+    return "FROM TEST XXX";
+  }
 
-size_t Test::msg_count() { return msg_count_; }
-
+  size_t Test::msg_count() { return msg_count_; }
 }  // namespace osoa
 
 // Creates and runs the service.

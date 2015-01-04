@@ -15,8 +15,8 @@
 
 // Contains a class representing a Subscriber.
 
-#ifndef SERVICE__COMMS__SUBSCRIBER_H_
-#define SERVICE__COMMS__SUBSCRIBER_H_
+#ifndef SERVICE_COMMS_SUBSCRIBER_H_
+#define SERVICE_COMMS_SUBSCRIBER_H_
 
 #include <string>
 
@@ -29,4 +29,4 @@ namespace osoa {
   };
 }  // namespace osoa
 
-#endif  // SERVICE__COMMS__SUBSCRIBER_H_
+#endif  // SERVICE_COMMS_SUBSCRIBER_H_

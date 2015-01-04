@@ -15,10 +15,10 @@
 
 // Contains a class representing a Client.
 
-#ifndef SERVICE__COMMS__CLIENT_H_
-#define SERVICE__COMMS__CLIENT_H_
+#ifndef SERVICE_COMMS_CLIENT_H_
+#define SERVICE_COMMS_CLIENT_H_
 
-#include <boost/asio.hpp>
+#include "boost/asio.hpp"
 
 using boost::asio::ip::tcp;
 using boost::system::error_code;
@@ -28,7 +28,7 @@ namespace osoa {
   // Async TCP client to a pub/sub server.
   class Client final {
   public:
-    Client(boost::asio::io_service* io_service);
+    explicit Client(boost::asio::io_service* io_service);
     ~Client();
 
     int Connect(int argc, char* argv[]);
@@ -54,4 +54,4 @@ namespace osoa {
   };
 }  // namespace osoa
 
-#endif  // SERVICE__COMMS__CLIENT_H_
+#endif  // SERVICE_COMMS_CLIENT_H_

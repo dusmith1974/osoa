@@ -15,10 +15,11 @@
 
 // Contains a class representing a Channel.
 
-#ifndef SERVICE__COMMS__CHANNEL_H_
-#define SERVICE__COMMS__CHANNEL_H_
+#ifndef SERVICE_COMMS_CHANNEL_H_
+#define SERVICE_COMMS_CHANNEL_H_
 
 #include <set>
+#include <string>
 
 #include "service/comms/subscriber_fwd.h"
 
@@ -38,4 +39,4 @@ namespace osoa {
   };
 }  // namespace osoa
 
-#endif  // SERVICE__COMMS__CHANNEL_H_
+#endif  // SERVICE_COMMS_CHANNEL_H_

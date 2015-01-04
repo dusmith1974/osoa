@@ -57,6 +57,7 @@ namespace osoa {
 
     // TODO(ds) return to protected
     std::shared_ptr<Comms> comms();
+
   protected:
     std::shared_ptr<Args> args();
 

@@ -15,10 +15,13 @@
 
 // Contains a class representing a Server.
 
-#ifndef SERVICE__COMMS__SERVER_H_
-#define SERVICE__COMMS__SERVER_H_
+#ifndef SERVICE_COMMS_SERVER_H_
+#define SERVICE_COMMS_SERVER_H_
 
-#include <boost/asio.hpp>
+#include <map>
+#include <string>
+
+#include "boost/asio.hpp"
 
 #include "service/comms/channel.h"
 #include "service/comms/tcp_session_fwd.h"
@@ -36,7 +39,6 @@ namespace osoa {
     Server(const tcp::endpoint& listen_endpoint,
            asio::io_service* io_service);
 
-    //int Listen(const std::string& port);
     void StartAccept();
     void HandleAccept(TcpSessionPtr session, const error_code& ec);
     void PublishMessage(const std::string& msg);
@@ -46,7 +48,7 @@ namespace osoa {
     tcp::acceptor acceptor_;
     Channel channel_;
 
-    std::map<long, std::string> cache_;
+    std::map<uint64_t, std::string> cache_;
   };
 }  // namespace osoa
-#endif  // SERVICE__COMMS__SERVER_H_
+#endif  // SERVICE_COMMS_SERVER_H_
