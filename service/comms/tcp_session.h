@@ -33,49 +33,49 @@ using boost::asio::ip::tcp;
 using boost::system::error_code;
 
 namespace osoa {
-  class Channel;
+class Channel;
 
-  // The TcpSession class.
+// The TcpSession class.
 #ifdef __GNUC__
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Weffc++"
 #endif
-  class TcpSession
-    : public Subscriber,
-    public boost::enable_shared_from_this < TcpSession > {
+class TcpSession
+  : public Subscriber,
+    public boost::enable_shared_from_this <TcpSession> {
 #ifdef __GNUC__
 #pragma GCC diagnostic pop
 #endif
-  public:
-    TcpSession(asio::io_service* io_service, Channel* ch);
+ public:
+  TcpSession(asio::io_service* io_service, Channel* ch);
 
-    void Start();
+  void Start();
 
-    tcp::socket& socket();
+  tcp::socket& socket();
 
-    void Deliver(const std::string& msg);
+  void Deliver(const std::string& msg);
 
-  private:
-    void Stop(error_code ec);
+ private:
+  void Stop(error_code ec);
 
-    bool Stopped() const;
+  bool Stopped() const;
 
-    void StartRead();
+  void StartRead();
 
-    void HandleRead(const error_code& ec);
-    void AwaitOutput();
-    void StartWrite();
-    void HandleWrite(const error_code& ec);
-    void CheckDeadline(deadline_timer* deadline);
+  void HandleRead(const error_code& ec);
+  void AwaitOutput();
+  void StartWrite();
+  void HandleWrite(const error_code& ec);
+  void CheckDeadline(deadline_timer* deadline);
 
-    Channel& channel_;
-    tcp::socket socket_;
-    asio::streambuf input_buffer_;
-    deadline_timer input_deadline_;
-    std::deque<std::string> output_queue_;
-    deadline_timer non_empty_output_queue_;
-    deadline_timer output_deadline_;
-  };
+  Channel& channel_;
+  tcp::socket socket_;
+  asio::streambuf input_buffer_;
+  deadline_timer input_deadline_;
+  std::deque<std::string> output_queue_;
+  deadline_timer non_empty_output_queue_;
+  deadline_timer output_deadline_;
+};
 }  // namespace osoa
 
 #endif  // SERVICE_COMMS_TCP_SESSION_H_

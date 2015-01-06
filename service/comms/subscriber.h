@@ -21,12 +21,12 @@
 #include <string>
 
 namespace osoa {
-  // The Subscriber class.
-  class Subscriber {
-  public:
-    virtual ~Subscriber();
-    virtual void Deliver(const std::string& msg) = 0;
-  };
+// The Subscriber class.
+class Subscriber {
+ public:
+  virtual ~Subscriber();
+  virtual void Deliver(const std::string& msg) = 0;
+};
 }  // namespace osoa
 
 #endif  // SERVICE_COMMS_SUBSCRIBER_H_

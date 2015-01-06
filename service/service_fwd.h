@@ -17,7 +17,7 @@
 #define SERVICE_SERVICE_FWD_H_
 
 namespace osoa {
-  enum class Error;
-  class Service;
+enum class Error;
+class Service;
 }  // namespace osoa
 #endif  // SERVICE_SERVICE_FWD_H_

@@ -21,8 +21,8 @@
 #include "boost/shared_ptr.hpp"
 
 namespace osoa {
-  class TcpSession;
-  typedef boost::shared_ptr<TcpSession> TcpSessionPtr;
+class TcpSession;
+typedef boost::shared_ptr<TcpSession> TcpSessionPtr;
 }  // namespace osoa
 
 #endif  // SERVICE_COMMS_TCP_SESSION_FWD_H_

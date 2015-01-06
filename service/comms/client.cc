@@ -31,152 +31,152 @@ namespace asio = boost::asio;
 namespace posix_time = boost::posix_time;
 
 namespace osoa {
-  Client::Client(asio::io_service* io_service)
-    : stopped_(false),
+Client::Client(asio::io_service* io_service)
+  : stopped_(false),
     socket_(*io_service),
     input_buffer_{},
     deadline_(*io_service),
     heartbeat_timer_(*io_service) {
-  }
+}
 
-  Client::~Client() {
-  }
+Client::~Client() {
+}
 
-  int Client::Connect(int argc, char* argv[]) {
-    try {
-      if (argc != 3) {
-        std::cerr << "Usage: client <host> <port>\n";
-        return 1;
-      }
-
-      asio::io_service io_service;
-      tcp::resolver resolver(io_service);
-      Client client(&io_service);
-
-      client.Start(resolver.resolve(tcp::resolver::query(argv[1], argv[2])));
-      io_service.run();
-    } catch (std::exception& e) {
-      std::cerr << "Exception: " << e.what() << "\n";
+int Client::Connect(int argc, char* argv[]) {
+  try {
+    if (argc != 3) {
+      std::cerr << "Usage: client <host> <port>\n";
+      return 1;
     }
 
-    return 0;
+    asio::io_service io_service;
+    tcp::resolver resolver(io_service);
+    Client client(&io_service);
+
+    client.Start(resolver.resolve(tcp::resolver::query(argv[1], argv[2])));
+    io_service.run();
+  } catch (std::exception& e) {
+    std::cerr << "Exception: " << e.what() << "\n";
   }
 
-  void Client::Start(tcp::resolver::iterator endpoint_iter) {
-    StartConnect(endpoint_iter);
-    deadline_.async_wait(bind(&Client::CheckDeadline, this));
-  }
+  return 0;
+}
 
-  void Client::Stop() {
-    stopped_ = true;
-    error_code ignored_ec;
-    socket_.close(ignored_ec);
-    deadline_.cancel();
-    heartbeat_timer_.cancel();
-  }
+void Client::Start(tcp::resolver::iterator endpoint_iter) {
+  StartConnect(endpoint_iter);
+  deadline_.async_wait(bind(&Client::CheckDeadline, this));
+}
 
-  void Client::StartConnect(tcp::resolver::iterator endpoint_iter) {
-    if (endpoint_iter != tcp::resolver::iterator()) {
-      BOOST_LOG_SEV(*Logging::logger(), blt::info)
+void Client::Stop() {
+  stopped_ = true;
+  error_code ignored_ec;
+  socket_.close(ignored_ec);
+  deadline_.cancel();
+  heartbeat_timer_.cancel();
+}
+
+void Client::StartConnect(tcp::resolver::iterator endpoint_iter) {
+  if (endpoint_iter != tcp::resolver::iterator()) {
+    BOOST_LOG_SEV(*Logging::logger(), blt::info)
         << "Trying "
         << endpoint_iter->endpoint();
 
-      deadline_.expires_from_now(posix_time::seconds(60));
+    deadline_.expires_from_now(posix_time::seconds(60));
 
-      socket_.async_connect(endpoint_iter->endpoint(),
-                            bind(&Client::HandleConnect,
-                            this, _1, endpoint_iter));
-    } else {
-      Stop();
-    }
+    socket_.async_connect(endpoint_iter->endpoint(),
+                          bind(&Client::HandleConnect,
+                               this, _1, endpoint_iter));
+  } else {
+    Stop();
   }
+}
 
-  void Client::HandleConnect(const error_code& ec,
-                             tcp::resolver::iterator endpoint_iter) {
-    if (stopped_)
-      return;
+void Client::HandleConnect(const error_code& ec,
+                           tcp::resolver::iterator endpoint_iter) {
+  if (stopped_)
+    return;
 
-    if (!socket_.is_open()) {
-      BOOST_LOG_SEV(*Logging::logger(), blt::info) << "Connect timed out";
-      StartConnect(++endpoint_iter);
-    } else if (ec) {
-      BOOST_LOG_SEV(*Logging::logger(), blt::info)
+  if (!socket_.is_open()) {
+    BOOST_LOG_SEV(*Logging::logger(), blt::info) << "Connect timed out";
+    StartConnect(++endpoint_iter);
+  } else if (ec) {
+    BOOST_LOG_SEV(*Logging::logger(), blt::info)
         << "Connect error: "
         << ec.message();
 
-      socket_.close();
+    socket_.close();
 
-      StartConnect(++endpoint_iter);
-    } else {
-      BOOST_LOG_SEV(*Logging::logger(), blt::info)
+    StartConnect(++endpoint_iter);
+  } else {
+    BOOST_LOG_SEV(*Logging::logger(), blt::info)
         << "Connected to "
         << endpoint_iter->endpoint();
 
-      StartRead();
-      StartWrite();
-    }
+    StartRead();
+    StartWrite();
   }
+}
 
-  void Client::StartRead() {
-    deadline_.expires_from_now(posix_time::seconds(30));
-    asio::async_read_until(socket_, input_buffer_, '\n',
-                           bind(&Client::HandleRead, this, _1));
-  }
+void Client::StartRead() {
+  deadline_.expires_from_now(posix_time::seconds(30));
+  asio::async_read_until(socket_, input_buffer_, '\n',
+                         bind(&Client::HandleRead, this, _1));
+}
 
-  void Client::HandleRead(const error_code& ec) {
-    if (stopped_)
-      return;
+void Client::HandleRead(const error_code& ec) {
+  if (stopped_)
+    return;
 
-    if (!ec) {
-      std::string line;
-      std::istream is(&input_buffer_);
-      std::getline(is, line);
+  if (!ec) {
+    std::string line;
+    std::istream is(&input_buffer_);
+    std::getline(is, line);
 
-      if (!line.empty())
-        BOOST_LOG_SEV(*Logging::logger(), blt::info) << "Received: " << line;
+    if (!line.empty())
+      BOOST_LOG_SEV(*Logging::logger(), blt::info) << "Received: " << line;
 
-      StartRead();
-    } else {
-      BOOST_LOG_SEV(*Logging::logger(), blt::info)
+    StartRead();
+  } else {
+    BOOST_LOG_SEV(*Logging::logger(), blt::info)
         << "Error on receive: "
         << ec.message();
 
-      Stop();
-    }
+    Stop();
   }
+}
 
-  void Client::StartWrite() {
-    if (stopped_)
-      return;
+void Client::StartWrite() {
+  if (stopped_)
+    return;
 
-    asio::async_write(socket_, asio::buffer("\n", 1),
-                      bind(&Client::HandleWrite, this, _1));
-  }
+  asio::async_write(socket_, asio::buffer("\n", 1),
+                    bind(&Client::HandleWrite, this, _1));
+}
 
-  void Client::HandleWrite(const error_code& ec) {
-    if (stopped_)
-      return;
+void Client::HandleWrite(const error_code& ec) {
+  if (stopped_)
+    return;
 
-    if (!ec) {
-      heartbeat_timer_.expires_from_now(posix_time::seconds(10));
-      heartbeat_timer_.async_wait(bind(&Client::StartWrite, this));
-    } else {
-      BOOST_LOG_SEV(*Logging::logger(), blt::info)
+  if (!ec) {
+    heartbeat_timer_.expires_from_now(posix_time::seconds(10));
+    heartbeat_timer_.async_wait(bind(&Client::StartWrite, this));
+  } else {
+    BOOST_LOG_SEV(*Logging::logger(), blt::info)
         << "Error on heartbeat: "
         << ec.message();
-      Stop();
-    }
+    Stop();
+  }
+}
+
+void Client::CheckDeadline() {
+  if (stopped_)
+    return;
+
+  if (deadline_.expires_at() <= deadline_timer::traits_type::now()) {
+    socket_.close();
+    deadline_.expires_at(posix_time::pos_infin);
   }
 
-  void Client::CheckDeadline() {
-    if (stopped_)
-      return;
-
-    if (deadline_.expires_at() <= deadline_timer::traits_type::now()) {
-      socket_.close();
-      deadline_.expires_at(posix_time::pos_infin);
-    }
-
-    deadline_.async_wait(bind(&Client::CheckDeadline, this));
-  }
+  deadline_.async_wait(bind(&Client::CheckDeadline, this));
+}
 }  // namespace osoa

@@ -28,12 +28,12 @@ namespace sinks = boost::log::sinks;
 namespace blt = boost::log::trivial;
 
 namespace osoa {
-  class Logging;
+class Logging;
 
-  typedef sinks::asynchronous_sink<sinks::text_file_backend> AsyncSink;
-  typedef src::severity_logger_mt<blt::severity_level> SeverityLogger;
-  typedef std::shared_ptr<SeverityLogger> SeverityLoggerPtr;
-  typedef std::shared_ptr<Logging> LoggingPtr;
+typedef sinks::asynchronous_sink<sinks::text_file_backend> AsyncSink;
+typedef src::severity_logger_mt<blt::severity_level> SeverityLogger;
+typedef std::shared_ptr<SeverityLogger> SeverityLoggerPtr;
+typedef std::shared_ptr<Logging> LoggingPtr;
 }  // namespace osoa
 
 #endif  // SERVICE_LOGGING_FWD_H_

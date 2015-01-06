@@ -24,19 +24,19 @@
 #include "service/comms/subscriber_fwd.h"
 
 namespace osoa {
-  // The Channel class.
-  class Channel {
-  public:
-    Channel();
-    ~Channel();
+// The Channel class.
+class Channel {
+ public:
+  Channel();
+  ~Channel();
 
-    void Join(SubscriberPtr subscriber);
-    void Leave(SubscriberPtr subscriber);
-    void Deliver(const std::string& msg);
+  void Join(SubscriberPtr subscriber);
+  void Leave(SubscriberPtr subscriber);
+  void Deliver(const std::string& msg);
 
-  private:
-    std::set<SubscriberPtr> subscribers_;
-  };
+ private:
+  std::set<SubscriberPtr> subscribers_;
+};
 }  // namespace osoa
 
 #endif  // SERVICE_COMMS_CHANNEL_H_

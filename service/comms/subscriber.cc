@@ -20,6 +20,6 @@
 #include "service/comms/subscriber.h"
 
 namespace osoa {
-  Subscriber::~Subscriber() {
-  }
+Subscriber::~Subscriber() {
+}
 }  // namespace osoa

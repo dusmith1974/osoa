@@ -1,9 +1,10 @@
+CC = distcc
+CXX = distcc g++
 CXXFLAGS = -DBOOST_ALL_DYN_LINK
 CXXFLAGS += -Wall -Wextra -ansi -pedantic -Werror
 "CXXFLAGS += -Weffc++ -Wshadow // Disabled for Poco 
 CXXFLAGS += -Wno-error=effc++ # for boost and other libs.
 CXXFLAGS += -std=c++11
-"CXXFLAGS += -H
 
 ITEM = item
 SERVICE = service
@@ -71,8 +72,8 @@ endif
 
 $(BIN_DIR)/test: $(OBJS)
 	$(LINK.cc) $(OBJS) $(DEFS) -L$(POCO_BASE)/lib/Linux/x86_64 -dynamic -lPocoUtild -lPocoNetd -lPocoXMLd -lPocoFoundationd -pthread -lboost_program_options -lboost_log_setup -lboost_log -lboost_system -lboost_thread -lboost_date_time -lboost_filesystem -lboost_chrono $(OUTPUT_OPTION)
-	ctags -R --c-kinds=+cdefglmnpstuvx --extra=+f
-	cscope -Rb
+	#ctags -R --c-kinds=+cdefglmnpstuvx --extra=+f
+	#cscope -Rb
 
 $(OBJ_DIR)/$(LIB_OSOA): $(OBJS)
 	mkdir -p $(OBJ_DIR)

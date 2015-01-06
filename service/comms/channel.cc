@@ -27,22 +27,22 @@
 #include "service/comms/subscriber.h"
 
 namespace osoa {
-  Channel::Channel() : subscribers_{} {
-  }
+Channel::Channel() : subscribers_{} {
+}
 
-  Channel::~Channel() {
-  }
+Channel::~Channel() {
+}
 
-  void Channel::Join(SubscriberPtr subscriber) {
-    subscribers_.insert(subscriber);
-  }
+void Channel::Join(SubscriberPtr subscriber) {
+  subscribers_.insert(subscriber);
+}
 
-  void Channel::Leave(SubscriberPtr subscriber) {
-    subscribers_.erase(subscriber);
-  }
+void Channel::Leave(SubscriberPtr subscriber) {
+  subscribers_.erase(subscriber);
+}
 
-  void Channel::Deliver(const std::string& msg) {
-    std::for_each(subscribers_.begin(), subscribers_.end(),
-                  bind(&Subscriber::Deliver, _1, boost::ref(msg)));
-  }
+void Channel::Deliver(const std::string& msg) {
+  std::for_each(subscribers_.begin(), subscribers_.end(),
+                bind(&Subscriber::Deliver, _1, boost::ref(msg)));
+}
 }  // namespace osoa

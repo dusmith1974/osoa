@@ -20,27 +20,27 @@
 #include <sstream>  // NOLINT
 
 namespace osoa {
-  std::string add_timestamp(const SteadyTimepointPair& timepoints) {
-    auto micro = boost::chrono::duration_cast<boost::chrono::microseconds>(
-      timepoints.second - timepoints.first);
-    auto milli = boost::chrono::duration_cast<boost::chrono::milliseconds>(
-      timepoints.second - timepoints.first);
-    auto sec = boost::chrono::duration_cast<boost::chrono::seconds>(
-      timepoints.second - timepoints.first);
+std::string add_timestamp(const SteadyTimepointPair& timepoints) {
+  auto micro = boost::chrono::duration_cast<boost::chrono::microseconds>(
+                 timepoints.second - timepoints.first);
+  auto milli = boost::chrono::duration_cast<boost::chrono::milliseconds>(
+                 timepoints.second - timepoints.first);
+  auto sec = boost::chrono::duration_cast<boost::chrono::seconds>(
+               timepoints.second - timepoints.first);
 
-    std::stringstream ss;
-    auto elapsed = timepoints.second - timepoints.first;
-    ss << elapsed.count() << " ticks of "
-      << boost::chrono::steady_clock::period::num
-      << "/" << boost::chrono::steady_clock::period::den << " (";
+  std::stringstream ss;
+  auto elapsed = timepoints.second - timepoints.first;
+  ss << elapsed.count() << " ticks of "
+     << boost::chrono::steady_clock::period::num
+     << "/" << boost::chrono::steady_clock::period::den << " (";
 
-    if (sec.count())
-      ss << sec.count() << " seconds)";
-    else if (milli.count())
-      ss << milli.count() << " milli-seconds)";
-    else
-      ss << micro.count() << " micro-seconds)";
+  if (sec.count())
+    ss << sec.count() << " seconds)";
+  else if (milli.count())
+    ss << milli.count() << " milli-seconds)";
+  else
+    ss << micro.count() << " micro-seconds)";
 
-    return (std::string(ss.str()));
-  }
+  return (std::string(ss.str()));
+}
 }  // namespace osoa

@@ -27,39 +27,38 @@
 #include "service/comms/tcp_session.h"
 
 namespace osoa {
-  Server::Server(const tcp::endpoint& listen_endpoint,
-                 asio::io_service* io_service
-                 )
-                 : io_service_(*io_service),
-                 acceptor_(*io_service, listen_endpoint),
-                 channel_{},
-                 cache_{} {
-    StartAccept();
+Server::Server(const tcp::endpoint& listen_endpoint,
+               asio::io_service* io_service
+              )
+  : io_service_(*io_service),
+    acceptor_(*io_service, listen_endpoint),
+    channel_{},
+    cache_{} {
+  StartAccept();
+}
+
+void Server::StartAccept() {
+  TcpSessionPtr new_session(new TcpSession(&io_service_, &channel_));
+
+  acceptor_.async_accept(new_session->socket(),
+                         boost::bind(&Server::HandleAccept,
+                                     this,
+                                     new_session,
+                                     _1));
+}
+
+void Server::HandleAccept(TcpSessionPtr session, const error_code& ec) {
+  if (!ec) {
+    for (const auto& msg : cache_)
+      session->Deliver(msg.second);
+    session->Start();
   }
 
-  void Server::StartAccept() {
-    TcpSessionPtr new_session(new TcpSession(&io_service_, &channel_));
+  StartAccept();
+}
 
-    acceptor_.async_accept(new_session->socket(),
-                           boost::bind(&Server::HandleAccept,
-                           this,
-                           new_session,
-                           _1));
-  }
-
-  void Server::HandleAccept(TcpSessionPtr session, const error_code& ec) {
-    if (!ec) {
-      for (const auto& msg : cache_) {
-        session->Deliver(msg.second);
-      }
-      session->Start();
-    }
-
-    StartAccept();
-  }
-
-  void Server::PublishMessage(const std::string& msg) {
-    cache_[cache_.size() + 1] = msg;
-    channel_.Deliver(msg);
-  }
+void Server::PublishMessage(const std::string& msg) {
+  cache_[cache_.size() + 1] = msg;
+  channel_.Deliver(msg);
+}
 }  // namespace osoa

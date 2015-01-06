@@ -24,10 +24,10 @@
 using boost::chrono::time_point;
 
 namespace osoa {
-  typedef time_point<boost::chrono::steady_clock> SteadyTimepoint;
-  typedef std::pair<SteadyTimepoint, SteadyTimepoint> SteadyTimepointPair;
+typedef time_point<boost::chrono::steady_clock> SteadyTimepoint;
+typedef std::pair<SteadyTimepoint, SteadyTimepoint> SteadyTimepointPair;
 
-  std::string add_timestamp(const SteadyTimepointPair& timepoints);
+std::string add_timestamp(const SteadyTimepointPair& timepoints);
 }  // namespace osoa
 
 #endif  // UTIL_TIMING_H_
