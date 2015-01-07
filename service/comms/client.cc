@@ -45,7 +45,8 @@ Client::~Client() {
 int Client::Connect(int argc, char* argv[]) {
   try {
     if (argc != 3) {
-      std::cerr << "Usage: client <host> <port>\n";
+      BOOST_LOG_SEV(*Logging::logger(), blt::info)
+          << "Usage: client <host> <port>\n";
       return 1;
     }
 
@@ -56,7 +57,8 @@ int Client::Connect(int argc, char* argv[]) {
     client.Start(resolver.resolve(tcp::resolver::query(argv[1], argv[2])));
     io_service.run();
   } catch (std::exception& e) {
-    std::cerr << "Exception: " << e.what() << "\n";
+    BOOST_LOG_SEV(*Logging::logger(), blt::info)
+        << "Exception: " << e.what() << "\n";
   }
 
   return 0;

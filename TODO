@@ -1,6 +1,3 @@
-add sdf to .gitignore
-precompiled headers for vs (and gcc?, see boost build v2)
-
 swmr shared lock on map (1 map per topic)
 wrap enum class in class for index into array w/o cast (SO duck)
 pub/sub support different publications

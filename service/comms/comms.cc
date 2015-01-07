@@ -40,7 +40,9 @@ Comms::~Comms() {
 // TODO(DS) remove? unused?
 Error Comms::PublishChannel(const std::string& port) {
   if (port.empty()) {
-    std::cerr << "Usage: server <listen_port>\n";
+    BOOST_LOG_SEV(*Logging::logger(), blt::info)
+        << "Usage: server <listen_port>\n";
+
     return Error::kInvalidArgs;
   }
 
@@ -59,7 +61,10 @@ Error Comms::PublishChannel(const std::string& port) {
 
     publisher_thread_ = std::thread([&]() { io_service_.run(); });
   } catch (std::exception& e) {
-    std::cerr << e.what() << std::endl;  // TODO(ds) to log
+    BOOST_LOG_SEV(*Logging::logger(), blt::info)
+        << e.what() << std::endl;
+
+    return Error::kCouldNotOpenListeningPort;
   }
 
   return Error::kSuccess;
@@ -75,9 +80,14 @@ void Comms::PublishMessage(const std::string& msg) {
 }
 
 Error Comms::Subscribe(const std::string& host, const std::string& port) {
+  namespace this_thread = boost::this_thread;
+  namespace posix_time = boost::posix_time;
+
   try {
     if (host.empty() || port.empty()) {
-      std::cerr << "Usage: client <host> <port>\n";
+      BOOST_LOG_SEV(*Logging::logger(), blt::info)
+          << "Usage: client <host> <port>\n";
+
       return Error::kInvalidArgs;
     }
 
@@ -89,11 +99,11 @@ Error Comms::Subscribe(const std::string& host, const std::string& port) {
       io_service_.run();
 
       io_service_.reset();
+      this_thread::sleep(posix_time::milliseconds(1000));
       BOOST_LOG_SEV(*Logging::logger(), blt::info)
           << "Reconnecting to server";
     }
   } catch (const std::exception& ex) {
-    // TODO(ds) log errors to cerr also
     BOOST_LOG_SEV(*Logging::logger(), blt::debug)
         << "Exception thrown in Comms::Subscribe <" << ex.what() << ">";
     return Error::kCouldNotSubscribeToService;
