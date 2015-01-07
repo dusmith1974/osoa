@@ -178,6 +178,8 @@ void Logging::WriteLogHeader(std::shared_ptr<const Args> args) const {
      << ((user_name) ? user_name : "unknown") << " on "
      << hostname << " at " << now << std::endl;
 
+  ss << args->cmdline() << std::endl << std::endl;
+
   if (!args->config_file().empty())
     ss << "using config-file: " << args->config_file() << std::endl;
   else

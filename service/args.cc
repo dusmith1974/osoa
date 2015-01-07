@@ -21,6 +21,8 @@
 #include <iostream>  // NOLINT
 #include <sstream>  // NOLINT
 
+#include "boost/algorithm/string/join.hpp"
+
 #include "service/service.h"
 
 namespace po = boost::program_options;
@@ -40,9 +42,10 @@ Args::Args()
     auto_flush_log_(false),
     rotation_size_(static_cast<int>(1e2)),
     config_(new po::options_description("Configuration:")),
-    generic_(new po::options_description("Genric Options:")),
+    generic_(new po::options_description("Generic Options:")),
     hidden_(new po::options_description("Hidden Options:")),
-    var_map_(new po::variables_map) {
+    var_map_(new po::variables_map),
+    cmdline_{} {
 }
 
 Args::~Args() {}
@@ -57,7 +60,10 @@ Error Args::Initialize(int argc, const char* argv[]) {
   AddOptionDescriptions(&cmdline_options, &visible_options,
                         &config_file_options);
 
-  // Parse the options included on the commnd line.
+  using boost::algorithm::join;
+  cmdline_ = join(std::vector<std::string>(argv, argv + argc), " ");
+
+  // Parse the options included on the command line.
   try {
     po::store(po::parse_command_line(argc, argv, cmdline_options), var_map());
     po::notify(var_map());
@@ -72,7 +78,7 @@ Error Args::Initialize(int argc, const char* argv[]) {
   }
 
   // Display the usage for --help.
-  if (var_map().count("help") /*|| 1 == argc*/) {
+  if (var_map().count("help") || 1 == argc) {
     std::cout << visible_options << std::endl;
     return Error::kCannotParseArgs;  // Not strictly true,
     // but we don't want to continue running either.
@@ -97,6 +103,8 @@ Error Args::Initialize(int argc, const char* argv[]) {
 
   return Error::kSuccess;
 }
+
+const std::string& Args::cmdline() const { return cmdline_; }
 
 // Generic options.
 const std::string& Args::config_file() const { return config_file_; }

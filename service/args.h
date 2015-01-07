@@ -51,6 +51,8 @@ class Args final : boost::noncopyable {
   // Adds option descriptions and parses all args.
   Error Initialize(int argc, const char* argv[]);
 
+  const std::string& cmdline() const;
+
   // Generic options.
   const std::string& config_file() const;
 
@@ -142,6 +144,8 @@ class Args final : boost::noncopyable {
   std::unique_ptr<po::options_description> generic_;
   std::unique_ptr<po::options_description> hidden_;
   std::unique_ptr<po::variables_map> var_map_;
+
+  std::string cmdline_;
 };
 }  // namespace osoa
 #endif  // SERVICE_ARGS_H_
