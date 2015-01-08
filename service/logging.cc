@@ -17,6 +17,7 @@
 
 #include "service/logging.h"
 
+#include <fstream>  // NOLINT
 #include <iostream>  // NOLINT
 #include <sstream>  // NOLINT
 
@@ -180,10 +181,19 @@ void Logging::WriteLogHeader(std::shared_ptr<const Args> args) const {
 
   ss << args->cmdline() << std::endl << std::endl;
 
-  if (!args->config_file().empty())
-    ss << "using config-file: " << args->config_file() << std::endl;
-  else
+  if (!args->config_file().empty()) {
+    std::string line;
+    std::ifstream file;
+    file.open(args->config_file());
+    if (file.is_open()) {
+      ss << "<" << args->config_file() << ">" << std::endl;
+      while (std::getline(file, line))
+        ss << "  "  << line << std::endl;
+      ss << "</" << args->config_file() << ">" << std::endl << std::endl;
+    }
+  } else {
     ss << "not using config-file" << std::endl;
+  }
 
   if (!args->log_dir().empty())
     ss << "using log-dir: " << args->log_dir() << std::endl;
