@@ -179,8 +179,10 @@ void Logging::WriteLogHeader(std::shared_ptr<const Args> args) const {
      << ((user_name) ? user_name : "unknown") << " on "
      << hostname << " at " << now << std::endl;
 
+  // Display the invocation..
   ss << args->cmdline() << std::endl << std::endl;
 
+  // ..and the contents of the options file.
   if (!args->config_file().empty()) {
     std::string line;
     std::ifstream file;

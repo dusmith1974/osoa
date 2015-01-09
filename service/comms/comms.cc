@@ -29,16 +29,19 @@ Comms::Comms()
     ws_(nullptr),
     publisher_port_(""),
     io_service_{},
-    publisher_thread_{} {
+    publisher_thread_{},
+    web_socket_thread_{} {
 }
 
 Comms::~Comms() {
 }
 
-// TODO(ds) trap sigint with asio and stop comms logging threads etc.
-
-// TODO(DS) remove? unused?
 Error Comms::PublishChannel(const std::string& port) {
+  using std::shared_ptr;
+  using boost::asio::deadline_timer;
+
+  namespace posix_time = boost::posix_time;
+
   if (port.empty()) {
     BOOST_LOG_SEV(*Logging::logger(), blt::info)
         << "Usage: server <listen_port>\n";
@@ -47,9 +50,14 @@ Error Comms::PublishChannel(const std::string& port) {
   }
 
   try {
-    // TODO(ds) ws needs to connect before tcp..
-    ws_ = std::unique_ptr<osoa::WebSocket>(new osoa::WebSocket);
-    BOOST_LOG_SEV(*Logging::logger(), blt::info) << "olap ws";
+    BOOST_LOG_SEV(*Logging::logger(), blt::info)
+        << "Starting websockets";
+
+    abort_timer_ = shared_ptr<deadline_timer>(new deadline_timer(io_service_));
+    abort_timer_->expires_at(posix_time::pos_infin);
+    abort_timer_->async_wait(boost::bind(&Comms::Shutdown, this));
+
+    ws_ = std::unique_ptr<osoa::WebSocket>(new osoa::WebSocket(abort_timer_));
     web_socket_thread_ = std::thread(&osoa::WebSocket::Run, ws_.get());
 
     tcp::endpoint listen_endpoint(tcp::v4(),
@@ -110,12 +118,15 @@ Error Comms::Subscribe(const std::string& host, const std::string& port) {
   }
 }
 
-// TODO(ds) trap sigint etc via asio (see Trojo).
 void Comms::Shutdown() {
-  if (publisher_thread_.joinable())
-    publisher_thread_.join();
+  if (web_socket_thread_.joinable())
+    web_socket_thread_.join();
 
-  // Close sockets
+  io_service_.stop();
+
+  // We are the publisher thread, don't self join!
+  //if (publisher_thread_.joinable())
+  //publisher_thread_.join();
 }
 
 const std::string& Comms::publisher_port() const {

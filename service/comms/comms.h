@@ -33,6 +33,8 @@ class WebSocket;
 
 namespace asio = boost::asio;
 
+using boost::asio::deadline_timer;
+
 // Provides a TCP publisher-subscriber link between a server and clients.
 #ifdef __GNUC__
 #pragma GCC diagnostic push
@@ -65,10 +67,14 @@ class Comms final : boost::noncopyable {
  private:
   std::unique_ptr<Server> server_;
   std::unique_ptr<osoa::WebSocket> ws_;
+
   std::string publisher_port_;
   asio::io_service io_service_;
+
   std::thread publisher_thread_;
   std::thread web_socket_thread_;
+
+  std::shared_ptr<boost::asio::deadline_timer> abort_timer_;
 };
 }  // namespace osoa
 #endif  // SERVICE_COMMS_COMMS_H_

@@ -24,6 +24,7 @@
 #include <thread>  // NOLINT
 
 #include "boost/asio.hpp"
+#include "boost/bind.hpp"
 
 #include "Poco/Format.h"
 #include "Poco/Net/HTTPRequestHandler.h"
@@ -56,12 +57,6 @@ using Poco::Util::Application;
 namespace osoa {
 std::mutex m;
 std::condition_variable cv;
-
-void handler(const boost::system::error_code& error, int /*signal_number*/) {
-  if (!error) {
-    // process signal
-  }
-}
 
 // Handle a WebSocket connection.
 class WebSocketRequestHandler : public HTTPRequestHandler {
@@ -176,7 +171,10 @@ class RequestHandlerFactory : public HTTPRequestHandlerFactory {
   MessageMap& messages_;
 };
 
-WebSocket::WebSocket() {
+WebSocket::WebSocket(std::shared_ptr<deadline_timer> work_done)
+  : abort_signal_(0),
+    messages_{},
+    work_done_(work_done) {
 }
 
 WebSocket::~WebSocket() {
@@ -199,15 +197,32 @@ void WebSocket::Run() {
   // wait for CTRL-C or kill
   boost::asio::io_service io_service;
   boost::asio::signal_set signals(io_service, SIGINT, SIGTERM);
-  signals.async_wait(handler);
+  signals.async_wait(boost::bind(&WebSocket::handler, this, _1, _2));
   io_service.run();
+
+  std::string abort_reason;
+  abort_reason = (abort_signal_ == SIGINT) ? "Ctrl-C" : "SIGTERM";
+  BOOST_LOG_SEV(*Logging::logger(), blt::info)
+      << abort_reason << " received.";
+
+  BOOST_LOG_SEV(*Logging::logger(), blt::info)
+      << "Stopping the web-socket server.";
 
   // Stop the HTTPServer
   srv.stop();
+
+  work_done_->expires_at(deadline_timer::traits_type::now());
 }
 
 void WebSocket::PublishMessage(const std::string& msg) {
   messages_[messages_.size() + 1] = msg;
   cv.notify_all();
+}
+
+void WebSocket::handler(const boost::system::error_code& error,
+                        int signal_number) {
+  if (!error) {
+    abort_signal_ = signal_number;
+  }
 }
 }  // namespace osoa

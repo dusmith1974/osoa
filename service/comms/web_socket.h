@@ -19,22 +19,40 @@
 #define SERVICE_COMMS_WEB_SOCKET_H_
 
 #include <map>
+#include <memory>
 #include <string>
+
+/*namespace boost {
+namespace asio {
+class deadline_timer;
+}
+namespace system {
+class error_code;
+}
+}*/
+
+#include "boost/asio.hpp"
 
 namespace osoa {
 typedef std::map<uint64_t, std::string> MessageMap;
 
+using boost::asio::deadline_timer;
+
 // The WebSocket class.
 class WebSocket { /*final : public Base*/
  public:
-  WebSocket();
+  WebSocket(std::shared_ptr<deadline_timer> work_done);
   /*virtual*/ ~WebSocket();
 
   void Run();
   void PublishMessage(const std::string& msg);
 
  private:
+  void handler(const boost::system::error_code& error, int signal_number);
+
+  int abort_signal_;
   MessageMap messages_;
+  std::shared_ptr<deadline_timer> work_done_;
 };
 }  // namespace osoa
 
