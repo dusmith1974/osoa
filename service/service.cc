@@ -26,7 +26,8 @@
 
 namespace osoa {
 Service::Service()
-  : svc_start_time_(boost::chrono::steady_clock::now()),
+  : abort_signal_(0),
+    svc_start_time_(boost::chrono::steady_clock::now()),
     svc_end_time_(boost::chrono::steady_clock::now()),
     args_(new Args()),
     comms_(std::make_shared<Comms>()) {
@@ -43,43 +44,88 @@ Error Service::Initialize(int argc, const char* argv[]) {
   code = Logging::Instance().Initialize(args());
   if (Error::kSuccess != code) return code;
 
+  code = comms()->Initialize();
+  if (Error::kSuccess != code) return code;
+
   return Error::kSuccess;
 }
 
-// Starts this service, sets the start time, resolves any services that may be
-// called upon during execution and opens the main listening port to accept
-// connections.
+// Starts this service, sets the start time and opens the main listening port
+// to accept connections.
+// Uses the non-virtual interface idiom to ensure certain pre-start tasks are
+// always carried out (publishing the channel, socket and websocket threads)
+// before any non-blocking service specific tasks are added in the subclass. We
+// then return to here and wait for SIGINT as a post start task.
 Error Service::Start() {
-  BOOST_LOG_SEV(*Logging::logger(), blt::info) << "Started the service.";
-
+  // Publish the channel.
   set_svc_start_time(boost::chrono::steady_clock::now());
+  BOOST_LOG_SEV(*Logging::logger(), blt::info)
+      << "Starting the service.";
 
   Error code = Error::kSuccess;
-  /*if (args()->var_map().count("services"))
-    code = comms()->ResolveServices(args()->services());*/
-
-  // Either open an async listening port for subscribers to connect to
-  // publications, or open a sync listening port for a simple iterative server
-  if (Error::kSuccess == code && args()->var_map().count("listening-port"))
+  if (args()->var_map().count("listening-port"))
     code = comms()->PublishChannel(args()->listening_port());
+
+  if (Error::kSuccess == code)
+    code = DoStart();
+
+  // Post Start
+  // wait for CTRL-C or kill
+  boost::asio::io_service io_service;
+  boost::asio::signal_set signals(io_service, SIGINT, SIGTERM);
+  signals.async_wait(boost::bind(&Service::AbortHandler, this, _1, _2));
+  io_service.run();
+
+  std::string abort_reason;
+  abort_reason = (abort_signal_ == SIGINT) ? "Ctrl-C" : "SIGTERM";
+  BOOST_LOG_SEV(*Logging::logger(), blt::info)
+      << abort_reason << " received.";
 
   return code;
 }
 
+// Override in the subclass to queue up all of the work for the service. Note
+// that all work and io_services should be spun off into threads so we don't
+// block. We want to return to Start() and wait for SIGINT to close cleanly.
+Error Service::DoStart() {
+  // Default service behavior - do nothing.
+  return Error::kSuccess;
+}
+
 // Stops the service, logs the service uptime and detaches any logging threads
-// or front-ends from the core. Any active threads should be joined here.
+// or front-ends from the core. Uses the non-virtual interface idiom to ensure
+// that we always call Shutdown on the comms to stop work and join threads,
+// before any service specific clean up in the subclass. Finally we detach
+// logging as a post stop task.
 Error Service::Stop() {
-  BOOST_LOG_SEV(*Logging::logger(), blt::info) << "service stop";
+  BOOST_LOG_SEV(*Logging::logger(), blt::info)
+      << "Stopping the service.";
+
+  comms()->Shutdown();
 
   set_svc_end_time(boost::chrono::steady_clock::now());
   BOOST_LOG_SEV(*Logging::logger(), blt::info) << "Service uptime: "
       << add_timestamp(std::make_pair(svc_start_time(), svc_end_time()));
 
-  // join/stop all threads before stopping logging.
+  Error code = DoStop();
 
+  BOOST_LOG_SEV(*Logging::logger(), blt::debug)
+      << "Detach logging.";
   Logging::Instance().Detach();
 
+  return code;
+}
+
+Error Service::DoStop() {
+  // Default service behavior - do nothing.
   return Error::kSuccess;
+}
+
+void Service::AbortHandler(const boost::system::error_code& error,
+                           int signal_number) {
+  if (!error) {
+    abort_signal_ = signal_number;
+  }
 }
 
 std::shared_ptr<Args> Service::args() { return args_; }

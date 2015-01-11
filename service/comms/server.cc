@@ -61,4 +61,8 @@ void Server::PublishMessage(const std::string& msg) {
   cache_[cache_.size() + 1] = msg;
   channel_.Deliver(msg);
 }
+
+void Server::Shutdown() {
+  io_service_.stop();
+}
 }  // namespace osoa

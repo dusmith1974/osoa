@@ -76,16 +76,11 @@ class WebSocketRequestHandler : public HTTPRequestHandler {
       char buffer[1024];
       int n;
       int flags = 0;
-      int beat_num = 0;
       size_t msg_num = 1;
       std::cv_status status = std::cv_status::no_timeout;
       do {
         n = ws.receiveFrame(buffer, sizeof(buffer), flags);
         opcodes = flags & Poco::Net::WebSocket::FRAME_OP_BITMASK;
-
-        BOOST_LOG_SEV(*Logging::logger(), blt::debug)
-            << Poco::format("Frame received (length=%d, flags=0x%x, msg=%d).",
-                            n, unsigned(flags), ++beat_num);
 
         // Send any new messages to the web client..
         if (status == std::cv_status::no_timeout) {
@@ -171,13 +166,14 @@ class RequestHandlerFactory : public HTTPRequestHandlerFactory {
   MessageMap& messages_;
 };
 
-WebSocket::WebSocket(std::shared_ptr<deadline_timer> work_done)
-  : abort_signal_(0),
-    messages_{},
-    work_done_(work_done) {
+WebSocket::WebSocket()
+  : messages_{} {
 }
 
 WebSocket::~WebSocket() {
+}
+
+void WebSocket::AbortHandler(const boost::system::error_code&) {
 }
 
 void WebSocket::Run() {
@@ -194,24 +190,13 @@ void WebSocket::Run() {
   // start the HTTPServer
   srv.start();
 
-  // wait for CTRL-C or kill
-  boost::asio::io_service io_service;
-  boost::asio::signal_set signals(io_service, SIGINT, SIGTERM);
-  signals.async_wait(boost::bind(&WebSocket::handler, this, _1, _2));
-  io_service.run();
-
-  std::string abort_reason;
-  abort_reason = (abort_signal_ == SIGINT) ? "Ctrl-C" : "SIGTERM";
-  BOOST_LOG_SEV(*Logging::logger(), blt::info)
-      << abort_reason << " received.";
-
-  BOOST_LOG_SEV(*Logging::logger(), blt::info)
-      << "Stopping the web-socket server.";
+  // Wait until stop_websockets_ AbortHandler fires.
+  io_service().run();
 
   // Stop the HTTPServer
   srv.stop();
 
-  work_done_->expires_at(deadline_timer::traits_type::now());
+  //work_done_->expires_at(deadline_timer::traits_type::now());
 }
 
 void WebSocket::PublishMessage(const std::string& msg) {
@@ -219,10 +204,7 @@ void WebSocket::PublishMessage(const std::string& msg) {
   cv.notify_all();
 }
 
-void WebSocket::handler(const boost::system::error_code& error,
-                        int signal_number) {
-  if (!error) {
-    abort_signal_ = signal_number;
-  }
+asio::io_service& WebSocket::io_service() {
+  return io_service_;
 }
 }  // namespace osoa

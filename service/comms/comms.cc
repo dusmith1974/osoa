@@ -15,6 +15,8 @@
 
 #include "osoa_pch.h"  // NOLINT
 
+#include <memory>  // NOLINT
+
 #include "service/comms/comms.h"
 
 #include "service/comms/client.h"
@@ -23,17 +25,32 @@
 #include "service/logging.h"
 #include "service/service.h"
 
+using std::shared_ptr;
+
 namespace osoa {
 Comms::Comms()
   : server_(nullptr),
     ws_(nullptr),
     publisher_port_(""),
     io_service_{},
-    publisher_thread_{},
+    socket_thread_{},
     web_socket_thread_{} {
 }
 
 Comms::~Comms() {
+  server_.reset();
+}
+
+Error Comms::Initialize() {
+  ws_ = std::unique_ptr<osoa::WebSocket>(new osoa::WebSocket());
+  stop_websockets_ = shared_ptr<deadline_timer>(new deadline_timer(
+                       ws_->io_service()));
+
+  stop_websockets_->expires_at(posix_time::pos_infin);
+  stop_websockets_->async_wait(boost::bind(&WebSocket::AbortHandler,
+                               ws_.get(), _1));
+
+  return Error::kSuccess;
 }
 
 Error Comms::PublishChannel(const std::string& port) {
@@ -50,14 +67,9 @@ Error Comms::PublishChannel(const std::string& port) {
   }
 
   try {
-    BOOST_LOG_SEV(*Logging::logger(), blt::info)
-        << "Starting websockets";
+    BOOST_LOG_SEV(*Logging::logger(), blt::debug)
+        << "Starting websocket thread.";
 
-    abort_timer_ = shared_ptr<deadline_timer>(new deadline_timer(io_service_));
-    abort_timer_->expires_at(posix_time::pos_infin);
-    abort_timer_->async_wait(boost::bind(&Comms::Shutdown, this));
-
-    ws_ = std::unique_ptr<osoa::WebSocket>(new osoa::WebSocket(abort_timer_));
     web_socket_thread_ = std::thread(&osoa::WebSocket::Run, ws_.get());
 
     tcp::endpoint listen_endpoint(tcp::v4(),
@@ -67,7 +79,7 @@ Error Comms::PublishChannel(const std::string& port) {
     server_ = std::unique_ptr<Server>(
                 new Server(listen_endpoint, &io_service_));
 
-    publisher_thread_ = std::thread([&]() { io_service_.run(); });
+    socket_thread_ = std::thread([&]() { io_service_.run(); });
   } catch (std::exception& e) {
     BOOST_LOG_SEV(*Logging::logger(), blt::info)
         << e.what() << std::endl;
@@ -119,14 +131,21 @@ Error Comms::Subscribe(const std::string& host, const std::string& port) {
 }
 
 void Comms::Shutdown() {
+  BOOST_LOG_SEV(*Logging::logger(), blt::debug)
+      << "Shutdown tcp server.";
+  server_->Shutdown();
+
+  BOOST_LOG_SEV(*Logging::logger(), blt::debug)
+      << "Joining websocket thread.";
+  stop_websockets_->expires_at(posix_time::neg_infin);
   if (web_socket_thread_.joinable())
     web_socket_thread_.join();
 
+  BOOST_LOG_SEV(*Logging::logger(), blt::debug)
+      << "Joining socket thread.";
   io_service_.stop();
-
-  // We are the publisher thread, don't self join!
-  //if (publisher_thread_.joinable())
-  //publisher_thread_.join();
+  if (socket_thread_.joinable())
+    socket_thread_.join();
 }
 
 const std::string& Comms::publisher_port() const {

@@ -33,26 +33,29 @@ class error_code;
 
 #include "boost/asio.hpp"
 
+namespace asio = boost::asio;
+
 namespace osoa {
 typedef std::map<uint64_t, std::string> MessageMap;
 
+using boost::asio::io_service;
 using boost::asio::deadline_timer;
 
 // The WebSocket class.
 class WebSocket { /*final : public Base*/
  public:
-  WebSocket(std::shared_ptr<deadline_timer> work_done);
+  WebSocket();
   /*virtual*/ ~WebSocket();
+
+  void AbortHandler(const boost::system::error_code&);
 
   void Run();
   void PublishMessage(const std::string& msg);
 
+  asio::io_service& io_service();
  private:
-  void handler(const boost::system::error_code& error, int signal_number);
-
-  int abort_signal_;
   MessageMap messages_;
-  std::shared_ptr<deadline_timer> work_done_;
+  boost::asio::io_service io_service_;
 };
 }  // namespace osoa
 

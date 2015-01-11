@@ -21,6 +21,7 @@
 
 #include <memory>
 
+#include "boost/asio.hpp"
 #include "boost/chrono.hpp"
 
 namespace osoa {
@@ -50,18 +51,25 @@ class Service {
   virtual Error Initialize(int argc, const char* argv[]);
 
   // Starts the service and sets up any networking.
-  virtual Error Start();
+  Error Start();
 
   // Stops the service and disables logging.
-  virtual Error Stop();
-
-  // TODO(ds) return to protected
-  std::shared_ptr<Comms> comms();
+  Error Stop();
 
  protected:
   std::shared_ptr<Args> args();
+  std::shared_ptr<Comms> comms();
 
  private:
+  // Override in the subclass to add the jobs for the service.
+  virtual Error DoStart();
+
+  // Override in the subclass to perform the cleanup for the service.
+  virtual Error DoStop();
+  void AbortHandler(const boost::system::error_code& error, int signal_number);
+
+  int abort_signal_;
+
   typedef boost::chrono::time_point<boost::chrono::steady_clock> Timepoint;
 
   const Timepoint& svc_start_time() const;

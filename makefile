@@ -1,7 +1,7 @@
-CC = distcc
-CXX = distcc g++
+#CC = distcc
+#CXX = distcc g++
 CXXFLAGS = -DBOOST_ALL_DYN_LINK
-CXXFLAGS += -Wall -Wextra -ansi -pedantic -Werror
+CXXFLAGS += -Wall -Wextra -ansi -pedantic -Werror -Wfatal-errors
 "CXXFLAGS += -Weffc++ -Wshadow // Disabled for Poco 
 CXXFLAGS += -Wno-error=effc++ # for boost and other libs.
 CXXFLAGS += -std=c++11
@@ -10,10 +10,9 @@ ITEM = item
 SERVICE = service
 COMMS = $(SERVICE)/comms
 UTIL = util
-TEST = test
 BASE = .
 
-PRJS := $(ITEM) $(SERVICE) $(COMMS) $(UTIL) $(BASE) $(TEST)
+PRJS := $(ITEM) $(SERVICE) $(COMMS) $(UTIL) $(BASE)
 
 LIB_OSOA_BASE = libosoa-mt
 ifeq ($(MAKECMDGOALS), debug)
@@ -52,10 +51,10 @@ DEF+=-DPOCO_HAVE_FD_EPOLL
 $(OBJ_DIR)/%.o : %.cc 
 	$(COMPILE.cc) $(INC) $(DEFS) $(OUTPUT_OPTION) $<
 
-all: $(BIN_DIR)/test $(OBJ_DIR)/$(LIB_OSOA)
+all: $(OBJ_DIR)/$(LIB_OSOA)
 
 debug: CXXFLAGS += -DDEBUG -g -O0
-debug: $(BIN_DIR)/test $(OBJ_DIR)/$(LIB_OSOA)
+debug: $(OBJ_DIR)/$(LIB_OSOA)
 
 ifneq ($(MAKECMDGOALS), debug)
 CXXFLAGS += -O3 -DNDEBUG
@@ -70,10 +69,10 @@ $(OBJ_DIR)/%.d : %.cc
 -include $(DEPS)
 endif
 
-$(BIN_DIR)/test: $(OBJS)
-	$(LINK.cc) $(OBJS) $(DEFS) -L$(POCO_BASE)/lib/Linux/x86_64 -dynamic -lPocoUtild -lPocoNetd -lPocoXMLd -lPocoFoundationd -pthread -lboost_program_options -lboost_log_setup -lboost_log -lboost_system -lboost_thread -lboost_date_time -lboost_filesystem -lboost_chrono $(OUTPUT_OPTION)
-	#ctags -R --c-kinds=+cdefglmnpstuvx --extra=+f
-	#cscope -Rb
+#$(OBJS)
+#	$(LINK.cc) $(OBJS) $(DEFS) -L$(POCO_BASE)/lib/Linux/x86_64 -dynamic -lPocoUtild -lPocoNetd -lPocoXMLd -lPocoFoundationd -pthread -lboost_program_options -lboost_log_setup -lboost_log -lboost_system -lboost_thread -lboost_date_time -lboost_filesystem -lboost_chrono $(OUTPUT_OPTION)
+#	#ctags -R --c-kinds=+cdefglmnpstuvx --extra=+f
+#	#cscope -Rb
 
 $(OBJ_DIR)/$(LIB_OSOA): $(OBJS)
 	mkdir -p $(OBJ_DIR)

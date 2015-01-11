@@ -49,6 +49,8 @@ class Comms final : boost::noncopyable {
   Comms();
   ~Comms();
 
+  Error Initialize();
+
   // Opens an async listening port for the published topics.
   // Returns kSuccess.
   Error PublishChannel(const std::string& port);
@@ -67,14 +69,13 @@ class Comms final : boost::noncopyable {
  private:
   std::unique_ptr<Server> server_;
   std::unique_ptr<osoa::WebSocket> ws_;
+  std::shared_ptr<deadline_timer> stop_websockets_;
 
   std::string publisher_port_;
   asio::io_service io_service_;
 
-  std::thread publisher_thread_;
+  std::thread socket_thread_;
   std::thread web_socket_thread_;
-
-  std::shared_ptr<boost::asio::deadline_timer> abort_timer_;
 };
 }  // namespace osoa
 #endif  // SERVICE_COMMS_COMMS_H_

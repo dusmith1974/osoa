@@ -81,7 +81,9 @@ void TcpSession::Stop(error_code ec) {
       << ec.message() << " "
       << remote_addr;
 
+  socket_.shutdown(boost::asio::ip::tcp::socket::shutdown_both);
   socket_.close(ec);
+
   input_deadline_.cancel();
   non_empty_output_queue_.cancel();
   output_deadline_.cancel();

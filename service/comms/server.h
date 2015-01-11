@@ -42,6 +42,7 @@ class Server final {
   void StartAccept();
   void HandleAccept(TcpSessionPtr session, const error_code& ec);
   void PublishMessage(const std::string& msg);
+  void Shutdown();
 
  private:
   asio::io_service& io_service_;

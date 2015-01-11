@@ -1,9 +1,6 @@
-mv abort handler from ws into service subclass (the app)
- sig_set, abort_handler_ etc into olap service run (new virt)
- service::start to call virtual run() func
-  mv olap global run into new virt run
-  on sigint join threads (log comms ws) stop io_services etc
-  test with clean exit on short quick race
+mv ws_stop handler into ws and call with io post
+weffc++
+test with clean exit on short quick race
 
 
 store and forward channel (as is)
