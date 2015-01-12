@@ -49,13 +49,16 @@ class WebSocket { /*final : public Base*/
 
   void AbortHandler(const boost::system::error_code&);
 
+  void Initialize();
   void Run();
   void PublishMessage(const std::string& msg);
+  void Shutdown();
 
   asio::io_service& io_service();
  private:
   MessageMap messages_;
   boost::asio::io_service io_service_;
+  std::shared_ptr<deadline_timer> stop_;
 };
 }  // namespace osoa
 

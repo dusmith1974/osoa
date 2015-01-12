@@ -54,6 +54,8 @@ using Poco::ThreadPool;
 using Poco::Util::ServerApplication;
 using Poco::Util::Application;
 
+namespace posix_time = boost::posix_time;
+
 namespace osoa {
 std::mutex m;
 std::condition_variable cv;
@@ -176,6 +178,15 @@ WebSocket::~WebSocket() {
 void WebSocket::AbortHandler(const boost::system::error_code&) {
 }
 
+void WebSocket::Initialize() {
+  using std::shared_ptr;
+  stop_ = shared_ptr<deadline_timer>(new deadline_timer(io_service()));
+
+  stop_->expires_at(posix_time::pos_infin);
+  stop_->async_wait(boost::bind(&WebSocket::AbortHandler,
+                                this, _1));
+}
+
 void WebSocket::Run() {
   unsigned short port = 9980;
 
@@ -195,13 +206,15 @@ void WebSocket::Run() {
 
   // Stop the HTTPServer
   srv.stop();
-
-  //work_done_->expires_at(deadline_timer::traits_type::now());
 }
 
 void WebSocket::PublishMessage(const std::string& msg) {
   messages_[messages_.size() + 1] = msg;
   cv.notify_all();
+}
+
+void WebSocket::Shutdown() {
+  stop_->expires_at(posix_time::neg_infin);
 }
 
 asio::io_service& WebSocket::io_service() {

@@ -69,7 +69,6 @@ class Comms final : boost::noncopyable {
  private:
   std::unique_ptr<Server> server_;
   std::unique_ptr<osoa::WebSocket> ws_;
-  std::shared_ptr<deadline_timer> stop_websockets_;
 
   std::string publisher_port_;
   asio::io_service io_service_;

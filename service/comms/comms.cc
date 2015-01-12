@@ -43,12 +43,7 @@ Comms::~Comms() {
 
 Error Comms::Initialize() {
   ws_ = std::unique_ptr<osoa::WebSocket>(new osoa::WebSocket());
-  stop_websockets_ = shared_ptr<deadline_timer>(new deadline_timer(
-                       ws_->io_service()));
-
-  stop_websockets_->expires_at(posix_time::pos_infin);
-  stop_websockets_->async_wait(boost::bind(&WebSocket::AbortHandler,
-                               ws_.get(), _1));
+  ws_->Initialize();
 
   return Error::kSuccess;
 }
@@ -56,8 +51,6 @@ Error Comms::Initialize() {
 Error Comms::PublishChannel(const std::string& port) {
   using std::shared_ptr;
   using boost::asio::deadline_timer;
-
-  namespace posix_time = boost::posix_time;
 
   if (port.empty()) {
     BOOST_LOG_SEV(*Logging::logger(), blt::info)
@@ -93,7 +86,6 @@ Error Comms::PublishChannel(const std::string& port) {
 void Comms::PublishMessage(const std::string& msg) {
   if (server_)
     io_service_.post(bind(&Server::PublishMessage, server_.get(), msg));
-  // TODO(ds) else ASSERT, post called before service start (null server).
 
   if (ws_)
     ws_->PublishMessage(msg);
@@ -137,7 +129,7 @@ void Comms::Shutdown() {
 
   BOOST_LOG_SEV(*Logging::logger(), blt::debug)
       << "Joining websocket thread.";
-  stop_websockets_->expires_at(posix_time::neg_infin);
+  ws_->io_service().post(boost::bind(&WebSocket::Shutdown, ws_.get()));
   if (web_socket_thread_.joinable())
     web_socket_thread_.join();
 

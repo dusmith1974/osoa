@@ -79,7 +79,7 @@ Error Service::Start() {
   std::string abort_reason;
   abort_reason = (abort_signal_ == SIGINT) ? "Ctrl-C" : "SIGTERM";
   BOOST_LOG_SEV(*Logging::logger(), blt::info)
-      << abort_reason << " received.";
+      << std::endl << abort_reason << " received.";
 
   return code;
 }
