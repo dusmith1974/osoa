@@ -30,7 +30,8 @@ Service::Service()
     svc_start_time_(boost::chrono::steady_clock::now()),
     svc_end_time_(boost::chrono::steady_clock::now()),
     args_(new Args()),
-    comms_(std::make_shared<Comms>()) {
+    comms_(std::make_shared<Comms>()),
+    publishing_(false) {
 }
 
 Service::~Service() {}
@@ -41,10 +42,13 @@ Error Service::Initialize(int argc, const char* argv[]) {
   Error code = args()->Initialize(argc, argv);
   if (Error::kSuccess != code) return code;
 
+  if (!args()->listening_port().empty())
+    set_publishing(true);
+
   code = Logging::Instance().Initialize(args());
   if (Error::kSuccess != code) return code;
 
-  code = comms()->Initialize();
+  code = comms()->Initialize(args()->listening_port());
   if (Error::kSuccess != code) return code;
 
   return Error::kSuccess;
@@ -64,7 +68,7 @@ Error Service::Start() {
 
   Error code = Error::kSuccess;
   if (args()->var_map().count("listening-port"))
-    code = comms()->PublishChannel(args()->listening_port());
+    code = comms()->PublishChannel();
 
   if (Error::kSuccess == code)
     code = DoStart();
@@ -145,5 +149,13 @@ const Service::Timepoint& Service::svc_end_time() const {
 
 void Service::set_svc_end_time(const Service::Timepoint& val) {
   svc_end_time_ = val;
+}
+
+bool Service::publishing() const {
+  return publishing_;
+}
+
+void Service::set_publishing(bool val) {
+  publishing_ = val;
 }
 }  // namespace osoa

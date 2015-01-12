@@ -56,6 +56,9 @@ class Service {
   // Stops the service and disables logging.
   Error Stop();
 
+  bool publishing() const;
+  void set_publishing(bool val);
+
  protected:
   std::shared_ptr<Args> args();
   std::shared_ptr<Comms> comms();
@@ -83,6 +86,8 @@ class Service {
 
   std::shared_ptr<Args> args_;
   std::shared_ptr<Comms> comms_;
+
+  bool publishing_;
 };
 }  // namespace osoa
 #endif  // SERVICE_SERVICE_H_

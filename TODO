@@ -1,7 +1,8 @@
-mv ws_stop handler into ws and call with io post
+firewall allow ws port
+remote vnc to websrv
+
 weffc++
 test with clean exit on short quick race
-
 
 store and forward channel (as is)
 pass through channel (delete msg after published)

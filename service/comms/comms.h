@@ -49,11 +49,11 @@ class Comms final : boost::noncopyable {
   Comms();
   ~Comms();
 
-  Error Initialize();
+  Error Initialize(const std::string& port);
 
   // Opens an async listening port for the published topics.
   // Returns kSuccess.
-  Error PublishChannel(const std::string& port);
+  Error PublishChannel();
 
   void PublishMessage(const std::string& msg);
 
@@ -63,8 +63,6 @@ class Comms final : boost::noncopyable {
 
   const std::string& publisher_port() const;
   void set_publisher_port(const std::string& val);
-
-  asio::io_service& io_service();
 
  private:
   std::unique_ptr<Server> server_;

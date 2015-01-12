@@ -41,37 +41,34 @@ Comms::~Comms() {
   server_.reset();
 }
 
-Error Comms::Initialize() {
-  ws_ = std::unique_ptr<osoa::WebSocket>(new osoa::WebSocket());
-  ws_->Initialize();
+Error Comms::Initialize(const std::string& port) {
+  // If we're publishing create the websocket and tcp server.
+  if (!port.empty()) {
+    ws_ = std::unique_ptr<osoa::WebSocket>(new osoa::WebSocket());
+    ws_->Initialize();
 
-  return Error::kSuccess;
-}
-
-Error Comms::PublishChannel(const std::string& port) {
-  using std::shared_ptr;
-  using boost::asio::deadline_timer;
-
-  if (port.empty()) {
-    BOOST_LOG_SEV(*Logging::logger(), blt::info)
-        << "Usage: server <listen_port>\n";
-
-    return Error::kInvalidArgs;
-  }
-
-  try {
-    BOOST_LOG_SEV(*Logging::logger(), blt::debug)
-        << "Starting websocket thread.";
-
-    web_socket_thread_ = std::thread(&osoa::WebSocket::Run, ws_.get());
-
+    // Create the socket object.
     tcp::endpoint listen_endpoint(tcp::v4(),
                                   static_cast<unsigned short>(  // NOLINT
                                     atoi(port.c_str())));
 
     server_ = std::unique_ptr<Server>(
                 new Server(listen_endpoint, &io_service_));
+  }
 
+  return Error::kSuccess;
+}
+
+Error Comms::PublishChannel() {
+  try {
+    // Start the websocket thread.
+    BOOST_LOG_SEV(*Logging::logger(), blt::debug)
+        << "Starting websocket thread.";
+    web_socket_thread_ = std::thread(&osoa::WebSocket::Run, ws_.get());
+
+    // Start the socket thread.
+    BOOST_LOG_SEV(*Logging::logger(), blt::debug)
+        << "Starting socket thread.";
     socket_thread_ = std::thread([&]() { io_service_.run(); });
   } catch (std::exception& e) {
     BOOST_LOG_SEV(*Logging::logger(), blt::info)
@@ -146,9 +143,5 @@ const std::string& Comms::publisher_port() const {
 
 void Comms::set_publisher_port(const std::string& val) {
   publisher_port_ = val;
-}
-
-asio::io_service& Comms::io_service() {
-  return io_service_;
 }
 }  // namespace osoa
