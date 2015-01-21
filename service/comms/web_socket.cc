@@ -26,6 +26,11 @@
 #include "boost/asio.hpp"
 #include "boost/bind.hpp"
 
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Weffc++"
+#pragma GCC diagnostic ignored "-Wshadow"
+#endif
 #include "Poco/Format.h"
 #include "Poco/Net/HTTPRequestHandler.h"
 #include "Poco/Net/HTTPRequestHandlerFactory.h"
@@ -37,6 +42,9 @@
 #include "Poco/Net/ServerSocket.h"
 #include "Poco/Net/WebSocket.h"
 #include "Poco/Util/ServerApplication.h"
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif
 
 #include "service/logging.h"
 

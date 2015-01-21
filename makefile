@@ -1,9 +1,9 @@
 #CC = distcc
 #CXX = distcc g++
 CXXFLAGS = -DBOOST_ALL_DYN_LINK
-CXXFLAGS += -Wall -Wextra -ansi -pedantic -Werror -Wfatal-errors
-"CXXFLAGS += -Weffc++ -Wshadow // Disabled for Poco 
-CXXFLAGS += -Wno-error=effc++ # for boost and other libs.
+CXXFLAGS += -Wall -Wextra -ansi -pedantic -Werror #-Wfatal-errors
+CXXFLAGS += -Weffc++ -Wshadow # // Disabled for Poco 
+#CXXFLAGS += -Wno-error=effc++ # for boost and other libs.
 CXXFLAGS += -std=c++11
 
 ITEM = item
